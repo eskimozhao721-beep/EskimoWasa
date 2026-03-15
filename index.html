@@ -1020,6 +1020,10 @@ async function saveDB(autoSync = true) {
 // ════════════════════════════════════════════════════════
 // AUTH / LOGIN
 // ════════════════════════════════════════════════════════
+// 种子管理员：只有这些邮箱可以在 whitelist 为空时自动注册为管理员
+// 其他所有人必须由管理员手动添加到白名单
+const SEED_ADMINS = ['irishsiang1210@gmail.com', 'eskimozhao721@gmail.com'];
+
 function doLogin() {
   const email = document.getElementById('login-email').value.trim().toLowerCase();
   const errEl = document.getElementById('login-err');
@@ -1028,8 +1032,8 @@ function doLogin() {
   // Check whitelist
   const user = db.whitelist.find(u => u.email.toLowerCase() === email);
   if (!user) {
-    // If whitelist is empty (first run), auto-admit as admin
-    if (db.whitelist.length === 0) {
+    // First run: only seed admins can self-register
+    if (db.whitelist.length === 0 && SEED_ADMINS.includes(email)) {
       db.whitelist.push({ email, role: 'admin' });
       saveDB();
       currentUser = { email, role: 'admin' };
@@ -1072,20 +1076,14 @@ function enterApp() {
   initApp();
 }
 
-function checkSession(gistPullSucceeded) {
+function checkSession() {
   try {
     const s = localStorage.getItem('ff_session');
     if (!s) return false;
     const sess = JSON.parse(s);
+    // 严格白名单检查：只有在白名单中的邮箱才能自动登录
     const user = db.whitelist.find(u => u.email.toLowerCase() === sess.email?.toLowerCase());
     if (user) { currentUser = { email: user.email, role: user.role }; return true; }
-    // Only treat empty whitelist as first-run if Gist pull succeeded (or no Gist configured)
-    // This prevents a failed Gist pull from making everyone look like a new admin
-    if (db.whitelist.length === 0 && gistPullSucceeded) {
-      currentUser = { email: sess.email, role: 'admin' };
-      db.whitelist.push({ email: sess.email, role: 'admin' });
-      return true;
-    }
   } catch(e) {}
   return false;
 }
@@ -2592,7 +2590,7 @@ async function boot() {
   }
 
   // Try auto-login with session
-  if (checkSession(gistPullSucceeded || !gistCfg?.gistId)) {
+  if (checkSession()) {
     document.getElementById('login-screen').style.display = 'none';
     enterApp();
   } else {
