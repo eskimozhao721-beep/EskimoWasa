@@ -362,6 +362,11 @@ tbody td{padding:12px 14px;font-size:13px;vertical-align:middle;}
   /* Tables horizontally scrollable */
   .tw { overflow-x:auto; -webkit-overflow-scrolling:touch; }
   table { min-width:480px; }
+  .stk-table { min-width:500px; }
+
+  /* Prevent full-page horizontal scroll */
+  body { overflow-x:hidden; }
+  .main { overflow-x:hidden; }
 
   /* Cards */
   .card { padding:14px 12px; border-radius:12px; }
@@ -401,12 +406,13 @@ tbody td{padding:12px 14px;font-size:13px;vertical-align:middle;}
   }
   .mob-nav-item {
     flex:1; display:flex; flex-direction:column; align-items:center;
-    gap:3px; padding:4px 0; cursor:pointer;
-    font-size:10px; color:var(--t3); font-weight:500;
+    gap:2px; padding:4px 0; cursor:pointer;
+    font-size:9px; color:var(--t3); font-weight:500;
     border:none; background:none; transition:color .15s;
+    min-width:0;
   }
   .mob-nav-item.active { color:var(--blue); }
-  .mob-nav-item .mob-icon { font-size:20px; line-height:1; }
+  .mob-nav-item .mob-icon { font-size:18px; line-height:1; }
 
   /* Toast above nav bar */
   .toast { bottom:72px; }
@@ -772,7 +778,7 @@ th.sort-active .sort-icon{color:var(--blue);}
         <div class="tw"><table>
           <thead><tr>
             <th>周期</th><th style="text-align:right">合计</th>
-            <th style="text-align:right">吃饭</th><th style="text-align:right">别需</th>
+            <th style="text-align:right">吃饭</th><th style="text-align:right">刚需</th>
             <th style="text-align:right">变美</th><th style="text-align:right">玩乐</th>
             <th style="text-align:right">固定支出</th><th>备注</th>
           </tr></thead>
@@ -2149,6 +2155,7 @@ function renderStockAnalysis(sorted) {
   if (charts.stockContrib) { charts.stockContrib.destroy(); charts.stockContrib = null; }
 
   el.innerHTML = `
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch">
     <table class="stk-table">
       <thead><tr>
         <th>股票</th><th>市场</th>
@@ -2159,6 +2166,7 @@ function renderStockAnalysis(sorted) {
       </tr></thead>
       <tbody>${tableRows}</tbody>
     </table>
+    </div>
     <div style="margin-top:16px;border-top:1px solid var(--border);padding-top:16px">
       <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:10px">各股票占总资产比例趋势</div>
       <div class="chart-box" style="height:200px"><canvas id="${chartId}"></canvas></div>
