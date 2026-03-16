@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>家庭财务</title>
+<title>FIRE计划</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
@@ -463,8 +463,18 @@ th.sort-active .sort-icon{color:var(--blue);}
 <!-- ═══ LOGIN SCREEN ═══ -->
 <div id="login-screen">
   <div class="login-card">
-    <div class="login-logo">💰</div>
-    <div class="login-title">家庭财务</div>
+    <div class="login-logo" style="background:linear-gradient(135deg,#ef4444,#f97316);display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" style="width:36px;height:36px">
+  <defs>
+    <linearGradient id="flameGL" x1="0" y1="1" x2="0.5" y2="0">
+      <stop offset="0%" stop-color="#f97316"/>
+      <stop offset="60%" stop-color="#ef4444"/>
+      <stop offset="100%" stop-color="#fbbf24"/>
+    </linearGradient>
+  </defs>
+  <path d="M30 5 C25 14 18 18 19 29 C20 36 17 39 17 39 C17 39 14 32 16 25 C10 30 10 39 14 46 C18 53 24 57 30 57 C36 57 42 53 46 46 C50 39 50 30 44 25 C41 32 39 34 39 34 C39 34 43 25 37 16 C35 23 32 25 32 25 C32 25 36 16 30 5Z" fill="url(#flameGL)"/>
+  <polyline points="21,44 26,36 31,39 38,27" stroke="rgba(255,255,255,0.8)" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></div>
+    <div class="login-title">🔥 FIRE计划</div>
     <div class="login-sub">请输入你的邮箱地址以继续<br>系统将验证你的访问权限</div>
     <input class="login-input" id="login-email" type="email" placeholder="your@email.com" autocomplete="email">
     <button class="login-btn" id="login-btn" onclick="doLogin()">继续</button>
@@ -482,8 +492,20 @@ th.sort-active .sort-icon{color:var(--blue);}
   <div class="sidebar">
     <div class="logo">
       <div class="logo-mark">
-        <div class="logo-icon">💰</div>
-        <div><div class="logo-text">家庭财务</div><div class="logo-sub">Family Finance</div></div>
+        <div class="logo-icon" style="background:linear-gradient(135deg,#ef4444,#f97316)"><svg viewBox="0 0 34 34" xmlns="http://www.w3.org/2000/svg" style="width:22px;height:22px">
+  <defs>
+    <linearGradient id="flameG" x1="0" y1="1" x2="0.5" y2="0">
+      <stop offset="0%" stop-color="#f97316"/>
+      <stop offset="60%" stop-color="#ef4444"/>
+      <stop offset="100%" stop-color="#fbbf24"/>
+    </linearGradient>
+  </defs>
+  <!-- flame body -->
+  <path d="M17 3 C14 8 10 10 11 16 C12 20 10 22 10 22 C10 22 8 18 9 14 C6 17 6 22 8 26 C10 30 13.5 32 17 32 C20.5 32 24 30 26 26 C28 22 28 17 25 14 C23 18 22 19 22 19 C22 19 24 14 21 9 C20 13 18 14 18 14 C18 14 20 9 17 3Z" fill="url(#flameG)"/>
+  <!-- trend line inside flame -->
+  <polyline points="12,25 15,20 18,22 22,15" stroke="rgba(255,255,255,0.75)" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></div>
+        <div><div class="logo-text">🔥 FIRE计划</div><div class="logo-sub">Financial Independence</div></div>
       </div>
     </div>
     <nav class="nav">
@@ -1150,7 +1172,7 @@ async function pushToGist() {
     if (!gistCfg.gistId) {
       // Create new gist
       const g = await gistFetch('POST', '/gists', {
-        description: '家庭财务数据',
+        description: 'FIRE计划数据',
         public: false,
         files: { 'finance_data.json': { content: payload } }
       });
@@ -2529,7 +2551,7 @@ function exportWeeklySummary() {
       pct  !== null ? pct.toFixed(2)+'%' : '',
     ]);
   });
-  downloadCSV(`家庭财务_周汇总_${today()}.csv`, buildCSV(rows));
+  downloadCSV(`FIRE计划_周汇总_${today()}.csv`, buildCSV(rows));
 }
 
 // ── Sheet 2: 账户逐周明细 ──────────────────────────────
@@ -2559,7 +2581,7 @@ function exportAccountDetail() {
       ]);
     });
   });
-  downloadCSV(`家庭财务_账户明细_${today()}.csv`, buildCSV(rows));
+  downloadCSV(`FIRE计划_账户明细_${today()}.csv`, buildCSV(rows));
 }
 
 // ── Sheet 3: 股票持仓快照 ──────────────────────────────
@@ -2591,7 +2613,7 @@ function exportSharesSnapshot() {
       });
     });
   });
-  downloadCSV(`家庭财务_持仓快照_${today()}.csv`, buildCSV(rows));
+  downloadCSV(`FIRE计划_持仓快照_${today()}.csv`, buildCSV(rows));
 }
 
 function today() { return new Date().toISOString().slice(0,10); }
