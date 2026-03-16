@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FIRE计划</title>
+<title>FIRE计划 v6.1</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
@@ -441,11 +441,17 @@ tbody td{padding:12px 14px;font-size:13px;vertical-align:middle;}
   .sec-hdr > div:last-child { align-self:flex-end; }
 }
 
-/* Privacy mode */
+/* Privacy mode — blur ALL numbers */
 .privacy-mode .sc-val, .privacy-mode .sc-chg, .privacy-mode .sc-cur,
 .privacy-mode .mono, .privacy-mode #dv-usd, .privacy-mode #dv-hkd, .privacy-mode #dv-jpy,
 .privacy-mode .dv, .privacy-mode [id^="s-total"], .privacy-mode [id^="s-bank"],
-.privacy-mode [id^="s-invest"], .privacy-mode [id^="s-other"] {
+.privacy-mode [id^="s-invest"], .privacy-mode [id^="s-other"],
+.privacy-mode .an-num,
+.privacy-mode #chart-trend, .privacy-mode #chart-pie,
+.privacy-mode #chart-tt, .privacy-mode #chart-contrib,
+.privacy-mode #invest-an, .privacy-mode #stock-an-body,
+.privacy-mode .ri-val, .privacy-mode .bal-cell,
+.privacy-mode td.mono, .privacy-mode th.mono {
   filter: blur(8px); user-select:none; pointer-events:none;
 }
 .privacy-mode #privacy-btn { background:var(--blue-l); color:var(--blue); }
@@ -512,7 +518,7 @@ th.sort-active .sort-icon{color:var(--blue);}
   <!-- trend line inside flame -->
   <polyline points="12,25 15,20 18,22 22,15" stroke="rgba(255,255,255,0.75)" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
 </svg></div>
-        <div><div class="logo-text">🔥 FIRE计划</div><div class="logo-sub">Financial Independence</div></div>
+        <div><div class="logo-text">🔥 FIRE计划</div><div class="logo-sub">Financial Independence · v6.1</div></div>
       </div>
     </div>
     <nav class="nav">
@@ -673,7 +679,13 @@ th.sort-active .sort-icon{color:var(--blue);}
     <div class="card" style="margin-top:14px" id="stock-analysis-card">
       <div class="card-hdr">
         <div><div class="card-title">📈 个股对总资产贡献趋势</div><div class="card-sub">每只股票折算后占总资产的比例变化</div></div>
-        <span style="font-size:11px;color:var(--t3)" id="stock-an-cur-lbl"></span>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="display:flex;border:1px solid var(--border2);border-radius:8px;overflow:hidden;font-size:11px">
+            <button id="stock-view-pct" onclick="setStockView('pct')" style="padding:4px 10px;border:none;cursor:pointer;background:var(--blue);color:white;font-size:11px">占比%</button>
+            <button id="stock-view-abs" onclick="setStockView('abs')" style="padding:4px 10px;border:none;cursor:pointer;background:var(--s2);color:var(--t2);font-size:11px">绝对值</button>
+          </div>
+          <span style="font-size:11px;color:var(--t3)" id="stock-an-cur-lbl"></span>
+        </div>
       </div>
       <div id="stock-an-body">
         <div class="empty-state" style="padding:24px"><div class="empty-icon">📊</div>暂无股票持仓数据</div>
@@ -925,7 +937,7 @@ th.sort-active .sort-icon{color:var(--blue);}
     <!-- 成就里程碑 -->
     <div class="card" style="margin-top:14px">
       <div class="card-hdr"><div class="card-title">🏗 建造里程碑</div><div class="card-sub">资产每达到25%，升级一次建材</div></div>
-      <div id="tree-milestones" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px"></div>
+      <div id="tree-milestones" style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px"></div>
     </div>
 
     <!-- 树的日记 -->
@@ -1601,6 +1613,11 @@ function togglePrivacy() {
   const isOn = app.classList.toggle('privacy-mode');
   const btn = document.getElementById('privacy-btn');
   if (btn) btn.textContent = isOn ? '🙈' : '👁';
+  // Blur chart canvases directly
+  ['chart-trend','chart-pie','chart-tt','chart-contrib'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.filter = isOn ? 'blur(8px)' : '';
+  });
   toast(isOn ? '🙈 数字已隐藏' : '👁 数字已显示');
 }
 
@@ -2148,12 +2165,62 @@ function renderContribChart(sorted){
 }
 
 // ── Individual stock contribution trend ──────────────────
+let _stockView = 'pct'; // 'pct' | 'abs'
+let _stockAnalysisCache = null; // cache for re-render on toggle
+
+function setStockView(mode) {
+  _stockView = mode;
+  const pctBtn = document.getElementById('stock-view-pct');
+  const absBtn = document.getElementById('stock-view-abs');
+  if (pctBtn) { pctBtn.style.background = mode==='pct'?'var(--blue)':'var(--s2)'; pctBtn.style.color = mode==='pct'?'white':'var(--t2)'; }
+  if (absBtn) { absBtn.style.background = mode==='abs'?'var(--blue)':'var(--s2)'; absBtn.style.color = mode==='abs'?'white':'var(--t2)'; }
+  if (_stockAnalysisCache) renderStockChart(_stockAnalysisCache);
+}
+
+function renderStockChart({ labels, datasets, weekTotals, TICKER_COLORS, chartId }) {
+  if (charts.stockContrib) { charts.stockContrib.destroy(); charts.stockContrib = null; }
+  const ctx = document.getElementById(chartId)?.getContext('2d');
+  if (!ctx) return;
+
+  const isPct = _stockView === 'pct';
+  const chartData = datasets.map((d, idx) => ({
+    label: d.ticker,
+    data: isPct
+      ? d.values.map((v, wi) => weekTotals[wi] > 0 ? +(v / weekTotals[wi] * 100).toFixed(3) : 0)
+      : d.values.map(v => +v.toFixed(0)),
+    borderColor: TICKER_COLORS[idx % TICKER_COLORS.length],
+    backgroundColor: 'transparent',
+    borderWidth: 2, pointRadius: 3,
+    pointBackgroundColor: '#fff',
+    pointBorderColor: TICKER_COLORS[idx % TICKER_COLORS.length],
+    pointBorderWidth: 2, tension: 0.4,
+  }));
+
+  charts.stockContrib = new Chart(ctx, {
+    type: 'line',
+    data: { labels, datasets: chartData },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color:'#6e6e73', font:{size:11}, usePointStyle:true, padding:12 } },
+        tooltip: { callbacks: { label: c => isPct
+          ? `${c.dataset.label}: ${c.parsed.y.toFixed(2)}%`
+          : `${c.dataset.label}: ${fmtMoney(c.parsed.y)}` } }
+      },
+      scales: {
+        x: { grid:{color:'rgba(0,0,0,.04)'}, ticks:{color:'#aeaeb2',font:{size:10}} },
+        y: { grid:{color:'rgba(0,0,0,.04)'}, ticks:{color:'#aeaeb2',font:{size:10},
+          callback: v => isPct ? v+'%' : v>=1e4?(v/1e4).toFixed(1)+'万':v } }
+      }
+    }
+  });
+}
+
 function renderStockAnalysis(sorted) {
   const el = document.getElementById('stock-an-body');
   const lblEl = document.getElementById('stock-an-cur-lbl');
   if (lblEl) lblEl.textContent = baseCurrency;
 
-  // Collect all unique tickers across all stock accounts
   const allTickers = [];
   db.accounts.filter(a => a.type === 'stock').forEach(acc => {
     (acc.holdings || []).forEach(h => {
@@ -2172,60 +2239,44 @@ function renderStockAnalysis(sorted) {
     return;
   }
 
-  // For each ticker: compute value in baseCurrency for each week
-  // Value = shares (from snapshot or account default) × current stockPrice
-  // If no price: use stored balance from record (account-level fallback)
   const TICKER_COLORS = ['#1a6fff','#f79009','#17b26a','#7c3aed','#f04438','#0ea5e9','#eab308','#ec4899','#14b8a6','#f97316'];
 
-  // Build dataset per ticker
   const datasets = allTickers.map((t, idx) => {
     const acc = db.accounts.find(a => a.id === t.accId);
     const sp = stockPrices[t.ticker];
     const values = sorted.map(rec => {
       const snap = rec.sharesSnapshot?.[t.accId];
       const shares = snap ? (snap[t.ticker] ?? 0) : (acc?.holdings?.find(h => h.ticker.toUpperCase() === t.ticker)?.shares ?? 0);
-      const price = sp?.price ?? 0;
-      const nativeVal = shares * price;
-      return conv(nativeVal, t.accCur, baseCurrency);
+      return conv(shares * (sp?.price ?? 0), t.accCur, baseCurrency);
     });
     return { ticker: t.ticker, market: t.market, accName: t.accName, values };
   });
 
-  // Compute grand total per week (all assets)
   const weekTotals = sorted.map(rec => computeRecord(rec).total);
-
-  // Build chart: stacked area showing each stock's % of total
   const chartId = 'chart-stock-contrib';
   const labels = sorted.map(r => r.weekEnd);
 
-  // First: summary table
+  // Cache for toggle re-render
+  _stockAnalysisCache = { labels, datasets, weekTotals, TICKER_COLORS, chartId };
+
   const tableRows = datasets.map((d, idx) => {
     const color = TICKER_COLORS[idx % TICKER_COLORS.length];
     const latestVal = d.values[d.values.length - 1];
     const firstVal  = d.values[0];
     const latestPct = weekTotals[weekTotals.length-1] > 0 ? (latestVal / weekTotals[weekTotals.length-1] * 100).toFixed(2) : '0.00';
-    const firstPct  = weekTotals[0] > 0 ? (firstVal / weekTotals[0] * 100).toFixed(2) : '0.00';
     const pctChange = firstVal > 0 ? ((latestVal - firstVal) / firstVal * 100).toFixed(1) : null;
     const pctChgColor = pctChange === null ? 'var(--t3)' : parseFloat(pctChange) >= 0 ? 'var(--green)' : 'var(--red)';
-
-    // Mini sparkline bars (normalized)
     const maxVal = Math.max(...d.values, 1);
     const sparkBars = d.values.map(v => {
       const h = Math.max(2, Math.round(v / maxVal * 20));
-      const barColor = v >= (d.values[0] || 0) ? color : 'var(--red)';
-      return `<div class="spark-bar" style="height:${h}px;background:${barColor};opacity:.8"></div>`;
+      return `<div class="spark-bar" style="height:${h}px;background:${v>=(d.values[0]||0)?color:'var(--red)'};opacity:.8"></div>`;
     }).join('');
-
     return `<tr>
-      <td>
-        <div style="display:flex;align-items:center;gap:7px">
-          <div style="width:10px;height:10px;border-radius:3px;background:${color};flex-shrink:0"></div>
-          <div>
-            <div style="font-weight:700;font-family:var(--mono);font-size:12px">${d.ticker}</div>
-            <div style="font-size:10px;color:var(--t3)">${d.accName}</div>
-          </div>
-        </div>
-      </td>
+      <td><div style="display:flex;align-items:center;gap:7px">
+        <div style="width:10px;height:10px;border-radius:3px;background:${color};flex-shrink:0"></div>
+        <div><div style="font-weight:700;font-family:var(--mono);font-size:12px">${d.ticker}</div>
+          <div style="font-size:10px;color:var(--t3)">${d.accName}</div></div>
+      </div></td>
       <td><span class="mtag ${getMktCls(d.market)}">${d.market}</span></td>
       <td class="mono" style="text-align:right">${fmtMoney(latestVal)}</td>
       <td style="text-align:right">
@@ -2236,18 +2287,13 @@ function renderStockAnalysis(sorted) {
           <span class="mono" style="font-size:11px;min-width:36px;text-align:right">${latestPct}%</span>
         </div>
       </td>
-      <td style="text-align:right">
-        <span style="font-size:11px;font-family:var(--mono);color:${pctChgColor}">
-          ${pctChange !== null ? (parseFloat(pctChange)>=0?'↑':'↓')+Math.abs(pctChange)+'%' : '—'}
-        </span>
-      </td>
-      <td>
-        <div class="trend-spark">${sparkBars}</div>
-      </td>
+      <td style="text-align:right"><span style="font-size:11px;font-family:var(--mono);color:${pctChgColor}">
+        ${pctChange !== null ? (parseFloat(pctChange)>=0?'↑':'↓')+Math.abs(pctChange)+'%' : '—'}
+      </span></td>
+      <td><div class="trend-spark">${sparkBars}</div></td>
     </tr>`;
   }).join('');
 
-  // Destroy previous stock chart if any
   if (charts.stockContrib) { charts.stockContrib.destroy(); charts.stockContrib = null; }
 
   el.innerHTML = `
@@ -2264,44 +2310,13 @@ function renderStockAnalysis(sorted) {
     </table>
     </div>
     <div style="margin-top:16px;border-top:1px solid var(--border);padding-top:16px">
-      <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:10px">各股票占总资产比例趋势</div>
+      <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:10px">
+        ${_stockView==='pct' ? '各股票占总资产比例趋势（推荐：差异小，更易对比）' : '各股票绝对值趋势（差异大时难以对比）'}
+      </div>
       <div class="chart-box" style="height:200px"><canvas id="${chartId}"></canvas></div>
     </div>`;
 
-  // Render % trend chart
-  requestAnimationFrame(() => {
-    const ctx = document.getElementById(chartId)?.getContext('2d');
-    if (!ctx) return;
-    charts.stockContrib = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels,
-        datasets: datasets.map((d, idx) => ({
-          label: d.ticker,
-          data: d.values.map((v, wi) => weekTotals[wi] > 0 ? +(v / weekTotals[wi] * 100).toFixed(3) : 0),
-          borderColor: TICKER_COLORS[idx % TICKER_COLORS.length],
-          backgroundColor: 'transparent',
-          borderWidth: 2,
-          pointRadius: 3,
-          pointBackgroundColor: '#fff',
-          pointBorderColor: TICKER_COLORS[idx % TICKER_COLORS.length],
-          pointBorderWidth: 2,
-          tension: 0.4,
-        }))
-      },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        plugins: {
-          legend: { labels: { color: '#6e6e73', font: { size: 11 }, usePointStyle: true, padding: 12 } },
-          tooltip: { callbacks: { label: c => `${c.dataset.label}: ${c.parsed.y.toFixed(2)}%` } }
-        },
-        scales: {
-          x: { grid: { color: 'rgba(0,0,0,.04)' }, ticks: { color: '#aeaeb2', font: { size: 10 } } },
-          y: { grid: { color: 'rgba(0,0,0,.04)' }, ticks: { color: '#aeaeb2', font: { size: 10 }, callback: v => v + '%' } }
-        }
-      }
-    });
-  });
+  requestAnimationFrame(() => renderStockChart(_stockAnalysisCache));
 }
 
 // ════════════════════════════════════════════════════════
@@ -3757,7 +3772,7 @@ function saveTreeGoal() {
   db.treeGoal = v;
   if (!oldGoal) {
     db.treeDiary = db.treeDiary || [];
-    db.treeDiary.unshift({ date: new Date().toISOString().slice(0,10), text: `🟫 奠基！目标：${fmtMoney(v)}，从一片土地开始建造`, icon: '🟫', key:'start' });
+    db.treeDiary.unshift({ date: new Date().toISOString().slice(0,10), text: `🌱 奠基！目标：${fmtMoney(v)}，从一片土地开始建造`, icon: '🌱', key:'start' });
   }
   saveDB(); closeModal('modal-tree-goal'); renderTree(); renderDashTree(); toast('🏗 目标已设定，开始建造！');
 }
@@ -4105,7 +4120,7 @@ function renderTree() {
   getTreeData();
   const state = calcTreeState();
   const stageInfo = [
-    { emoji:'🟫', name:'一片土地',   desc:'资产积累中，奠定基础…' },
+    { emoji:'🌱', name:'一片土地',   desc:'资产积累中，奠定基础…' },
     { emoji:'🪨', name:'石头地基',   desc:'地基已打好，开始建造！' },
     { emoji:'⛺', name:'帐篷',       desc:'有了临时的遮蔽所' },
     { emoji:'🪵', name:'小木屋',     desc:'第一个真正的家' },
@@ -4196,8 +4211,8 @@ function renderDashTree() {
   if (!iconEl) return;
   getTreeData();
   const state = calcTreeState();
-  const icons = ['🟫','🪨','⛺','🪵','🏠','🏰'];
-  iconEl.textContent = icons[state.stage] || '🟫';
+  const icons = ['🌱','🪨','⛺','🪵','🏠','🏰'];
+  iconEl.textContent = icons[state.stage] || '🌱';
 }
 
 function checkTreeMilestones(state) {
