@@ -2836,8 +2836,9 @@ function calcMonthBudgetStatus(subKey, spent) {
   const spentPct = spent / monthBudget;
   const over = spentPct - timePct;
   let status = 'ok';
-  if (over > 0.30) status = 'danger';
-  else if (over > 0.10) status = 'warn';
+  if (over > 0.80) status = 'danger';
+  else if (over > 0.50) status = 'orange';
+  else if (over > 0.30) status = 'warn';
   return { budget: monthBudget, spent, spentPct, timePct, over, status };
 }
 
@@ -3110,13 +3111,13 @@ function renderLedgerWeekForm(entry) {
       if (st) {
         const pct = st.spentPct !== undefined ? st.spentPct : st.pct;
         const timeLine = st.timePct !== undefined ? st.timePct : null;
-        const barColor = st.status==='danger'?'#ef4444': st.status==='orange'?'#f97316':'#eab308';
+        const barColor = st.status==='danger'?'#ef4444': st.status==='orange'?'#f97316': st.status==='warn'?'#eab308':'#22c55e';
         progressBar = `<div style="margin-top:6px;position:relative;height:4px;background:var(--s3);border-radius:2px;overflow:hidden">
           <div style="position:absolute;left:0;top:0;height:100%;width:${Math.min(100,pct*100).toFixed(1)}%;background:${barColor};border-radius:2px;transition:width .3s"></div>
           ${timeLine!==null?`<div style="position:absolute;left:${(timeLine*100).toFixed(1)}%;top:-2px;height:8px;width:2px;background:#374151;border-radius:1px"></div>`:''}
         </div>`;
       }
-      const borderColor = st ? (st.status==='danger'?'#fca5a5': st.status==='orange'?'#fdba74':'#fde047') : 'var(--border)';
+      const borderColor = (st && st.status !== 'ok') ? (st.status==='danger'?'#fca5a5': st.status==='orange'?'#fdba74':'#fde047') : 'var(--border)';
       html += `<div style="background:var(--surface);border-radius:8px;padding:10px 12px;border:1.5px solid ${borderColor}">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
           <span style="font-size:11px;font-weight:600;color:var(--t2)">${sub.label}</span>
