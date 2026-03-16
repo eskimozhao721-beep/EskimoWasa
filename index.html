@@ -441,7 +441,14 @@ tbody td{padding:12px 14px;font-size:13px;vertical-align:middle;}
   .sec-hdr > div:last-child { align-self:flex-end; }
 }
 
-/* Bottom nav — hidden on desktop */
+/* Privacy mode */
+.privacy-mode .sc-val, .privacy-mode .sc-chg, .privacy-mode .sc-cur,
+.privacy-mode .mono, .privacy-mode #dv-usd, .privacy-mode #dv-hkd, .privacy-mode #dv-jpy,
+.privacy-mode .dv, .privacy-mode [id^="s-total"], .privacy-mode [id^="s-bank"],
+.privacy-mode [id^="s-invest"], .privacy-mode [id^="s-other"] {
+  filter: blur(8px); user-select:none; pointer-events:none;
+}
+.privacy-mode #privacy-btn { background:var(--blue-l); color:var(--blue); }
 .mob-nav { display:none; }
 
 /* SORTABLE TABLE */
@@ -514,7 +521,6 @@ th.sort-active .sort-icon{color:var(--blue);}
       <div class="nav-item" onclick="showPage('record')"><span class="nav-icon">✎</span>记录</div>
       <div class="nav-item" onclick="showPage('accounts')"><span class="nav-icon">◈</span>账户管理</div>
       <div class="nav-item" onclick="showPage('ledger')"><span class="nav-icon">📒</span>账本</div>
-      <div class="nav-item" onclick="showPage('tree')"><span class="nav-icon">🌳</span>柠檬树</div>
       <div class="nav-section" id="admin-nav-section" style="display:none">管理</div>
       <div class="nav-item" id="admin-nav-item" style="display:none" onclick="showPage('admin')"><span class="nav-icon">⚙</span>系统管理</div>
     </nav>
@@ -545,6 +551,14 @@ th.sort-active .sort-icon{color:var(--blue);}
     <div class="page-header">
       <div><div class="page-title">总览 & 分析</div><div class="page-sub" id="dash-sub">—</div></div>
       <div class="hdr-actions">
+        <!-- 迷你房子 — 点击进详情 -->
+        <div onclick="showPage('tree')" id="dash-house-btn" title="我的家 — 点击查看详情"
+          style="cursor:pointer;width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;background:var(--s2);border:1.5px solid var(--border2);transition:transform .15s;flex-shrink:0"
+          onmouseover="this.style.transform='scale(1.12)'" onmouseout="this.style.transform='scale(1)'">
+          <span id="dash-house-icon">🪨</span>
+        </div>
+        <!-- 隐私模式 -->
+        <button id="privacy-btn" class="btn btn-g btn-sm" onclick="togglePrivacy()" title="隐藏/显示所有数字">👁</button>
         <div style="position:relative;display:inline-block" id="export-menu-wrap">
           <button class="btn btn-g btn-sm" onclick="toggleExportMenu()">↓ 导出 CSV</button>
           <div id="export-menu" style="display:none;position:absolute;right:0;top:calc(100% + 6px);background:var(--surface);border:1px solid var(--border2);border-radius:12px;box-shadow:var(--sh3);padding:6px;min-width:190px;z-index:200;">
@@ -575,22 +589,12 @@ th.sort-active .sort-icon{color:var(--blue);}
       </div>
     </div>
 
-    <!-- ── 快照统计 + 柠檬树 ── -->
-    <div style="display:grid;grid-template-columns:1fr auto;gap:12px;align-items:start">
-      <div class="stats-grid" style="grid-template-columns:repeat(2,1fr)">
-        <div class="sc"><div class="sc-label"><span class="sc-label-icon">🏠</span>家庭总资产</div><div class="sc-val lg" id="s-total">—</div><div class="sc-cur" id="s-total-cur"></div><div class="sc-chg cn" id="s-total-chg">—</div><div class="sbar sb-total"></div></div>
-        <div class="sc"><div class="sc-label"><span class="sc-label-icon">🏦</span>银行存款</div><div class="sc-val" id="s-bank">—</div><div class="sc-chg cn" id="s-bank-chg">—</div><div class="sbar sb-blue"></div></div>
-        <div class="sc"><div class="sc-label"><span class="sc-label-icon">📈</span>投资资产</div><div class="sc-val" id="s-invest">—</div><div class="sc-chg cn" id="s-invest-chg">—</div><div class="sbar sb-orange"></div></div>
-        <div class="sc"><div class="sc-label"><span class="sc-label-icon">🗂</span>其他资产</div><div class="sc-val" id="s-other">—</div><div class="sc-chg cn" id="s-other-chg">—</div><div class="sbar sb-green"></div></div>
-      </div>
-      <!-- 迷你柠檬树 -->
-      <div onclick="showPage('tree')" style="cursor:pointer;width:148px;flex-shrink:0;background:linear-gradient(180deg,#e8dfc8 0%,#d8e8d0 50%,#c8dfc0 100%);border-radius:16px;overflow:hidden;border:1.5px solid rgba(180,168,140,0.4);box-shadow:0 2px 12px rgba(0,0,0,0.08);transition:transform .15s" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
-        <div id="dash-tree-svg" style="width:100%;line-height:0"></div>
-        <div style="padding:6px 10px 8px;background:rgba(255,255,255,0.7)">
-          <div id="dash-tree-label" style="font-size:10px;font-weight:600;color:#2a6010;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">🌳 柠檬树</div>
-          <div id="dash-tree-pct" style="font-size:10px;color:#555;margin-top:1px">点击查看详情</div>
-        </div>
-      </div>
+    <!-- ── 快照统计 ── -->
+    <div class="stats-grid">
+      <div class="sc"><div class="sc-label"><span class="sc-label-icon">🏠</span>家庭总资产</div><div class="sc-val lg" id="s-total">—</div><div class="sc-cur" id="s-total-cur"></div><div class="sc-chg cn" id="s-total-chg">—</div><div class="sbar sb-total"></div></div>
+      <div class="sc"><div class="sc-label"><span class="sc-label-icon">🏦</span>银行存款</div><div class="sc-val" id="s-bank">—</div><div class="sc-chg cn" id="s-bank-chg">—</div><div class="sbar sb-blue"></div></div>
+      <div class="sc"><div class="sc-label"><span class="sc-label-icon">📈</span>投资资产</div><div class="sc-val" id="s-invest">—</div><div class="sc-chg cn" id="s-invest-chg">—</div><div class="sbar sb-orange"></div></div>
+      <div class="sc"><div class="sc-label"><span class="sc-label-icon">🗂</span>其他资产</div><div class="sc-val" id="s-other">—</div><div class="sc-chg cn" id="s-other-chg">—</div><div class="sbar sb-green"></div></div>
     </div>
 
     <!-- ── 趋势图 + 构成 ── -->
@@ -904,7 +908,7 @@ th.sort-active .sort-icon{color:var(--blue);}
   <!-- 🌳 柠檬树 -->
   <div class="page" id="page-tree">
     <div class="page-header">
-      <div><div class="page-title">🌳 我的柠檬树</div><div class="page-sub" id="tree-sub">种下你的FIRE之树</div></div>
+      <div><div class="page-title">🏠 我的家</div><div class="page-sub" id="tree-sub">用资产建造你的FIRE之家</div></div>
       <div class="hdr-actions">
         <button class="btn btn-g btn-sm" onclick="openTreeGoalModal()">🎯 设定目标</button>
       </div>
@@ -920,7 +924,7 @@ th.sort-active .sort-icon{color:var(--blue);}
 
     <!-- 成就里程碑 -->
     <div class="card" style="margin-top:14px">
-      <div class="card-hdr"><div class="card-title">🍋 柠檬里程碑</div><div class="card-sub">每达到25%目标，树上结一颗柠檬</div></div>
+      <div class="card-hdr"><div class="card-title">🏗 建造里程碑</div><div class="card-sub">资产每达到25%，升级一次建材</div></div>
       <div id="tree-milestones" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px"></div>
     </div>
 
@@ -945,7 +949,7 @@ th.sort-active .sort-icon{color:var(--blue);}
       <span id="tree-goal-cur-label" style="font-size:13px;color:var(--t2);min-width:36px"></span>
       <input type="number" class="fi" id="tree-goal-input" placeholder="如 10000000" style="flex:1">
     </div>
-    <div class="fhint">达到此目标时，柠檬树将完全成熟🍋</div>
+    <div class="fhint">达到此目标时，你的家将完全建成🏠</div>
   </div>
   <div class="mfooter">
     <button class="btn btn-s" onclick="closeModal('modal-tree-goal')">取消</button>
@@ -1034,9 +1038,6 @@ th.sort-active .sort-icon{color:var(--blue);}
   </button>
   <button class="mob-nav-item" id="mob-tab-ledger" onclick="showPage('ledger')">
     <span class="mob-icon">📒</span>账本
-  </button>
-  <button class="mob-nav-item" id="mob-tab-tree" onclick="showPage('tree')">
-    <span class="mob-icon">🌳</span>柠檬树
   </button>
   <button class="mob-nav-item" id="mob-tab-admin" onclick="showPage('admin')" style="display:none">
     <span class="mob-icon">⚙</span>管理
@@ -1579,7 +1580,7 @@ function showPage(page) {
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   const pageEl = document.getElementById('page-'+page);
   if (pageEl) pageEl.classList.add('active');
-  const idx={dashboard:0,record:1,accounts:2,ledger:3,tree:4,admin:5};
+  const idx={dashboard:0,record:1,accounts:2,ledger:3,admin:4};
   document.querySelectorAll('.nav-item')[idx[page]]?.classList.add('active');
   document.querySelectorAll('.mob-nav-item').forEach(b=>b.classList.remove('active'));
   document.getElementById('mob-tab-'+page)?.classList.add('active');
@@ -1595,6 +1596,14 @@ function renderPageContent(p) {
   if(p==='tree') renderTree();
   if(p==='admin') renderAdmin();
 }
+function togglePrivacy() {
+  const app = document.getElementById('app-screen');
+  const isOn = app.classList.toggle('privacy-mode');
+  const btn = document.getElementById('privacy-btn');
+  if (btn) btn.textContent = isOn ? '🙈' : '👁';
+  toast(isOn ? '🙈 数字已隐藏' : '👁 数字已显示');
+}
+
 function setBase(cur) { baseCurrency=cur; document.querySelectorAll('.cpill').forEach(b=>b.classList.toggle('active',b.textContent===cur)); saveDB(); renderCurrentPage(); }
 
 // ════════════════════════════════════════════════════════
@@ -3730,8 +3739,8 @@ function dlCSV(rows, filename) {
 // 🌳 LEMON TREE
 // ════════════════════════════════════════════════════════
 function getTreeData() {
-  if (!db.treeGoal) db.treeGoal = null;      // 目标资产（基准货币）
-  if (!db.treeDiary) db.treeDiary = [];       // 成长日记
+  if (!db.treeGoal) db.treeGoal = null;
+  if (!db.treeDiary) db.treeDiary = [];
   return db;
 }
 
@@ -3748,12 +3757,11 @@ function saveTreeGoal() {
   db.treeGoal = v;
   if (!oldGoal) {
     db.treeDiary = db.treeDiary || [];
-    db.treeDiary.unshift({ date: new Date().toISOString().slice(0,10), text: `🌱 种下了一颗柠檬树！目标：${fmtMoney(v)}` });
+    db.treeDiary.unshift({ date: new Date().toISOString().slice(0,10), text: `🟫 奠基！目标：${fmtMoney(v)}，从一片土地开始建造`, icon: '🟫', key:'start' });
   }
-  saveDB(); closeModal('modal-tree-goal'); renderTree(); toast('🌱 目标已设定，开始生长！');
+  saveDB(); closeModal('modal-tree-goal'); renderTree(); renderDashTree(); toast('🏗 目标已设定，开始建造！');
 }
 
-// ── 树的状态计算 ──────────────────────────────────────
 function calcTreeState() {
   const sorted = sortedRecords();
   const latest = sorted[sorted.length - 1];
@@ -3761,336 +3769,396 @@ function calcTreeState() {
   const goal = db.treeGoal || 0;
   const progress = goal > 0 ? Math.min(1, currentAssets / goal) : 0;
 
-  // 近4周增长健康度
-  let healthScore = 1; // 0~1
+  // Recent growth health
+  let healthScore = 1;
   if (sorted.length >= 2) {
     const recent = sorted.slice(-5);
     let growWeeks = 0, totalWeeks = recent.length - 1;
     for (let i = 1; i < recent.length; i++) {
-      const prev = computeRecord(recent[i-1]).total;
-      const curr = computeRecord(recent[i]).total;
-      if (curr >= prev) growWeeks++;
+      if (computeRecord(recent[i]).total >= computeRecord(recent[i-1]).total) growWeeks++;
     }
     healthScore = totalWeeks > 0 ? growWeeks / totalWeeks : 1;
   }
 
-  // 超预算惩罚（最近4周）
+  // Budget penalty
   let budgetPenalty = 0;
   const now = new Date();
-  const recentWeeks = (db.ledgerWeeks || [])
-    .sort((a,b) => b.weekEnd.localeCompare(a.weekEnd))
-    .slice(0, 4);
+  const recentWeeks = (db.ledgerWeeks || []).sort((a,b) => b.weekEnd.localeCompare(a.weekEnd)).slice(0, 4);
   if (recentWeeks.length > 0) {
     let overCount = 0;
     recentWeeks.forEach(w => {
-      const ym = w.weekEnd.slice(0,7);
-      const yr = w.weekEnd.slice(0,4);
-      const monthSpent = getMonthSpent ? getMonthSpent(ym) : {};
-      const yearSpent = getYearSpent ? getYearSpent(yr) : {};
       ALL_SUB_KEYS.forEach(k => {
-        const sub = ALL_SUBS_MAP[k];
         if (!isBudgetEnabled(k)) return;
-        const st = sub.yearBudget
-          ? calcYearBudgetStatus(k, yearSpent[k]||0)
-          : calcMonthBudgetStatus(k, monthSpent[k]||0);
+        const sub = ALL_SUBS_MAP[k];
+        const ym = w.weekEnd.slice(0,7), yr = w.weekEnd.slice(0,4);
+        const ms = getMonthSpent(ym), ys = getYearSpent(yr);
+        const st = sub.yearBudget ? calcYearBudgetStatus(k, ys[k]||0) : calcMonthBudgetStatus(k, ms[k]||0);
         if (st && (st.status === 'danger' || st.status === 'orange')) overCount++;
       });
     });
     budgetPenalty = Math.min(0.5, overCount * 0.05);
   }
 
-  const vitality = Math.max(0, healthScore - budgetPenalty); // 0~1 活力值
+  const vitality = Math.max(0, healthScore - budgetPenalty);
 
-  // 树的阶段：0=种子 1=芽 2=小树苗 3=小树 4=茂盛 5=开花 6=结果
+  // House stage: 0=土地 1=石头地基 2=帐篷 3=小木屋 4=英式小屋 5=FIRE豪宅
   let stage;
   if (progress < 0.05) stage = 0;
-  else if (progress < 0.15) stage = 1;
-  else if (progress < 0.30) stage = 2;
-  else if (progress < 0.50) stage = 3;
-  else if (progress < 0.75) stage = 4;
-  else if (progress < 1.0)  stage = 5;
-  else stage = 6;
+  else if (progress < 0.20) stage = 1;
+  else if (progress < 0.40) stage = 2;
+  else if (progress < 0.60) stage = 3;
+  else if (progress < 0.85) stage = 4;
+  else stage = 5;
 
-  // 叶色：活力高→深绿，低→黄绿→黄
-  const leafH = Math.round(vitality * 80 + 40); // 40(黄)~120(绿)
-  const leafS = Math.round(vitality * 40 + 50);
-  const leafL = Math.round(35 + (1-vitality) * 15);
-  const leafColor = `hsl(${leafH},${leafS}%,${leafL}%)`;
-  const leafColor2 = `hsl(${leafH-10},${leafS+10}%,${leafL-8}%)`;
-
-  return { progress, currentAssets, goal, stage, vitality, healthScore, budgetPenalty, leafColor, leafColor2 };
+  return { progress, currentAssets, goal, stage, vitality, healthScore, budgetPenalty };
 }
 
-// ── 绘树函数 ─────────────────────────────────────────
-function buildTreeSVG(state, w, h) {
+// ── House SVG builder ──────────────────────────────────
+function buildHouseSVG(state, w, h) {
   const { stage, progress, vitality } = state;
   const lv = Math.max(0, Math.min(1, vitality));
+  const skyTop = lv > 0.5 ? '#c8e8f8' : '#d8d8c8';
+  const skyBot = lv > 0.5 ? '#b8e0c8' : '#c8c8b0';
 
-  // Leaf colors — vitality driven
-  const leafDark  = lv > 0.6 ? '#3a7a18' : lv > 0.3 ? '#607a18' : '#707010';
-  const leafMid   = lv > 0.6 ? '#4e9a22' : lv > 0.3 ? '#808a22' : '#989018';
-  const leafBrt   = lv > 0.6 ? '#6ab82e' : lv > 0.3 ? '#9eac28' : '#c0a018';
-  const leafTop   = lv > 0.6 ? '#88cc3a' : lv > 0.3 ? '#b8c030' : '#d4b828';
-  const leafShade = lv > 0.6 ? '#2a6010' : lv > 0.3 ? '#4a5e10' : '#585008';
-
-  // Sky: warm parchment-to-haze, not blue
-  const skyTop = '#e8dfc8';
-  const skyMid = '#d8e8d0';
-  const skyBot = '#c8dfc0';
-
-  const sx = w / 500, sy = h / 560;
-  const s = (x, y) => `${(x*sx).toFixed(1)},${(y*sy).toFixed(1)}`;
-
-  const lemonCount = stage >= 6 ? 7 : stage >= 5 ? 5 : stage >= 4 ? 3 : stage >= 3 ? 1 : 0;
-  const trunkScale = stage === 0 ? 0.15 : stage === 1 ? 0.38 : stage === 2 ? 0.62 : 1;
-  const co = stage < 2 ? 0 : stage === 2 ? 0.45 : stage === 3 ? 0.72 : 1;
+  const sx = w/400, sy = h/320;
+  const s  = (x,y) => `${(x*sx).toFixed(1)},${(y*sy).toFixed(1)}`;
+  const px = x => (x*sx).toFixed(1);
+  const py = y => (y*sy).toFixed(1);
+  const sw = n => (n*sx).toFixed(1);
+  const sh = n => (n*sy).toFixed(1);
 
   let svg = `<svg viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg" width="100%" height="${h}" style="display:block">
 <defs>
-  <linearGradient id="tsg${w}" x1="0" y1="0" x2="1" y2="0">
-    <stop offset="0%" stop-color="#5a3208"/>
-    <stop offset="40%" stop-color="#a07848"/>
-    <stop offset="100%" stop-color="#6a4018"/>
-  </linearGradient>
-  <radialGradient id="lg${w}" cx="28%" cy="24%" r="68%">
-    <stop offset="0%" stop-color="#fffff0"/>
-    <stop offset="30%" stop-color="#f5e030"/>
-    <stop offset="100%" stop-color="#c08000"/>
-  </radialGradient>
-  <linearGradient id="skyG${w}" x1="0" y1="0" x2="0" y2="1">
+  <linearGradient id="sky${w}" x1="0" y1="0" x2="0" y2="1">
     <stop offset="0%" stop-color="${skyTop}"/>
-    <stop offset="55%" stop-color="${skyMid}"/>
     <stop offset="100%" stop-color="${skyBot}"/>
   </linearGradient>
-  <linearGradient id="groundG${w}" x1="0" y1="0" x2="0" y2="1">
-    <stop offset="0%" stop-color="#88b840"/>
-    <stop offset="40%" stop-color="#6a9828"/>
-    <stop offset="100%" stop-color="#4a6e18"/>
+  <linearGradient id="wall${w}" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0%" stop-color="#f4eedc"/>
+    <stop offset="100%" stop-color="#e8dcc8"/>
   </linearGradient>
-  <linearGradient id="soilG${w}" x1="0" y1="0" x2="0" y2="1">
-    <stop offset="0%" stop-color="#8a6030"/>
-    <stop offset="100%" stop-color="#5a3810"/>
+  <linearGradient id="roof${w}" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0%" stop-color="#7a7878"/>
+    <stop offset="100%" stop-color="#585858"/>
+  </linearGradient>
+  <linearGradient id="tent${w}" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0%" stop-color="#f8d040"/>
+    <stop offset="100%" stop-color="#e0a010"/>
+  </linearGradient>
+  <linearGradient id="gnd${w}" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#78b030"/>
+    <stop offset="100%" stop-color="#4a7818"/>
   </linearGradient>
 </defs>
-
-<!-- Sky: warm parchment -->
-<rect width="${w}" height="${h}" fill="url(#skyG${w})"/>
-
-<!-- Soft sun glow top-left -->
-<circle cx="${(72*sx).toFixed(1)}" cy="${(62*sy).toFixed(1)}" r="${(52*sx).toFixed(1)}" fill="#fff8d8" opacity=".28"/>
-<circle cx="${(72*sx).toFixed(1)}" cy="${(62*sy).toFixed(1)}" r="${(38*sx).toFixed(1)}" fill="#f8e878" opacity=".55"/>
-<circle cx="${(72*sx).toFixed(1)}" cy="${(62*sy).toFixed(1)}" r="${(28*sx).toFixed(1)}" fill="#f5d840" opacity=".75"/>
-
-<!-- Clouds: warm creamy white -->
-<g opacity=".82">
-  <ellipse cx="${(205*sx).toFixed(1)}" cy="${(72*sy).toFixed(1)}" rx="${(52*sx).toFixed(1)}" ry="${(20*sy).toFixed(1)}" fill="#f8f4ec"/>
-  <ellipse cx="${(175*sx).toFixed(1)}" cy="${(80*sy).toFixed(1)}" rx="${(34*sx).toFixed(1)}" ry="${(22*sy).toFixed(1)}" fill="#f8f4ec"/>
-  <ellipse cx="${(236*sx).toFixed(1)}" cy="${(80*sy).toFixed(1)}" rx="${(32*sx).toFixed(1)}" ry="${(18*sy).toFixed(1)}" fill="#f5f0e8"/>
-  <ellipse cx="${(205*sx).toFixed(1)}" cy="${(86*sy).toFixed(1)}" rx="${(54*sx).toFixed(1)}" ry="${(13*sy).toFixed(1)}" fill="#ede8de"/>
+<rect width="${w}" height="${h}" fill="url(#sky${w})"/>
+<circle cx="${px(48)}" cy="${py(42)}" r="${sw(28)}" fill="#fff8b0" opacity=".28"/>
+<circle cx="${px(48)}" cy="${py(42)}" r="${sw(20)}" fill="#f8e060" opacity=".82"/>
+<g fill="white" opacity=".7">
+  <ellipse cx="${px(230)}" cy="${py(46)}" rx="${sw(44)}" ry="${sh(16)}"/>
+  <ellipse cx="${px(204)}" cy="${py(52)}" rx="${sw(28)}" ry="${sh(18)}"/>
+  <ellipse cx="${px(256)}" cy="${py(52)}" rx="${sw(26)}" ry="${sh(14)}"/>
+  <ellipse cx="${px(230)}" cy="${py(58)}" rx="${sw(46)}" ry="${sh(10)}" fill="#f0ede4"/>
 </g>
-<g opacity=".65">
-  <ellipse cx="${(400*sx).toFixed(1)}" cy="${(52*sy).toFixed(1)}" rx="${(38*sx).toFixed(1)}" ry="${(15*sy).toFixed(1)}" fill="#f8f4ec"/>
-  <ellipse cx="${(375*sx).toFixed(1)}" cy="${(58*sy).toFixed(1)}" rx="${(26*sx).toFixed(1)}" ry="${(17*sy).toFixed(1)}" fill="#f8f4ec"/>
-  <ellipse cx="${(424*sx).toFixed(1)}" cy="${(58*sy).toFixed(1)}" rx="${(24*sx).toFixed(1)}" ry="${(14*sy).toFixed(1)}" fill="#f5f0e8"/>
+<g fill="white" opacity=".48">
+  <ellipse cx="${px(340)}" cy="${py(34)}" rx="${sw(32)}" ry="${sh(12)}"/>
+  <ellipse cx="${px(318)}" cy="${py(39)}" rx="${sw(20)}" ry="${sh(14)}"/>
+  <ellipse cx="${px(362)}" cy="${py(39)}" rx="${sw(18)}" ry="${sh(10)}"/>
 </g>
-
-<!-- Distant soft hills -->
-<ellipse cx="${(100*sx).toFixed(1)}" cy="${(420*sy).toFixed(1)}" rx="${(185*sx).toFixed(1)}" ry="${(62*sy).toFixed(1)}" fill="#7ab030" opacity=".32"/>
-<ellipse cx="${(420*sx).toFixed(1)}" cy="${(428*sy).toFixed(1)}" rx="${(165*sx).toFixed(1)}" ry="${(56*sy).toFixed(1)}" fill="#7ab030" opacity=".28"/>
-
-<!-- Ground: rolling green hill -->
-<ellipse cx="${(250*sx).toFixed(1)}" cy="${(490*sy).toFixed(1)}" rx="${(295*sx).toFixed(1)}" ry="${(90*sy).toFixed(1)}" fill="url(#groundG${w})"/>
-<rect x="0" y="${(490*sy).toFixed(1)}" width="${w}" height="${(h-490*sy).toFixed(1)}" fill="#4a6e18"/>
-<ellipse cx="${(250*sx).toFixed(1)}" cy="${(490*sy).toFixed(1)}" rx="${(295*sx).toFixed(1)}" ry="${(28*sy).toFixed(1)}" fill="#98cc48" opacity=".5"/>
-
-<!-- Soil patch around trunk base -->
-<ellipse cx="${(252*sx).toFixed(1)}" cy="${(498*sy).toFixed(1)}" rx="${(62*sx).toFixed(1)}" ry="${(16*sy).toFixed(1)}" fill="url(#soilG${w})" stroke="#3a2008" stroke-width="${(1.5*sx).toFixed(1)}"/>
-<ellipse cx="${(240*sx).toFixed(1)}" cy="${(495*sy).toFixed(1)}" rx="${(26*sx).toFixed(1)}" ry="${(5*sy).toFixed(1)}" fill="rgba(255,255,255,0.08)"/>
-<!-- Soil crack lines -->
-<path d="M${s(228,496)} Q${s(238,491)} ${s(250,497)}" stroke="#3a2008" stroke-width="${(1.2*sx).toFixed(1)}" fill="none" opacity=".4"/>
-<path d="M${s(260,494)} Q${s(270,499)} ${s(280,495)}" stroke="#3a2008" stroke-width="${(1.1*sx).toFixed(1)}" fill="none" opacity=".35"/>
-
-<!-- Grass tufts -->
-<g stroke="#3a7808" stroke-width="${(1.8*sx).toFixed(1)}" stroke-linecap="round" fill="none" opacity=".8">
-  <path d="M${s(55,494)} Q${s(52,481)} ${s(49,494)}"/>
-  <path d="M${s(68,491)} Q${s(65,477)} ${s(62,491)}"/>
-  <path d="M${s(86,496)} Q${s(83,482)} ${s(80,496)}"/>
-  <path d="M${s(395,494)} Q${s(392,480)} ${s(389,494)}"/>
-  <path d="M${s(412,492)} Q${s(409,478)} ${s(406,492)}"/>
-  <path d="M${s(158,500)} Q${s(155,487)} ${s(152,500)}"/>
-  <path d="M${s(348,498)} Q${s(345,485)} ${s(342,498)}"/>
-  <path d="M${s(462,496)} Q${s(459,482)} ${s(456,496)}"/>
+<ellipse cx="${px(80)}"  cy="${py(255)}" rx="${sw(170)}" ry="${sh(52)}" fill="#6aa828" opacity=".28"/>
+<ellipse cx="${px(340)}" cy="${py(260)}" rx="${sw(150)}" ry="${sh(45)}" fill="#6aa828" opacity=".25"/>
+<ellipse cx="${px(200)}" cy="${py(282)}" rx="${sw(230)}" ry="${sh(60)}" fill="url(#gnd${w})"/>
+<rect x="0" y="${py(282)}" width="${w}" height="${sh(38)}" fill="#5a8820"/>
+<ellipse cx="${px(200)}" cy="${py(282)}" rx="${sw(230)}" ry="${sh(18)}" fill="#96cc40" opacity=".45"/>
+<g stroke="#387010" stroke-width="${sw(1.5)}" stroke-linecap="round" fill="none" opacity=".65">
+  <path d="M${s(34,283)} Q${s(32,274)} ${s(30,283)}"/>
+  <path d="M${s(44,281)} Q${s(42,271)} ${s(40,281)}"/>
+  <path d="M${s(330,285)} Q${s(328,275)} ${s(326,285)}"/>
+  <path d="M${s(348,282)} Q${s(346,272)} ${s(344,282)}"/>
+  <path d="M${s(100,289)} Q${s(98,280)} ${s(96,289)}"/>
+  <path d="M${s(290,287)} Q${s(288,278)} ${s(286,287)}"/>
 </g>
-<!-- Wildflowers -->
-<circle cx="${(104*sx).toFixed(1)}" cy="${(490*sy).toFixed(1)}" r="${(3.5*sx).toFixed(1)}" fill="#f4a8c0"/>
-<circle cx="${(104*sx).toFixed(1)}" cy="${(490*sy).toFixed(1)}" r="${(1.5*sx).toFixed(1)}" fill="#fff8c0"/>
-<circle cx="${(374*sx).toFixed(1)}" cy="${(491*sy).toFixed(1)}" r="${(3*sx).toFixed(1)}" fill="#f8d868"/>
-<circle cx="${(374*sx).toFixed(1)}" cy="${(491*sy).toFixed(1)}" r="${(1.3*sx).toFixed(1)}" fill="white"/>
-<circle cx="${(438*sx).toFixed(1)}" cy="${(492*sy).toFixed(1)}" r="${(3.5*sx).toFixed(1)}" fill="#f4a8c0"/>
-<circle cx="${(438*sx).toFixed(1)}" cy="${(492*sy).toFixed(1)}" r="${(1.5*sx).toFixed(1)}" fill="#fff8c0"/>`;
+<circle cx="${px(60)}" cy="${py(278)}" r="${sw(3)}" fill="#f8a8c0"/>
+<circle cx="${px(60)}" cy="${py(278)}" r="${sw(1.3)}" fill="#fffcb0"/>
+<circle cx="${px(310)}" cy="${py(280)}" r="${sw(2.8)}" fill="#f8d860"/>
+<circle cx="${px(310)}" cy="${py(280)}" r="${sw(1.2)}" fill="white"/>`;
 
+  // ── STAGE 0: bare land ──────────────────────────
   if (stage === 0) {
-    // Just a tiny sprout from soil
     svg += `
-<line x1="${(252*sx).toFixed(1)}" y1="${(498*sy).toFixed(1)}" x2="${(250*sx).toFixed(1)}" y2="${(455*sy).toFixed(1)}" stroke="#4a9020" stroke-width="${(3*sx).toFixed(1)}" stroke-linecap="round"/>
-<ellipse cx="${(240*sx).toFixed(1)}" cy="${(452*sy).toFixed(1)}" rx="${(12*sx).toFixed(1)}" ry="${(6*sy).toFixed(1)}" fill="#5aaa28" transform="rotate(-30,${(240*sx).toFixed(1)},${(452*sy).toFixed(1)})"/>
-<ellipse cx="${(262*sx).toFixed(1)}" cy="${(448*sy).toFixed(1)}" rx="${(12*sx).toFixed(1)}" ry="${(6*sy).toFixed(1)}" fill="#4a9820" transform="rotate(25,${(262*sx).toFixed(1)},${(448*sy).toFixed(1)})"/>`;
-  } else {
-    // Trunk grows from soil
-    const ts = trunkScale;
-    const trunkTop = 500 - ts * 190;
-    const trunkMid = 500 - ts * 95;
-    svg += `
-<path d="M${s(244,498)} Q${s(238,trunkMid)} ${s(240,trunkTop+20)} Q${s(244,trunkTop+5)} ${s(252,trunkTop)}
-         Q${s(260,trunkTop+5)} ${s(264,trunkTop+20)} Q${s(266,trunkMid)} ${s(260,498)} Z"
-  fill="url(#tsg${w})" stroke="#4a2c08" stroke-width="${(3*sx).toFixed(1)}"/>
-<path d="M${s(250,496)} Q${s(247,trunkMid)} ${s(249,trunkTop+15)} Q${s(251,trunkTop+5)} ${s(252,trunkTop)}
-         Q${s(253,trunkTop+5)} ${s(252,trunkTop+15)}"
-  stroke="rgba(255,255,255,0.17)" stroke-width="${(5*sx).toFixed(1)}" fill="none" stroke-linecap="round"/>`;
-
-    if (stage >= 2 && co > 0) {
-      // Branches
-      svg += `<g stroke="#a07848" fill="none" stroke-linecap="round" opacity="${co}">
-<path d="M${s(246,422)} Q${s(218,402)} ${s(196,378)} Q${s(180,360)} ${s(170,340)}" stroke-width="${(8*sx).toFixed(1)}"/>
-<path d="M${s(247,382)} Q${s(224,361)} ${s(207,338)} Q${s(195,322)} ${s(188,302)}" stroke-width="${(7*sx).toFixed(1)}"/>
-<path d="M${s(249,352)} Q${s(232,330)} ${s(222,307)} Q${s(215,290)} ${s(213,269)}" stroke-width="${(6*sx).toFixed(1)}"/>
-<path d="M${s(251,322)} Q${s(247,297)} ${s(246,272)} Q${s(245,254)} ${s(247,234)}" stroke-width="${(5.5*sx).toFixed(1)}"/>
-<path d="M${s(253,318)} Q${s(270,293)} ${s(280,269)} Q${s(288,251)} ${s(290,231)}" stroke-width="${(5.5*sx).toFixed(1)}"/>
-<path d="M${s(255,348)} Q${s(278,325)} ${s(296,302)} Q${s(310,284)} ${s(316,264)}" stroke-width="${(6.5*sx).toFixed(1)}"/>
-<path d="M${s(257,390)} Q${s(284,368)} ${s(306,344)} Q${s(323,326)} ${s(332,306)}" stroke-width="${(7.5*sx).toFixed(1)}"/>
-<path d="M${s(170,340)} Q${s(160,321)} ${s(154,300)}" stroke-width="${(4.5*sx).toFixed(1)}"/>
-<path d="M${s(170,340)} Q${s(178,321)} ${s(184,302)}" stroke-width="${(4.5*sx).toFixed(1)}"/>
-<path d="M${s(188,302)} Q${s(180,283)} ${s(177,263)}" stroke-width="${(4*sx).toFixed(1)}"/>
-<path d="M${s(188,302)} Q${s(197,283)} ${s(202,264)}" stroke-width="${(4*sx).toFixed(1)}"/>
-<path d="M${s(332,306)} Q${s(338,287)} ${s(340,268)}" stroke-width="${(4.5*sx).toFixed(1)}"/>
-<path d="M${s(332,306)} Q${s(324,287)} ${s(320,268)}" stroke-width="${(4*sx).toFixed(1)}"/>
-<path d="M${s(247,234)} Q${s(242,215)} ${s(242,196)}" stroke-width="${(3.5*sx).toFixed(1)}"/>
-<path d="M${s(247,234)} Q${s(255,215)} ${s(257,197)}" stroke-width="${(3.5*sx).toFixed(1)}"/>
-</g>`;
-
-      // Leaves — 5 layers
-      const leafGroups = [
-        { fill:leafDark, stroke:'#1e5008', o:.88, leaves:[
-          [146,293,-50],[160,275,-24],[138,313,-64],[175,282,4],[192,284,-40],
-          [206,266,-14],[182,302,-56],[288,244,30],[301,226,8],[279,261,48],
-          [315,268,36],[328,251,13],[339,298,42],[353,280,20]
-        ]},
-        { fill:leafMid, stroke:'#286010', o:.92, leaves:[
-          [156,265,-10],[174,258,5],[216,281,14],[198,251,-28],[218,251,-32],
-          [232,232,-6],[209,267,-50],[242,248,17],[311,242,-12],[320,268,-10],
-          [336,253,25],[331,316,58],[351,310,-7],[359,291,32]
-        ]},
-        { fill:leafBrt, stroke:'#387010', o:.94, leaves:[
-          [248,214,-20],[262,196,2],[274,216,22],[254,229,-8],[250,199,-33],
-          [272,199,14],[258,182,0],[236,249,-32],[294,207,22],[225,216,-22]
-        ]},
-        { fill:leafTop, stroke:'#488018', o:.9, leaves:[
-          [246,194,-33],[262,178,0],[276,194,16],[234,232,-18],[278,226,20]
-        ]},
-        { fill:leafShade, stroke:'#144008', o:.82, leaves:[
-          [228,362,-30],[278,356,26],[212,380,-46],[296,372,42],[246,386,-16],[264,384,13]
-        ]},
-      ];
-      leafGroups.forEach(g => {
-        svg += `<g fill="${g.fill}" stroke="${g.stroke}" stroke-width="${(1.6*sx).toFixed(1)}" opacity="${(co*g.o).toFixed(2)}">`;
-        g.leaves.forEach(([cx,cy,rot]) => {
-          svg += `<ellipse cx="${(cx*sx).toFixed(1)}" cy="${(cy*sy).toFixed(1)}" rx="${(22*sx).toFixed(1)}" ry="${(9*sy).toFixed(1)}" transform="rotate(${rot},${(cx*sx).toFixed(1)},${(cy*sy).toFixed(1)})"/>`;
-        });
-        svg += `</g>`;
-      });
-
-      // Lemons
-      if (lemonCount > 0) {
-        const allLemons = [
-          {cx:258,cy:250,sx2:275,sy2:246,ex:284,ey:239,lr:-34},
-          {cx:150,cy:325,sx2:166,sy2:321,ex:175,ey:314,lr:-26},
-          {cx:320,cy:310,sx2:336,sy2:306,ex:345,ey:299,lr:22},
-          {cx:190,cy:315,sx2:205,sy2:311,ex:214,ey:304,lr:-18},
-          {cx:286,cy:282,sx2:301,sy2:278,ex:310,ey:271,lr:14},
-          {cx:222,cy:288,sx2:238,sy2:284,ex:247,ey:277,lr:-8},
-          {cx:256,cy:372,sx2:272,sy2:368,ex:281,ey:361,lr:4},
-        ];
-        svg += `<g stroke="#a07000" stroke-width="${(3*sx).toFixed(1)}" opacity="${co}">`;
-        allLemons.slice(0, lemonCount).forEach(l => {
-          const lcx=(l.cx*sx).toFixed(1), lcy=(l.cy*sy).toFixed(1);
-          svg += `<ellipse cx="${lcx}" cy="${lcy}" rx="${(16*sx).toFixed(1)}" ry="${(13*sy).toFixed(1)}" fill="url(#lg${w})"/>`;
-          svg += `<ellipse cx="${((l.cx-8)*sx).toFixed(1)}" cy="${((l.cy-7)*sy).toFixed(1)}" rx="${(6*sx).toFixed(1)}" ry="${(4*sy).toFixed(1)}" fill="rgba(255,255,255,0.55)"/>`;
-          svg += `<line x1="${(l.sx2*sx).toFixed(1)}" y1="${(l.sy2*sy).toFixed(1)}" x2="${(l.ex*sx).toFixed(1)}" y2="${(l.ey*sy).toFixed(1)}" stroke="#2a7010" stroke-width="${(2*sx).toFixed(1)}" stroke-linecap="round"/>`;
-          svg += `<ellipse cx="${(l.ex*sx).toFixed(1)}" cy="${(l.ey*sy).toFixed(1)}" rx="${(10*sx).toFixed(1)}" ry="${(4.5*sy).toFixed(1)}" fill="#58a018" stroke="#286008" stroke-width="${(1.5*sx).toFixed(1)}" transform="rotate(${l.lr},${(l.ex*sx).toFixed(1)},${(l.ey*sy).toFixed(1)})"/>`;
-        });
-        svg += `</g>`;
-      }
-
-      // Wilting leaves if low vitality
-      if (lv < 0.35 && stage >= 3) {
-        svg += `<g fill="#b89808" opacity="0.65">`;
-        for (let i = 0; i < 5; i++) {
-          const angle = (i/5)*Math.PI*2;
-          const fx = (252 + Math.cos(angle)*105)*sx;
-          const fy = (300 + Math.sin(angle)*60)*sy;
-          svg += `<ellipse cx="${fx.toFixed(1)}" cy="${fy.toFixed(1)}" rx="${(5*sx).toFixed(1)}" ry="${(2.5*sy).toFixed(1)}" transform="rotate(${(angle*57).toFixed(0)},${fx.toFixed(1)},${fy.toFixed(1)})"/>`;
-        }
-        svg += `</g>`;
-      }
-    }
+<ellipse cx="${px(200)}" cy="${py(272)}" rx="${sw(80)}" ry="${sh(18)}" fill="#a07840" opacity=".6"/>
+<ellipse cx="${px(200)}" cy="${py(270)}" rx="${sw(70)}" ry="${sh(12)}" fill="#b08848" opacity=".7"/>
+<g stroke="#7a5020" stroke-width="${sw(1.2)}" fill="none" opacity=".45">
+  <path d="M${s(158,268)} Q${s(170,263)} ${s(182,269)}"/>
+  <path d="M${s(212,266)} Q${s(224,261)} ${s(236,267)}"/>
+  <path d="M${s(175,274)} Q${s(190,270)} ${s(205,275)}"/>
+</g>
+<rect x="${px(192)}" y="${py(228)}" width="${sw(5)}" height="${sh(44)}" fill="#b08030" rx="${sw(1.5)}"/>
+<rect x="${px(178)}" y="${py(222)}" width="${sw(32)}" height="${sh(22)}" fill="#d4a850" stroke="#8a5820" stroke-width="${sw(1.5)}" rx="${sw(2)}"/>
+<text x="${px(194)}" y="${py(237)}" text-anchor="middle" font-size="${sw(9)}" fill="#5a3010" font-family="sans-serif" font-weight="bold">未来的家</text>
+<text x="${px(200)}" y="${py(310)}" text-anchor="middle" font-size="${sw(13)}" fill="#5a4010" font-family="sans-serif" font-weight="bold">一片土地</text>`;
   }
+
+  // ── STAGE 1: stone foundation ───────────────────
+  else if (stage === 1) {
+    svg += `
+<rect x="${px(128)}" y="${py(252)}" width="${sw(144)}" height="${sh(24)}" fill="#9a9890" stroke="#686860" stroke-width="${sw(2)}" rx="${sw(3)}"/>
+<g stroke="#686860" stroke-width="${sw(1)}" fill="none" opacity=".45">
+  <line x1="${px(128)}" y1="${py(264)}" x2="${px(272)}" y2="${py(264)}"/>
+  <line x1="${px(164)}" y1="${py(252)}" x2="${px(164)}" y2="${py(276)}"/>
+  <line x1="${px(200)}" y1="${py(252)}" x2="${px(200)}" y2="${py(276)}"/>
+  <line x1="${px(236)}" y1="${py(252)}" x2="${px(236)}" y2="${py(276)}"/>
+</g>
+<rect x="${px(140)}" y="${py(244)}" width="${sw(10)}" height="${sh(10)}" fill="#b0a898" stroke="#686860" stroke-width="${sw(1)}" rx="${sw(1)}"/>
+<rect x="${px(250)}" y="${py(244)}" width="${sw(10)}" height="${sh(10)}" fill="#b0a898" stroke="#686860" stroke-width="${sw(1)}" rx="${sw(1)}"/>
+<line x1="${px(144)}" y1="${py(244)}" x2="${px(144)}" y2="${py(202)}" stroke="#c09848" stroke-width="${sw(2)}" stroke-linecap="round"/>
+<line x1="${px(256)}" y1="${py(244)}" x2="${px(256)}" y2="${py(202)}" stroke="#c09848" stroke-width="${sw(2)}" stroke-linecap="round"/>
+<line x1="${px(144)}" y1="${py(218)}" x2="${px(256)}" y2="${py(218)}" stroke="#c09848" stroke-width="${sw(1.5)}" stroke-dasharray="${sw(5)},${sw(4)}" opacity=".7"/>
+<text x="${px(200)}" y="${py(310)}" text-anchor="middle" font-size="${sw(13)}" fill="#585850" font-family="sans-serif" font-weight="bold">石头地基</text>`;
+  }
+
+  // ── STAGE 2: tent ───────────────────────────────
+  else if (stage === 2) {
+    svg += `
+<polygon points="${s(200,72)} ${s(148,268)} ${s(252,268)}" fill="url(#tent${w})" stroke="#c89010" stroke-width="${sw(3)}" stroke-linejoin="round"/>
+<polygon points="${s(200,72)} ${s(148,268)} ${s(168,268)}" fill="rgba(0,0,0,0.10)"/>
+<path d="M${s(188,268)} Q${s(200,218)} ${s(212,268)}" fill="#8a5020" stroke="#5a2808" stroke-width="${sw(2)}"/>
+<line x1="${px(200)}" y1="${py(78)}" x2="${px(150)}" y2="${py(200)}" stroke="#d4a840" stroke-width="${sw(1)}" stroke-dasharray="${sw(3)},${sw(3)}" opacity=".6"/>
+<line x1="${px(200)}" y1="${py(78)}" x2="${px(250)}" y2="${py(200)}" stroke="#d4a840" stroke-width="${sw(1)}" stroke-dasharray="${sw(3)},${sw(3)}" opacity=".6"/>
+<line x1="${px(150)}" y1="${py(265)}" x2="${px(142)}" y2="${py(276)}" stroke="#a07030" stroke-width="${sw(2)}" stroke-linecap="round"/>
+<line x1="${px(250)}" y1="${py(265)}" x2="${px(258)}" y2="${py(276)}" stroke="#a07030" stroke-width="${sw(2)}" stroke-linecap="round"/>
+<rect x="${px(264)}" y="${py(254)}" width="${sw(7)}" height="${sh(16)}" fill="#6090d0" rx="${sw(1)}"/>
+<rect x="${px(261)}" y="${py(248)}" width="${sw(13)}" height="${sh(9)}" fill="#4878c0" rx="${sw(2)}"/>
+<circle cx="${px(273)}" cy="${py(250)}" r="${sw(2)}" fill="#c8e0f8"/>
+<text x="${px(200)}" y="${py(310)}" text-anchor="middle" font-size="${sw(13)}" fill="#8a5010" font-family="sans-serif" font-weight="bold">帐篷</text>`;
+  }
+
+  // ── STAGE 3: small wooden house ─────────────────
+  else if (stage === 3) {
+    svg += `
+<rect x="${px(138)}" y="${py(252)}" width="${sw(124)}" height="${sh(22)}" fill="#c8b898" stroke="#a09070" stroke-width="${sw(2)}" rx="${sw(2)}"/>
+<rect x="${px(142)}" y="${py(178)}" width="${sw(116)}" height="${sh(76)}" fill="#e8c880" stroke="#b89040" stroke-width="${sw(2.5)}" rx="${sw(3)}"/>
+<g stroke="#c8a850" stroke-width="${sw(1)}" opacity=".35">
+  <line x1="${px(142)}" y1="${py(196)}" x2="${px(258)}" y2="${py(196)}"/>
+  <line x1="${px(142)}" y1="${py(214)}" x2="${px(258)}" y2="${py(214)}"/>
+  <line x1="${px(142)}" y1="${py(232)}" x2="${px(258)}" y2="${py(232)}"/>
+</g>
+<rect x="${px(142)}" y="${py(178)}" width="${sw(22)}" height="${sh(76)}" fill="rgba(0,0,0,0.07)" rx="${sw(3)}"/>
+<polygon points="${s(130,180)} ${s(200,98)} ${s(270,180)}" fill="#e07830" stroke="#b05010" stroke-width="${sw(3)}" stroke-linejoin="round"/>
+<polygon points="${s(130,180)} ${s(200,98)} ${s(162,180)}" fill="rgba(0,0,0,0.10)"/>
+<rect x="${px(152)}" y="${py(190)}" width="${sw(36)}" height="${sh(30)}" fill="#b8daf5" stroke="#8888a0" stroke-width="${sw(2)}" rx="${sw(3)}"/>
+<line x1="${px(170)}" y1="${py(190)}" x2="${px(170)}" y2="${py(220)}" stroke="#8888a0" stroke-width="${sw(1.5)}"/>
+<line x1="${px(152)}" y1="${py(205)}" x2="${px(188)}" y2="${py(205)}" stroke="#8888a0" stroke-width="${sw(1.5)}"/>
+<rect x="${px(208)}" y="${py(218)}" width="${sw(34)}" height="${sh(36)}" fill="#9a5828" stroke="#5a2808" stroke-width="${sw(2)}" rx="${sw(3)}"/>
+<path d="M${s(208,228)} Q${s(225,213)} ${s(242,228)}" fill="#b87040" stroke="#5a2808" stroke-width="${sw(2)}"/>
+<circle cx="${px(237)}" cy="${py(238)}" r="${sw(3)}" fill="#d4a830"/>
+<rect x="${px(228)}" y="${py(122)}" width="${sw(14)}" height="${sh(30)}" fill="#d0a870" stroke="#907040" stroke-width="${sw(1.5)}" rx="${sw(2)}"/>
+<rect x="${px(225)}" y="${py(119)}" width="${sw(20)}" height="${sh(7)}" fill="#b08050" rx="${sw(2)}"/>
+<circle cx="${px(235)}" cy="${py(110)}" r="${sw(5)}" fill="#e8e8e0" opacity=".55"/>
+<circle cx="${px(238)}" cy="${py(101)}" r="${sw(4)}" fill="#e8e8e0" opacity=".38"/>
+<rect x="${px(272)}" y="${py(254)}" width="${sw(7)}" height="${sh(16)}" fill="#6090d0" rx="${sw(1)}"/>
+<rect x="${px(269)}" y="${py(248)}" width="${sw(13)}" height="${sh(9)}" fill="#4878c0" rx="${sw(2)}"/>
+<circle cx="${px(281)}" cy="${py(250)}" r="${sw(2)}" fill="#c8e0f8"/>
+<text x="${px(200)}" y="${py(310)}" text-anchor="middle" font-size="${sw(13)}" fill="#5a3010" font-family="sans-serif" font-weight="bold">小木屋</text>`;
+  }
+
+  // ── STAGE 4: English cottage ────────────────────
+  else if (stage === 4) {
+    svg += `
+<rect x="${px(118)}" y="${py(252)}" width="${sw(164)}" height="${sh(22)}" fill="#b8b0a0" stroke="#908880" stroke-width="${sw(2)}" rx="${sw(2)}"/>
+<rect x="${px(124)}" y="${py(162)}" width="${sw(152)}" height="${sh(92)}" fill="url(#wall${w})" stroke="#c8c0a0" stroke-width="${sw(2.5)}" rx="${sw(3)}"/>
+<g stroke="#5a3010" stroke-width="${sw(3)}" stroke-linecap="round">
+  <line x1="${px(124)}" y1="${py(162)}" x2="${px(124)}" y2="${py(254)}"/>
+  <line x1="${px(276)}" y1="${py(162)}" x2="${px(276)}" y2="${py(254)}"/>
+  <line x1="${px(178)}" y1="${py(162)}" x2="${px(178)}" y2="${py(254)}"/>
+  <line x1="${px(222)}" y1="${py(162)}" x2="${px(222)}" y2="${py(254)}"/>
+  <line x1="${px(124)}" y1="${py(162)}" x2="${px(276)}" y2="${py(162)}"/>
+  <line x1="${px(124)}" y1="${py(206)}" x2="${px(276)}" y2="${py(206)}"/>
+</g>
+<g stroke="#5a3010" stroke-width="${sw(2)}" opacity=".5">
+  <line x1="${px(124)}" y1="${py(162)}" x2="${px(178)}" y2="${py(206)}"/>
+  <line x1="${px(178)}" y1="${py(162)}" x2="${px(124)}" y2="${py(206)}"/>
+  <line x1="${px(222)}" y1="${py(162)}" x2="${px(276)}" y2="${py(206)}"/>
+  <line x1="${px(276)}" y1="${py(162)}" x2="${px(222)}" y2="${py(206)}"/>
+</g>
+<rect x="${px(124)}" y="${py(162)}" width="${sw(24)}" height="${sh(92)}" fill="rgba(0,0,0,0.06)" rx="${sw(3)}"/>
+<polygon points="${s(110,164)} ${s(200,76)} ${s(290,164)}" fill="url(#roof${w})" stroke="#404040" stroke-width="${sw(3)}" stroke-linejoin="round"/>
+<polygon points="${s(110,164)} ${s(200,76)} ${s(152,164)}" fill="rgba(0,0,0,0.14)"/>
+<rect x="${px(134)}" y="${py(172)}" width="${sw(32)}" height="${sh(26)}" fill="#b8daf5" stroke="#8888a0" stroke-width="${sw(2)}" rx="${sw(2)}"/>
+<line x1="${px(150)}" y1="${py(172)}" x2="${px(150)}" y2="${py(198)}" stroke="#8888a0" stroke-width="${sw(1.5)}"/>
+<line x1="${px(134)}" y1="${py(185)}" x2="${px(166)}" y2="${py(185)}" stroke="#8888a0" stroke-width="${sw(1.5)}"/>
+<rect x="${px(128)}" y="${py(172)}" width="${sw(7)}" height="${sh(26)}" fill="#7a9a50" stroke="#4a6a28" stroke-width="${sw(1)}" rx="${sw(1)}"/>
+<rect x="${px(165)}" y="${py(172)}" width="${sw(7)}" height="${sh(26)}" fill="#7a9a50" stroke="#4a6a28" stroke-width="${sw(1)}" rx="${sw(1)}"/>
+<rect x="${px(234)}" y="${py(172)}" width="${sw(32)}" height="${sh(26)}" fill="#b8daf5" stroke="#8888a0" stroke-width="${sw(2)}" rx="${sw(2)}"/>
+<line x1="${px(250)}" y1="${py(172)}" x2="${px(250)}" y2="${py(198)}" stroke="#8888a0" stroke-width="${sw(1.5)}"/>
+<line x1="${px(234)}" y1="${py(185)}" x2="${px(266)}" y2="${py(185)}" stroke="#8888a0" stroke-width="${sw(1.5)}"/>
+<rect x="${px(228)}" y="${py(172)}" width="${sw(7)}" height="${sh(26)}" fill="#7a9a50" stroke="#4a6a28" stroke-width="${sw(1)}" rx="${sw(1)}"/>
+<rect x="${px(265)}" y="${py(172)}" width="${sw(7)}" height="${sh(26)}" fill="#7a9a50" stroke="#4a6a28" stroke-width="${sw(1)}" rx="${sw(1)}"/>
+<rect x="${px(180)}" y="${py(214)}" width="${sw(40)}" height="${sh(40)}" fill="#7a4020" stroke="#3a1808" stroke-width="${sw(2.5)}" rx="${sw(4)}"/>
+<path d="M${s(180,226)} Q${s(200,208)} ${s(220,226)}" fill="#9a5830" stroke="#3a1808" stroke-width="${sw(2)}"/>
+<circle cx="${px(215)}" cy="${py(236)}" r="${sw(3.5)}" fill="#d4a830"/>
+<rect x="${px(174)}" y="${py(220)}" width="${sw(6)}" height="${sh(10)}" fill="#f8d870" stroke="#c0a030" stroke-width="${sw(1)}" rx="${sw(1)}"/>
+<rect x="${px(220)}" y="${py(220)}" width="${sw(6)}" height="${sh(10)}" fill="#f8d870" stroke="#c0a030" stroke-width="${sw(1)}" rx="${sw(1)}"/>
+<rect x="${px(232)}" y="${py(96)}" width="${sw(16)}" height="${sh(36)}" fill="#b09878" stroke="#807050" stroke-width="${sw(1.5)}" rx="${sw(2)}"/>
+<rect x="${px(228)}" y="${py(92)}" width="${sw(24)}" height="${sh(8)}" fill="#908060" rx="${sw(2)}"/>
+<circle cx="${px(240)}" cy="${py(82)}" r="${sw(6)}" fill="#e8e8e0" opacity=".6"/>
+<circle cx="${px(244)}" cy="${py(72)}" r="${sw(5)}" fill="#e8e8e0" opacity=".4"/>
+<rect x="${px(134)}" y="${py(197)}" width="${sw(32)}" height="${sh(6)}" fill="#a07030" rx="${sw(2)}"/>
+<circle cx="${px(141)}" cy="${py(193)}" r="${sw(4)}" fill="#f86090"/>
+<circle cx="${px(150)}" cy="${py(191)}" r="${sw(4)}" fill="#f8d040"/>
+<circle cx="${px(159)}" cy="${py(193)}" r="${sw(4)}" fill="#f86090"/>
+<rect x="${px(286)}" y="${py(254)}" width="${sw(7)}" height="${sh(16)}" fill="#6090d0" rx="${sw(1)}"/>
+<rect x="${px(283)}" y="${py(248)}" width="${sw(13)}" height="${sh(9)}" fill="#4878c0" rx="${sw(2)}"/>
+<circle cx="${px(295)}" cy="${py(250)}" r="${sw(2)}" fill="#c8e0f8"/>
+<text x="${px(200)}" y="${py(310)}" text-anchor="middle" font-size="${sw(13)}" fill="#3a2808" font-family="sans-serif" font-weight="bold">英式小屋</text>`;
+  }
+
+  // ── STAGE 5: grand mansion ───────────────────────
+  else {
+    svg += `
+<rect x="${px(80)}" y="${py(250)}" width="${sw(240)}" height="${sh(24)}" fill="#c8c0a8" stroke="#a09880" stroke-width="${sw(2.5)}" rx="${sw(3)}"/>
+<rect x="${px(80)}"  y="${py(195)}" width="${sw(44)}" height="${sh(57)}" fill="#e8d8b0" stroke="#b09858" stroke-width="${sw(2)}" rx="${sw(2)}"/>
+<rect x="${px(276)}" y="${py(195)}" width="${sw(44)}" height="${sh(57)}" fill="#e8d8b0" stroke="#b09858" stroke-width="${sw(2)}" rx="${sw(2)}"/>
+<polygon points="${s(74,197)} ${s(102,162)} ${s(130,197)}" fill="url(#roof${w})" stroke="#404040" stroke-width="${sw(2)}" stroke-linejoin="round"/>
+<polygon points="${s(74,197)} ${s(102,162)} ${s(90,197)}" fill="rgba(0,0,0,0.12)"/>
+<polygon points="${s(270,197)} ${s(298,162)} ${s(326,197)}" fill="url(#roof${w})" stroke="#404040" stroke-width="${sw(2)}" stroke-linejoin="round"/>
+<polygon points="${s(270,197)} ${s(298,162)} ${s(286,197)}" fill="rgba(0,0,0,0.12)"/>
+<rect x="${px(118)}" y="${py(152)}" width="${sw(164)}" height="${sh(100)}" fill="url(#wall${w})" stroke="#c8c0a0" stroke-width="${sw(2.5)}" rx="${sw(3)}"/>
+<g stroke="#5a3010" stroke-width="${sw(2.5)}" stroke-linecap="round">
+  <line x1="${px(118)}" y1="${py(152)}" x2="${px(118)}" y2="${py(252)}"/>
+  <line x1="${px(282)}" y1="${py(152)}" x2="${px(282)}" y2="${py(252)}"/>
+  <line x1="${px(175)}" y1="${py(152)}" x2="${px(175)}" y2="${py(252)}"/>
+  <line x1="${px(225)}" y1="${py(152)}" x2="${px(225)}" y2="${py(252)}"/>
+  <line x1="${px(118)}" y1="${py(152)}" x2="${px(282)}" y2="${py(152)}"/>
+  <line x1="${px(118)}" y1="${py(196)}" x2="${px(282)}" y2="${py(196)}"/>
+</g>
+<g stroke="#5a3010" stroke-width="${sw(2)}" opacity=".48">
+  <line x1="${px(118)}" y1="${py(152)}" x2="${px(175)}" y2="${py(196)}"/>
+  <line x1="${px(175)}" y1="${py(152)}" x2="${px(118)}" y2="${py(196)}"/>
+  <line x1="${px(225)}" y1="${py(152)}" x2="${px(282)}" y2="${py(196)}"/>
+  <line x1="${px(282)}" y1="${py(152)}" x2="${px(225)}" y2="${py(196)}"/>
+</g>
+<rect x="${px(118)}" y="${py(152)}" width="${sw(22)}" height="${sh(100)}" fill="rgba(0,0,0,0.06)" rx="${sw(3)}"/>
+<polygon points="${s(104,154)} ${s(200,62)} ${s(296,154)}" fill="url(#roof${w})" stroke="#404040" stroke-width="${sw(3)}" stroke-linejoin="round"/>
+<polygon points="${s(104,154)} ${s(200,62)} ${s(148,154)}" fill="rgba(0,0,0,0.14)"/>
+<rect x="${px(128)}" y="${py(160)}" width="${sw(32)}" height="${sh(28)}" fill="#c8e8f8" stroke="#8888a0" stroke-width="${sw(2)}" rx="${sw(2)}"/>
+<line x1="${px(144)}" y1="${py(160)}" x2="${px(144)}" y2="${py(188)}" stroke="#8888a0" stroke-width="${sw(1.5)}"/>
+<line x1="${px(128)}" y1="${py(174)}" x2="${px(160)}" y2="${py(174)}" stroke="#8888a0" stroke-width="${sw(1.5)}"/>
+<rect x="${px(122)}" y="${py(160)}" width="${sw(7)}" height="${sh(28)}" fill="#7a9a50" stroke="#4a6a28" stroke-width="${sw(1)}" rx="${sw(1)}"/>
+<rect x="${px(159)}" y="${py(160)}" width="${sw(7)}" height="${sh(28)}" fill="#7a9a50" stroke="#4a6a28" stroke-width="${sw(1)}" rx="${sw(1)}"/>
+<rect x="${px(240)}" y="${py(160)}" width="${sw(32)}" height="${sh(28)}" fill="#c8e8f8" stroke="#8888a0" stroke-width="${sw(2)}" rx="${sw(2)}"/>
+<line x1="${px(256)}" y1="${py(160)}" x2="${px(256)}" y2="${py(188)}" stroke="#8888a0" stroke-width="${sw(1.5)}"/>
+<line x1="${px(240)}" y1="${py(174)}" x2="${px(272)}" y2="${py(174)}" stroke="#8888a0" stroke-width="${sw(1.5)}"/>
+<rect x="${px(234)}" y="${py(160)}" width="${sw(7)}" height="${sh(28)}" fill="#7a9a50" stroke="#4a6a28" stroke-width="${sw(1)}" rx="${sw(1)}"/>
+<rect x="${px(271)}" y="${py(160)}" width="${sw(7)}" height="${sh(28)}" fill="#7a9a50" stroke="#4a6a28" stroke-width="${sw(1)}" rx="${sw(1)}"/>
+<rect x="${px(176)}" y="${py(200)}" width="${sw(48)}" height="${sh(52)}" fill="#6a3818" stroke="#3a1808" stroke-width="${sw(2.5)}" rx="${sw(5)}"/>
+<path d="M${s(176,215)} Q${s(200,196)} ${s(224,215)}" fill="#8a4828" stroke="#3a1808" stroke-width="${sw(2)}"/>
+<circle cx="${px(218)}" cy="${py(228)}" r="${sw(3.5)}" fill="#f0c020"/>
+<rect x="${px(168)}" y="${py(200)}" width="${sw(8)}" height="${sh(52)}" fill="#e0d4b8" stroke="#c0b898" stroke-width="${sw(1)}" rx="${sw(3)}"/>
+<rect x="${px(224)}" y="${py(200)}" width="${sw(8)}" height="${sh(52)}" fill="#e0d4b8" stroke="#c0b898" stroke-width="${sw(1)}" rx="${sw(3)}"/>
+<rect x="${px(164)}" y="${py(196)}" width="${sw(72)}" height="${sh(6)}" fill="#b09878" rx="${sw(2)}"/>
+<rect x="${px(157)}" y="${py(208)}" width="${sw(7)}" height="${sh(11)}" fill="#f8d870" stroke="#c0a030" stroke-width="${sw(1)}" rx="${sw(1)}"/>
+<rect x="${px(236)}" y="${py(208)}" width="${sw(7)}" height="${sh(11)}" fill="#f8d870" stroke="#c0a030" stroke-width="${sw(1)}" rx="${sw(1)}"/>
+<rect x="${px(90)}" y="${py(208)}" width="${sw(24)}" height="${sh(20)}" fill="#c8e8f8" stroke="#8888a0" stroke-width="${sw(1.5)}" rx="${sw(2)}"/>
+<line x1="${px(102)}" y1="${py(208)}" x2="${px(102)}" y2="${py(228)}" stroke="#8888a0" stroke-width="${sw(1.2)}"/>
+<rect x="${px(286)}" y="${py(208)}" width="${sw(24)}" height="${sh(20)}" fill="#c8e8f8" stroke="#8888a0" stroke-width="${sw(1.5)}" rx="${sw(2)}"/>
+<line x1="${px(298)}" y1="${py(208)}" x2="${px(298)}" y2="${py(228)}" stroke="#8888a0" stroke-width="${sw(1.2)}"/>
+<rect x="${px(138)}" y="${py(82)}" width="${sw(14)}" height="${sh(38)}" fill="#b09878" stroke="#807050" stroke-width="${sw(1.5)}" rx="${sw(2)}"/>
+<rect x="${px(134)}" y="${py(78)}" width="${sw(22)}" height="${sh(8)}" fill="#907860" rx="${sw(2)}"/>
+<rect x="${px(248)}" y="${py(82)}" width="${sw(14)}" height="${sh(38)}" fill="#b09878" stroke="#807050" stroke-width="${sw(1.5)}" rx="${sw(2)}"/>
+<rect x="${px(244)}" y="${py(78)}" width="${sw(22)}" height="${sh(8)}" fill="#907860" rx="${sw(2)}"/>
+<circle cx="${px(145)}" cy="${py(68)}" r="${sw(5)}" fill="#e8e8e0" opacity=".55"/>
+<circle cx="${px(148)}" cy="${py(57)}" r="${sw(4)}" fill="#e8e8e0" opacity=".38"/>
+<circle cx="${px(255)}" cy="${py(68)}" r="${sw(5)}" fill="#e8e8e0" opacity=".5"/>
+<circle cx="${px(258)}" cy="${py(57)}" r="${sw(4)}" fill="#e8e8e0" opacity=".35"/>
+<polygon points="${px(200)},${py(50)} ${px(202)},${py(57)} ${px(209)},${py(57)} ${px(204)},${py(62)} ${px(206)},${py(69)} ${px(200)},${py(65)} ${px(194)},${py(69)} ${px(196)},${py(62)} ${px(191)},${py(57)} ${px(198)},${py(57)}" fill="#f0c020" stroke="#c09010" stroke-width="${sw(1)}"/>
+<rect x="${px(128)}" y="${py(187)}" width="${sw(32)}" height="${sh(5)}" fill="#a07030" rx="${sw(2)}"/>
+<circle cx="${px(135)}" cy="${py(183)}" r="${sw(4)}" fill="#f86090"/>
+<circle cx="${px(144)}" cy="${py(181)}" r="${sw(4)}" fill="#f8d040"/>
+<circle cx="${px(153)}" cy="${py(183)}" r="${sw(4)}" fill="#f040a0"/>
+<rect x="${px(240)}" y="${py(187)}" width="${sw(32)}" height="${sh(5)}" fill="#a07030" rx="${sw(2)}"/>
+<circle cx="${px(247)}" cy="${py(183)}" r="${sw(4)}" fill="#f8d040"/>
+<circle cx="${px(256)}" cy="${py(181)}" r="${sw(4)}" fill="#f86090"/>
+<circle cx="${px(265)}" cy="${py(183)}" r="${sw(4)}" fill="#f040a0"/>
+<g stroke="#c8a850" stroke-width="${sw(1.8)}" stroke-linecap="round" fill="none">
+  <line x1="${px(62)}" y1="${py(258)}" x2="${px(62)}" y2="${py(268)}"/>
+  <line x1="${px(70)}" y1="${py(256)}" x2="${px(70)}" y2="${py(268)}"/>
+  <line x1="${px(62)}" y1="${py(262)}" x2="${px(70)}" y2="${py(262)}"/>
+  <line x1="${px(330)}" y1="${py(258)}" x2="${px(330)}" y2="${py(268)}"/>
+  <line x1="${px(338)}" y1="${py(256)}" x2="${px(338)}" y2="${py(268)}"/>
+  <line x1="${px(330)}" y1="${py(262)}" x2="${px(338)}" y2="${py(262)}"/>
+</g>
+<rect x="${px(348)}" y="${py(252)}" width="${sw(7)}" height="${sh(18)}" fill="#c09840" rx="${sw(1)}"/>
+<rect x="${px(344)}" y="${py(245)}" width="${sw(15)}" height="${sh(10)}" fill="#b08030" rx="${sw(2)}"/>
+<circle cx="${px(358)}" cy="${py(247)}" r="${sw(2.5)}" fill="#f8e090"/>
+<text x="${px(200)}" y="${py(310)}" text-anchor="middle" font-size="${sw(13)}" fill="#3a1808" font-family="sans-serif" font-weight="bold">FIRE豪宅 🌟</text>`;
+  }
+
   svg += `</svg>`;
   return svg;
 }
 
-// ── 渲染整页 ─────────────────────────────────────────
-// ── 渲染整页 ─────────────────────────────────────────
+// Keep buildTreeSVG as alias for backward compat
+function buildTreeSVG(state, w, h) { return buildHouseSVG(state, w, h); }
+
+// ── Render house page ─────────────────────────────────
 function renderTree() {
   getTreeData();
   const state = calcTreeState();
+  const stageInfo = [
+    { emoji:'🟫', name:'一片土地',   desc:'资产积累中，奠定基础…' },
+    { emoji:'🪨', name:'石头地基',   desc:'地基已打好，开始建造！' },
+    { emoji:'⛺', name:'帐篷',       desc:'有了临时的遮蔽所' },
+    { emoji:'🪵', name:'小木屋',     desc:'第一个真正的家' },
+    { emoji:'🏠', name:'英式小屋',   desc:'家园越来越完善' },
+    { emoji:'🏰', name:'FIRE豪宅',   desc:'财务自由，美梦成真！' },
+  ];
+  const si = stageInfo[state.stage];
 
   const subEl = document.getElementById('tree-sub');
   if (!db.treeGoal) {
-    subEl.textContent = '点击「设定目标」种下你的FIRE之树';
+    subEl.textContent = '点击「设定目标」开始建造你的家';
   } else {
     subEl.textContent = `目标 ${fmtMoney(db.treeGoal)} · 进度 ${(state.progress*100).toFixed(1)}%`;
   }
 
-  // Render full SVG tree — responsive, wait for layout
   const container = document.getElementById('tree-svg-container');
   if (container) {
     const doRender = () => {
       const cw = container.offsetWidth || 680;
-      const ch = Math.round(cw * 520 / 680);
-      container.innerHTML = buildTreeSVG(state, cw, ch);
+      const ch = Math.round(cw * 420 / 400);
+      container.innerHTML = buildHouseSVG(state, cw, ch);
     };
     if (container.offsetWidth > 0) doRender();
     else requestAnimationFrame(doRender);
   }
 
-  // Progress label
   const prog = document.getElementById('tree-progress-label');
   if (db.treeGoal && state.currentAssets > 0) {
-    const stageNames = ['🌰 种子', '🌱 萌芽', '🪴 小苗', '🌿 成长', '🌳 茂盛', '🌸 开花', '🍋 丰收'];
-    const vitalityDesc = state.vitality > 0.8 ? '💚 活力充沛' : state.vitality > 0.5 ? '💛 状态不错' : state.vitality > 0.3 ? '🟡 需要呵护' : '🔴 亟需改善';
+    const vDesc = state.vitality > 0.8 ? '💚 收支健康' : state.vitality > 0.5 ? '💛 状态不错' : state.vitality > 0.3 ? '🟡 需要注意' : '🔴 超支警告';
     prog.innerHTML = `
-      <div style="font-weight:700;font-size:13px;margin-bottom:4px">${stageNames[state.stage]}</div>
-      <div style="color:var(--t2);font-size:11px">当前 ${fmtMoney(state.currentAssets)}</div>
-      <div style="color:var(--t2);font-size:11px">目标 ${fmtMoney(db.treeGoal)}</div>
+      <div style="font-weight:700;font-size:13px;margin-bottom:4px">${si.emoji} ${si.name}</div>
+      <div style="color:var(--t2);font-size:11px">${si.desc}</div>
+      <div style="color:var(--t2);font-size:11px;margin-top:2px">当前 ${fmtMoney(state.currentAssets)}</div>
       <div style="margin-top:6px">
         <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--t2);margin-bottom:2px">
-          <span>资产进度</span><span>${(state.progress*100).toFixed(1)}%</span>
+          <span>建造进度</span><span>${(state.progress*100).toFixed(1)}%</span>
         </div>
         <div style="height:6px;background:rgba(0,0,0,.1);border-radius:3px;overflow:hidden">
-          <div style="height:100%;width:${(state.progress*100).toFixed(1)}%;background:linear-gradient(90deg,#22c55e,#86efac);border-radius:3px;transition:width 1s"></div>
+          <div style="height:100%;width:${(state.progress*100).toFixed(1)}%;background:linear-gradient(90deg,#f59e0b,#f97316);border-radius:3px;transition:width 1s"></div>
         </div>
       </div>
-      <div style="margin-top:6px;font-size:11px">${vitalityDesc}</div>`;
+      <div style="margin-top:6px;font-size:11px">${vDesc}</div>`;
   } else {
-    prog.innerHTML = '<div style="color:var(--t2);font-size:12px">设定目标后开始生长 🌱</div>';
+    prog.innerHTML = '<div style="color:var(--t2);font-size:12px">设定目标后开始建造 🏗</div>';
   }
 
-  // 里程碑
+  // Milestones
   const milestones = [
-    { pct: 0.25, label: '25%', name: '第一颗柠檬', icon: '🍋' },
-    { pct: 0.50, label: '50%', name: '半程达成', icon: '🌿' },
-    { pct: 0.75, label: '75%', name: '即将丰收', icon: '🌳' },
-    { pct: 1.00, label: '100%', name: 'FIRE达成！', icon: '🎉' },
+    { pct:0.20, name:'石头地基', icon:'🪨' },
+    { pct:0.40, name:'帐篷',     icon:'⛺' },
+    { pct:0.60, name:'小木屋',   icon:'🪵' },
+    { pct:0.85, name:'英式小屋', icon:'🏠' },
+    { pct:1.00, name:'FIRE豪宅', icon:'🏰' },
   ];
   const msEl = document.getElementById('tree-milestones');
   if (msEl) msEl.innerHTML = milestones.map(m => {
@@ -4098,18 +4166,17 @@ function renderTree() {
     return `<div style="text-align:center;padding:14px 8px;border-radius:12px;background:${done?'var(--green-l)':'var(--s2)'};border:1.5px solid ${done?'var(--green)':'var(--border)'};transition:all .3s">
       <div style="font-size:24px;margin-bottom:4px">${m.icon}</div>
       <div style="font-size:11px;font-weight:700;color:${done?'var(--green)':'var(--t2)'}">${m.name}</div>
-      <div style="font-size:10px;color:var(--t3);margin-top:2px">${m.label}</div>
+      <div style="font-size:10px;color:var(--t3);margin-top:2px">${m.pct*100}%</div>
       ${done ? '<div style="font-size:10px;color:var(--green);margin-top:2px">✓ 已达成</div>' : `<div style="font-size:10px;color:var(--t3);margin-top:2px">${fmtMoney((db.treeGoal||0)*m.pct)}</div>`}
     </div>`;
   }).join('');
 
-  // 成长日记
   checkTreeMilestones(state);
   const diary = document.getElementById('tree-diary');
   const entries = db.treeDiary || [];
   if (diary) {
     if (!entries.length) {
-      diary.innerHTML = '<div style="text-align:center;padding:20px;color:var(--t3);font-size:13px">种下树后，成长记录会在这里出现 🌱</div>';
+      diary.innerHTML = '<div style="text-align:center;padding:20px;color:var(--t3);font-size:13px">设定目标后，成长记录会在这里出现 🏗</div>';
     } else {
       diary.innerHTML = entries.map(e => `
         <div style="display:flex;gap:10px;align-items:flex-start;padding:10px 12px;background:var(--s2);border-radius:10px;border:1px solid var(--border)">
@@ -4123,36 +4190,25 @@ function renderTree() {
   }
 }
 
-// 总览页迷你树
+// Dashboard mini house icon
 function renderDashTree() {
-  const el = document.getElementById('dash-tree-svg');
-  const label = document.getElementById('dash-tree-label');
-  const pct = document.getElementById('dash-tree-pct');
-  if (!el) return;
+  const iconEl = document.getElementById('dash-house-icon');
+  if (!iconEl) return;
   getTreeData();
   const state = calcTreeState();
-  const mw = el.offsetWidth || 148;
-  const mh = Math.round(mw * 160 / 148);
-  el.innerHTML = buildTreeSVG(state, mw, mh);
-  if (label) {
-    const stageNames = ['🌰 种子', '🌱 萌芽', '🪴 小苗', '🌿 成长', '🌳 茂盛', '🌸 开花', '🍋 丰收'];
-    label.textContent = db.treeGoal ? stageNames[state.stage] : '🌳 柠檬树';
-  }
-  if (pct) {
-    pct.textContent = db.treeGoal
-      ? `${(state.progress*100).toFixed(0)}% · 点击详情`
-      : '设定目标开始生长';
-  }
+  const icons = ['🟫','🪨','⛺','🪵','🏠','🏰'];
+  iconEl.textContent = icons[state.stage] || '🟫';
 }
 
 function checkTreeMilestones(state) {
   if (!db.treeGoal) return;
   if (!db.treeDiary) db.treeDiary = [];
   const milestones = [
-    { pct: 0.25, text: '🍋 第一颗柠檬成熟！资产达到目标的25%', icon: '🍋' },
-    { pct: 0.50, text: '🌿 半程达成！资产达到目标的50%，树已茂盛', icon: '🌿' },
-    { pct: 0.75, text: '🌳 即将丰收！资产达到目标的75%', icon: '🌳' },
-    { pct: 1.00, text: '🎉 FIRE达成！财务自由之树完全成熟！', icon: '🎉' },
+    { pct:0.20, text:'🪨 石头地基打好！建造正式开始', icon:'🪨' },
+    { pct:0.40, text:'⛺ 帐篷搭起来了！有了第一个落脚点', icon:'⛺' },
+    { pct:0.60, text:'🪵 小木屋建成！第一个真正的家', icon:'🪵' },
+    { pct:0.85, text:'🏠 英式小屋升级完成！家园越来越美', icon:'🏠' },
+    { pct:1.00, text:'🏰 FIRE豪宅落成！财务自由达成！', icon:'🏰' },
   ];
   let changed = false;
   milestones.forEach(m => {
@@ -4164,6 +4220,7 @@ function checkTreeMilestones(state) {
   });
   if (changed) saveDB();
 }
+
 
 async function boot() {
   let gistPullSucceeded = false;
@@ -4232,4 +4289,4 @@ function seedDemoData() {
 }
 </script>
 </body>
-</html
+</html>
