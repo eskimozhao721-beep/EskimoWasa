@@ -514,6 +514,7 @@ th.sort-active .sort-icon{color:var(--blue);}
       <div class="nav-item" onclick="showPage('record')"><span class="nav-icon">✎</span>记录</div>
       <div class="nav-item" onclick="showPage('accounts')"><span class="nav-icon">◈</span>账户管理</div>
       <div class="nav-item" onclick="showPage('ledger')"><span class="nav-icon">📒</span>账本</div>
+      <div class="nav-item" onclick="showPage('tree')"><span class="nav-icon">🌳</span>柠檬树</div>
       <div class="nav-section" id="admin-nav-section" style="display:none">管理</div>
       <div class="nav-item" id="admin-nav-item" style="display:none" onclick="showPage('admin')"><span class="nav-icon">⚙</span>系统管理</div>
     </nav>
@@ -574,12 +575,22 @@ th.sort-active .sort-icon{color:var(--blue);}
       </div>
     </div>
 
-    <!-- ── 快照统计 ── -->
-    <div class="stats-grid">
-      <div class="sc"><div class="sc-label"><span class="sc-label-icon">🏠</span>家庭总资产</div><div class="sc-val lg" id="s-total">—</div><div class="sc-cur" id="s-total-cur"></div><div class="sc-chg cn" id="s-total-chg">—</div><div class="sbar sb-total"></div></div>
-      <div class="sc"><div class="sc-label"><span class="sc-label-icon">🏦</span>银行存款</div><div class="sc-val" id="s-bank">—</div><div class="sc-chg cn" id="s-bank-chg">—</div><div class="sbar sb-blue"></div></div>
-      <div class="sc"><div class="sc-label"><span class="sc-label-icon">📈</span>投资资产</div><div class="sc-val" id="s-invest">—</div><div class="sc-chg cn" id="s-invest-chg">—</div><div class="sbar sb-orange"></div></div>
-      <div class="sc"><div class="sc-label"><span class="sc-label-icon">🗂</span>其他资产</div><div class="sc-val" id="s-other">—</div><div class="sc-chg cn" id="s-other-chg">—</div><div class="sbar sb-green"></div></div>
+    <!-- ── 快照统计 + 柠檬树 ── -->
+    <div style="display:grid;grid-template-columns:1fr auto;gap:12px;align-items:start">
+      <div class="stats-grid" style="grid-template-columns:repeat(2,1fr)">
+        <div class="sc"><div class="sc-label"><span class="sc-label-icon">🏠</span>家庭总资产</div><div class="sc-val lg" id="s-total">—</div><div class="sc-cur" id="s-total-cur"></div><div class="sc-chg cn" id="s-total-chg">—</div><div class="sbar sb-total"></div></div>
+        <div class="sc"><div class="sc-label"><span class="sc-label-icon">🏦</span>银行存款</div><div class="sc-val" id="s-bank">—</div><div class="sc-chg cn" id="s-bank-chg">—</div><div class="sbar sb-blue"></div></div>
+        <div class="sc"><div class="sc-label"><span class="sc-label-icon">📈</span>投资资产</div><div class="sc-val" id="s-invest">—</div><div class="sc-chg cn" id="s-invest-chg">—</div><div class="sbar sb-orange"></div></div>
+        <div class="sc"><div class="sc-label"><span class="sc-label-icon">🗂</span>其他资产</div><div class="sc-val" id="s-other">—</div><div class="sc-chg cn" id="s-other-chg">—</div><div class="sbar sb-green"></div></div>
+      </div>
+      <!-- 迷你柠檬树 -->
+      <div onclick="showPage('tree')" style="cursor:pointer;width:148px;flex-shrink:0;background:linear-gradient(180deg,#e8dfc8 0%,#d8e8d0 50%,#c8dfc0 100%);border-radius:16px;overflow:hidden;border:1.5px solid rgba(180,168,140,0.4);box-shadow:0 2px 12px rgba(0,0,0,0.08);transition:transform .15s" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
+        <div id="dash-tree-svg" style="width:100%;line-height:0"></div>
+        <div style="padding:6px 10px 8px;background:rgba(255,255,255,0.7)">
+          <div id="dash-tree-label" style="font-size:10px;font-weight:600;color:#2a6010;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">🌳 柠檬树</div>
+          <div id="dash-tree-pct" style="font-size:10px;color:#555;margin-top:1px">点击查看详情</div>
+        </div>
+      </div>
     </div>
 
     <!-- ── 趋势图 + 构成 ── -->
@@ -890,7 +901,56 @@ th.sort-active .sort-icon{color:var(--blue);}
     <div id="ledger-budget-tab" style="display:none"></div>
   </div>
 
+  <!-- 🌳 柠檬树 -->
+  <div class="page" id="page-tree">
+    <div class="page-header">
+      <div><div class="page-title">🌳 我的柠檬树</div><div class="page-sub" id="tree-sub">种下你的FIRE之树</div></div>
+      <div class="hdr-actions">
+        <button class="btn btn-g btn-sm" onclick="openTreeGoalModal()">🎯 设定目标</button>
+      </div>
+    </div>
+
+    <!-- 主场景 -->
+    <div class="card" style="position:relative;overflow:hidden;padding:0;background:linear-gradient(180deg,#e8dfc8 0%,#d8e8d0 50%,#c8dfc0 100%)">
+      <!-- 进度标注 -->
+      <div id="tree-progress-label" style="position:absolute;bottom:16px;left:16px;background:rgba(255,255,255,.88);backdrop-filter:blur(8px);border-radius:12px;padding:10px 14px;font-size:12px;box-shadow:0 2px 12px rgba(0,0,0,.1);z-index:2;max-width:160px"></div>
+      <!-- SVG tree -->
+      <div id="tree-svg-container" style="width:100%;display:block"></div>
+    </div>
+
+    <!-- 成就里程碑 -->
+    <div class="card" style="margin-top:14px">
+      <div class="card-hdr"><div class="card-title">🍋 柠檬里程碑</div><div class="card-sub">每达到25%目标，树上结一颗柠檬</div></div>
+      <div id="tree-milestones" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px"></div>
+    </div>
+
+    <!-- 树的日记 -->
+    <div class="card" style="margin-top:14px">
+      <div class="card-hdr"><div class="card-title">📖 成长日记</div><div class="card-sub">记录每一个重要节点</div></div>
+      <div id="tree-diary" style="display:grid;gap:8px;max-height:240px;overflow-y:auto"></div>
+    </div>
+  </div>
+
   </main>
+</div>
+</div>
+
+<!-- MODAL: Tree Goal -->
+<div class="overlay" id="modal-tree-goal">
+<div class="modal" style="width:400px">
+  <div class="modal-title">🎯 设定FIRE目标</div>
+  <div class="fg">
+    <label class="fl">目标总资产（基准货币）</label>
+    <div style="display:flex;align-items:center;gap:8px">
+      <span id="tree-goal-cur-label" style="font-size:13px;color:var(--t2);min-width:36px"></span>
+      <input type="number" class="fi" id="tree-goal-input" placeholder="如 10000000" style="flex:1">
+    </div>
+    <div class="fhint">达到此目标时，柠檬树将完全成熟🍋</div>
+  </div>
+  <div class="mfooter">
+    <button class="btn btn-s" onclick="closeModal('modal-tree-goal')">取消</button>
+    <button class="btn btn-p" onclick="saveTreeGoal()">种下这棵树</button>
+  </div>
 </div>
 </div>
 
@@ -974,6 +1034,9 @@ th.sort-active .sort-icon{color:var(--blue);}
   </button>
   <button class="mob-nav-item" id="mob-tab-ledger" onclick="showPage('ledger')">
     <span class="mob-icon">📒</span>账本
+  </button>
+  <button class="mob-nav-item" id="mob-tab-tree" onclick="showPage('tree')">
+    <span class="mob-icon">🌳</span>柠檬树
   </button>
   <button class="mob-nav-item" id="mob-tab-admin" onclick="showPage('admin')" style="display:none">
     <span class="mob-icon">⚙</span>管理
@@ -1516,7 +1579,7 @@ function showPage(page) {
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   const pageEl = document.getElementById('page-'+page);
   if (pageEl) pageEl.classList.add('active');
-  const idx={dashboard:0,record:1,accounts:2,ledger:3,admin:4};
+  const idx={dashboard:0,record:1,accounts:2,ledger:3,tree:4,admin:5};
   document.querySelectorAll('.nav-item')[idx[page]]?.classList.add('active');
   document.querySelectorAll('.mob-nav-item').forEach(b=>b.classList.remove('active'));
   document.getElementById('mob-tab-'+page)?.classList.add('active');
@@ -1529,6 +1592,7 @@ function renderPageContent(p) {
   if(p==='record') renderRecord();
   if(p==='accounts') renderAccounts();
   if(p==='ledger') renderLedger();
+  if(p==='tree') renderTree();
   if(p==='admin') renderAdmin();
 }
 function setBase(cur) { baseCurrency=cur; document.querySelectorAll('.cpill').forEach(b=>b.classList.toggle('active',b.textContent===cur)); saveDB(); renderCurrentPage(); }
@@ -1543,6 +1607,7 @@ function renderDashboard() {
   document.getElementById('base-cur-hdr').textContent = baseCurrency;
   document.getElementById('trend-cur-lbl').textContent = baseCurrency;
   updateDataBar();
+  renderDashTree();
   if (!latest) {
     ['total','bank','invest','other'].forEach(k=>{document.getElementById('s-'+k).textContent='—';const e=document.getElementById('s-'+k+'-chg');e.textContent='—';e.className='sc-chg cn';});
     renderTrendChart([]); renderPieChart(null);
@@ -3661,6 +3726,445 @@ function dlCSV(rows, filename) {
   setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
 
+// ════════════════════════════════════════════════════════
+// 🌳 LEMON TREE
+// ════════════════════════════════════════════════════════
+function getTreeData() {
+  if (!db.treeGoal) db.treeGoal = null;      // 目标资产（基准货币）
+  if (!db.treeDiary) db.treeDiary = [];       // 成长日记
+  return db;
+}
+
+function openTreeGoalModal() {
+  document.getElementById('tree-goal-cur-label').textContent = CUR_SYM[baseCurrency] || '';
+  document.getElementById('tree-goal-input').value = db.treeGoal || '';
+  openModal('modal-tree-goal');
+}
+
+function saveTreeGoal() {
+  const v = parseFloat(document.getElementById('tree-goal-input').value);
+  if (!v || v <= 0) { toast('请输入有效的目标金额'); return; }
+  const oldGoal = db.treeGoal;
+  db.treeGoal = v;
+  if (!oldGoal) {
+    db.treeDiary = db.treeDiary || [];
+    db.treeDiary.unshift({ date: new Date().toISOString().slice(0,10), text: `🌱 种下了一颗柠檬树！目标：${fmtMoney(v)}` });
+  }
+  saveDB(); closeModal('modal-tree-goal'); renderTree(); toast('🌱 目标已设定，开始生长！');
+}
+
+// ── 树的状态计算 ──────────────────────────────────────
+function calcTreeState() {
+  const sorted = sortedRecords();
+  const latest = sorted[sorted.length - 1];
+  const currentAssets = latest ? computeRecord(latest).total : 0;
+  const goal = db.treeGoal || 0;
+  const progress = goal > 0 ? Math.min(1, currentAssets / goal) : 0;
+
+  // 近4周增长健康度
+  let healthScore = 1; // 0~1
+  if (sorted.length >= 2) {
+    const recent = sorted.slice(-5);
+    let growWeeks = 0, totalWeeks = recent.length - 1;
+    for (let i = 1; i < recent.length; i++) {
+      const prev = computeRecord(recent[i-1]).total;
+      const curr = computeRecord(recent[i]).total;
+      if (curr >= prev) growWeeks++;
+    }
+    healthScore = totalWeeks > 0 ? growWeeks / totalWeeks : 1;
+  }
+
+  // 超预算惩罚（最近4周）
+  let budgetPenalty = 0;
+  const now = new Date();
+  const recentWeeks = (db.ledgerWeeks || [])
+    .sort((a,b) => b.weekEnd.localeCompare(a.weekEnd))
+    .slice(0, 4);
+  if (recentWeeks.length > 0) {
+    let overCount = 0;
+    recentWeeks.forEach(w => {
+      const ym = w.weekEnd.slice(0,7);
+      const yr = w.weekEnd.slice(0,4);
+      const monthSpent = getMonthSpent ? getMonthSpent(ym) : {};
+      const yearSpent = getYearSpent ? getYearSpent(yr) : {};
+      ALL_SUB_KEYS.forEach(k => {
+        const sub = ALL_SUBS_MAP[k];
+        if (!isBudgetEnabled(k)) return;
+        const st = sub.yearBudget
+          ? calcYearBudgetStatus(k, yearSpent[k]||0)
+          : calcMonthBudgetStatus(k, monthSpent[k]||0);
+        if (st && (st.status === 'danger' || st.status === 'orange')) overCount++;
+      });
+    });
+    budgetPenalty = Math.min(0.5, overCount * 0.05);
+  }
+
+  const vitality = Math.max(0, healthScore - budgetPenalty); // 0~1 活力值
+
+  // 树的阶段：0=种子 1=芽 2=小树苗 3=小树 4=茂盛 5=开花 6=结果
+  let stage;
+  if (progress < 0.05) stage = 0;
+  else if (progress < 0.15) stage = 1;
+  else if (progress < 0.30) stage = 2;
+  else if (progress < 0.50) stage = 3;
+  else if (progress < 0.75) stage = 4;
+  else if (progress < 1.0)  stage = 5;
+  else stage = 6;
+
+  // 叶色：活力高→深绿，低→黄绿→黄
+  const leafH = Math.round(vitality * 80 + 40); // 40(黄)~120(绿)
+  const leafS = Math.round(vitality * 40 + 50);
+  const leafL = Math.round(35 + (1-vitality) * 15);
+  const leafColor = `hsl(${leafH},${leafS}%,${leafL}%)`;
+  const leafColor2 = `hsl(${leafH-10},${leafS+10}%,${leafL-8}%)`;
+
+  return { progress, currentAssets, goal, stage, vitality, healthScore, budgetPenalty, leafColor, leafColor2 };
+}
+
+// ── 绘树函数 ─────────────────────────────────────────
+function buildTreeSVG(state, w, h) {
+  const { stage, progress, vitality } = state;
+  const lv = Math.max(0, Math.min(1, vitality));
+
+  // Leaf colors — vitality driven
+  const leafDark  = lv > 0.6 ? '#3a7a18' : lv > 0.3 ? '#607a18' : '#707010';
+  const leafMid   = lv > 0.6 ? '#4e9a22' : lv > 0.3 ? '#808a22' : '#989018';
+  const leafBrt   = lv > 0.6 ? '#6ab82e' : lv > 0.3 ? '#9eac28' : '#c0a018';
+  const leafTop   = lv > 0.6 ? '#88cc3a' : lv > 0.3 ? '#b8c030' : '#d4b828';
+  const leafShade = lv > 0.6 ? '#2a6010' : lv > 0.3 ? '#4a5e10' : '#585008';
+
+  // Sky: warm parchment-to-haze, not blue
+  const skyTop = '#e8dfc8';
+  const skyMid = '#d8e8d0';
+  const skyBot = '#c8dfc0';
+
+  const sx = w / 500, sy = h / 560;
+  const s = (x, y) => `${(x*sx).toFixed(1)},${(y*sy).toFixed(1)}`;
+
+  const lemonCount = stage >= 6 ? 7 : stage >= 5 ? 5 : stage >= 4 ? 3 : stage >= 3 ? 1 : 0;
+  const trunkScale = stage === 0 ? 0.15 : stage === 1 ? 0.38 : stage === 2 ? 0.62 : 1;
+  const co = stage < 2 ? 0 : stage === 2 ? 0.45 : stage === 3 ? 0.72 : 1;
+
+  let svg = `<svg viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg" width="100%" height="${h}" style="display:block">
+<defs>
+  <linearGradient id="tsg${w}" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0%" stop-color="#5a3208"/>
+    <stop offset="40%" stop-color="#a07848"/>
+    <stop offset="100%" stop-color="#6a4018"/>
+  </linearGradient>
+  <radialGradient id="lg${w}" cx="28%" cy="24%" r="68%">
+    <stop offset="0%" stop-color="#fffff0"/>
+    <stop offset="30%" stop-color="#f5e030"/>
+    <stop offset="100%" stop-color="#c08000"/>
+  </radialGradient>
+  <linearGradient id="skyG${w}" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="${skyTop}"/>
+    <stop offset="55%" stop-color="${skyMid}"/>
+    <stop offset="100%" stop-color="${skyBot}"/>
+  </linearGradient>
+  <linearGradient id="groundG${w}" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#88b840"/>
+    <stop offset="40%" stop-color="#6a9828"/>
+    <stop offset="100%" stop-color="#4a6e18"/>
+  </linearGradient>
+  <linearGradient id="soilG${w}" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#8a6030"/>
+    <stop offset="100%" stop-color="#5a3810"/>
+  </linearGradient>
+</defs>
+
+<!-- Sky: warm parchment -->
+<rect width="${w}" height="${h}" fill="url(#skyG${w})"/>
+
+<!-- Soft sun glow top-left -->
+<circle cx="${(72*sx).toFixed(1)}" cy="${(62*sy).toFixed(1)}" r="${(52*sx).toFixed(1)}" fill="#fff8d8" opacity=".28"/>
+<circle cx="${(72*sx).toFixed(1)}" cy="${(62*sy).toFixed(1)}" r="${(38*sx).toFixed(1)}" fill="#f8e878" opacity=".55"/>
+<circle cx="${(72*sx).toFixed(1)}" cy="${(62*sy).toFixed(1)}" r="${(28*sx).toFixed(1)}" fill="#f5d840" opacity=".75"/>
+
+<!-- Clouds: warm creamy white -->
+<g opacity=".82">
+  <ellipse cx="${(205*sx).toFixed(1)}" cy="${(72*sy).toFixed(1)}" rx="${(52*sx).toFixed(1)}" ry="${(20*sy).toFixed(1)}" fill="#f8f4ec"/>
+  <ellipse cx="${(175*sx).toFixed(1)}" cy="${(80*sy).toFixed(1)}" rx="${(34*sx).toFixed(1)}" ry="${(22*sy).toFixed(1)}" fill="#f8f4ec"/>
+  <ellipse cx="${(236*sx).toFixed(1)}" cy="${(80*sy).toFixed(1)}" rx="${(32*sx).toFixed(1)}" ry="${(18*sy).toFixed(1)}" fill="#f5f0e8"/>
+  <ellipse cx="${(205*sx).toFixed(1)}" cy="${(86*sy).toFixed(1)}" rx="${(54*sx).toFixed(1)}" ry="${(13*sy).toFixed(1)}" fill="#ede8de"/>
+</g>
+<g opacity=".65">
+  <ellipse cx="${(400*sx).toFixed(1)}" cy="${(52*sy).toFixed(1)}" rx="${(38*sx).toFixed(1)}" ry="${(15*sy).toFixed(1)}" fill="#f8f4ec"/>
+  <ellipse cx="${(375*sx).toFixed(1)}" cy="${(58*sy).toFixed(1)}" rx="${(26*sx).toFixed(1)}" ry="${(17*sy).toFixed(1)}" fill="#f8f4ec"/>
+  <ellipse cx="${(424*sx).toFixed(1)}" cy="${(58*sy).toFixed(1)}" rx="${(24*sx).toFixed(1)}" ry="${(14*sy).toFixed(1)}" fill="#f5f0e8"/>
+</g>
+
+<!-- Distant soft hills -->
+<ellipse cx="${(100*sx).toFixed(1)}" cy="${(420*sy).toFixed(1)}" rx="${(185*sx).toFixed(1)}" ry="${(62*sy).toFixed(1)}" fill="#7ab030" opacity=".32"/>
+<ellipse cx="${(420*sx).toFixed(1)}" cy="${(428*sy).toFixed(1)}" rx="${(165*sx).toFixed(1)}" ry="${(56*sy).toFixed(1)}" fill="#7ab030" opacity=".28"/>
+
+<!-- Ground: rolling green hill -->
+<ellipse cx="${(250*sx).toFixed(1)}" cy="${(490*sy).toFixed(1)}" rx="${(295*sx).toFixed(1)}" ry="${(90*sy).toFixed(1)}" fill="url(#groundG${w})"/>
+<rect x="0" y="${(490*sy).toFixed(1)}" width="${w}" height="${(h-490*sy).toFixed(1)}" fill="#4a6e18"/>
+<ellipse cx="${(250*sx).toFixed(1)}" cy="${(490*sy).toFixed(1)}" rx="${(295*sx).toFixed(1)}" ry="${(28*sy).toFixed(1)}" fill="#98cc48" opacity=".5"/>
+
+<!-- Soil patch around trunk base -->
+<ellipse cx="${(252*sx).toFixed(1)}" cy="${(498*sy).toFixed(1)}" rx="${(62*sx).toFixed(1)}" ry="${(16*sy).toFixed(1)}" fill="url(#soilG${w})" stroke="#3a2008" stroke-width="${(1.5*sx).toFixed(1)}"/>
+<ellipse cx="${(240*sx).toFixed(1)}" cy="${(495*sy).toFixed(1)}" rx="${(26*sx).toFixed(1)}" ry="${(5*sy).toFixed(1)}" fill="rgba(255,255,255,0.08)"/>
+<!-- Soil crack lines -->
+<path d="M${s(228,496)} Q${s(238,491)} ${s(250,497)}" stroke="#3a2008" stroke-width="${(1.2*sx).toFixed(1)}" fill="none" opacity=".4"/>
+<path d="M${s(260,494)} Q${s(270,499)} ${s(280,495)}" stroke="#3a2008" stroke-width="${(1.1*sx).toFixed(1)}" fill="none" opacity=".35"/>
+
+<!-- Grass tufts -->
+<g stroke="#3a7808" stroke-width="${(1.8*sx).toFixed(1)}" stroke-linecap="round" fill="none" opacity=".8">
+  <path d="M${s(55,494)} Q${s(52,481)} ${s(49,494)}"/>
+  <path d="M${s(68,491)} Q${s(65,477)} ${s(62,491)}"/>
+  <path d="M${s(86,496)} Q${s(83,482)} ${s(80,496)}"/>
+  <path d="M${s(395,494)} Q${s(392,480)} ${s(389,494)}"/>
+  <path d="M${s(412,492)} Q${s(409,478)} ${s(406,492)}"/>
+  <path d="M${s(158,500)} Q${s(155,487)} ${s(152,500)}"/>
+  <path d="M${s(348,498)} Q${s(345,485)} ${s(342,498)}"/>
+  <path d="M${s(462,496)} Q${s(459,482)} ${s(456,496)}"/>
+</g>
+<!-- Wildflowers -->
+<circle cx="${(104*sx).toFixed(1)}" cy="${(490*sy).toFixed(1)}" r="${(3.5*sx).toFixed(1)}" fill="#f4a8c0"/>
+<circle cx="${(104*sx).toFixed(1)}" cy="${(490*sy).toFixed(1)}" r="${(1.5*sx).toFixed(1)}" fill="#fff8c0"/>
+<circle cx="${(374*sx).toFixed(1)}" cy="${(491*sy).toFixed(1)}" r="${(3*sx).toFixed(1)}" fill="#f8d868"/>
+<circle cx="${(374*sx).toFixed(1)}" cy="${(491*sy).toFixed(1)}" r="${(1.3*sx).toFixed(1)}" fill="white"/>
+<circle cx="${(438*sx).toFixed(1)}" cy="${(492*sy).toFixed(1)}" r="${(3.5*sx).toFixed(1)}" fill="#f4a8c0"/>
+<circle cx="${(438*sx).toFixed(1)}" cy="${(492*sy).toFixed(1)}" r="${(1.5*sx).toFixed(1)}" fill="#fff8c0"/>`;
+
+  if (stage === 0) {
+    // Just a tiny sprout from soil
+    svg += `
+<line x1="${(252*sx).toFixed(1)}" y1="${(498*sy).toFixed(1)}" x2="${(250*sx).toFixed(1)}" y2="${(455*sy).toFixed(1)}" stroke="#4a9020" stroke-width="${(3*sx).toFixed(1)}" stroke-linecap="round"/>
+<ellipse cx="${(240*sx).toFixed(1)}" cy="${(452*sy).toFixed(1)}" rx="${(12*sx).toFixed(1)}" ry="${(6*sy).toFixed(1)}" fill="#5aaa28" transform="rotate(-30,${(240*sx).toFixed(1)},${(452*sy).toFixed(1)})"/>
+<ellipse cx="${(262*sx).toFixed(1)}" cy="${(448*sy).toFixed(1)}" rx="${(12*sx).toFixed(1)}" ry="${(6*sy).toFixed(1)}" fill="#4a9820" transform="rotate(25,${(262*sx).toFixed(1)},${(448*sy).toFixed(1)})"/>`;
+  } else {
+    // Trunk grows from soil
+    const ts = trunkScale;
+    const trunkTop = 500 - ts * 190;
+    const trunkMid = 500 - ts * 95;
+    svg += `
+<path d="M${s(244,498)} Q${s(238,trunkMid)} ${s(240,trunkTop+20)} Q${s(244,trunkTop+5)} ${s(252,trunkTop)}
+         Q${s(260,trunkTop+5)} ${s(264,trunkTop+20)} Q${s(266,trunkMid)} ${s(260,498)} Z"
+  fill="url(#tsg${w})" stroke="#4a2c08" stroke-width="${(3*sx).toFixed(1)}"/>
+<path d="M${s(250,496)} Q${s(247,trunkMid)} ${s(249,trunkTop+15)} Q${s(251,trunkTop+5)} ${s(252,trunkTop)}
+         Q${s(253,trunkTop+5)} ${s(252,trunkTop+15)}"
+  stroke="rgba(255,255,255,0.17)" stroke-width="${(5*sx).toFixed(1)}" fill="none" stroke-linecap="round"/>`;
+
+    if (stage >= 2 && co > 0) {
+      // Branches
+      svg += `<g stroke="#a07848" fill="none" stroke-linecap="round" opacity="${co}">
+<path d="M${s(246,422)} Q${s(218,402)} ${s(196,378)} Q${s(180,360)} ${s(170,340)}" stroke-width="${(8*sx).toFixed(1)}"/>
+<path d="M${s(247,382)} Q${s(224,361)} ${s(207,338)} Q${s(195,322)} ${s(188,302)}" stroke-width="${(7*sx).toFixed(1)}"/>
+<path d="M${s(249,352)} Q${s(232,330)} ${s(222,307)} Q${s(215,290)} ${s(213,269)}" stroke-width="${(6*sx).toFixed(1)}"/>
+<path d="M${s(251,322)} Q${s(247,297)} ${s(246,272)} Q${s(245,254)} ${s(247,234)}" stroke-width="${(5.5*sx).toFixed(1)}"/>
+<path d="M${s(253,318)} Q${s(270,293)} ${s(280,269)} Q${s(288,251)} ${s(290,231)}" stroke-width="${(5.5*sx).toFixed(1)}"/>
+<path d="M${s(255,348)} Q${s(278,325)} ${s(296,302)} Q${s(310,284)} ${s(316,264)}" stroke-width="${(6.5*sx).toFixed(1)}"/>
+<path d="M${s(257,390)} Q${s(284,368)} ${s(306,344)} Q${s(323,326)} ${s(332,306)}" stroke-width="${(7.5*sx).toFixed(1)}"/>
+<path d="M${s(170,340)} Q${s(160,321)} ${s(154,300)}" stroke-width="${(4.5*sx).toFixed(1)}"/>
+<path d="M${s(170,340)} Q${s(178,321)} ${s(184,302)}" stroke-width="${(4.5*sx).toFixed(1)}"/>
+<path d="M${s(188,302)} Q${s(180,283)} ${s(177,263)}" stroke-width="${(4*sx).toFixed(1)}"/>
+<path d="M${s(188,302)} Q${s(197,283)} ${s(202,264)}" stroke-width="${(4*sx).toFixed(1)}"/>
+<path d="M${s(332,306)} Q${s(338,287)} ${s(340,268)}" stroke-width="${(4.5*sx).toFixed(1)}"/>
+<path d="M${s(332,306)} Q${s(324,287)} ${s(320,268)}" stroke-width="${(4*sx).toFixed(1)}"/>
+<path d="M${s(247,234)} Q${s(242,215)} ${s(242,196)}" stroke-width="${(3.5*sx).toFixed(1)}"/>
+<path d="M${s(247,234)} Q${s(255,215)} ${s(257,197)}" stroke-width="${(3.5*sx).toFixed(1)}"/>
+</g>`;
+
+      // Leaves — 5 layers
+      const leafGroups = [
+        { fill:leafDark, stroke:'#1e5008', o:.88, leaves:[
+          [146,293,-50],[160,275,-24],[138,313,-64],[175,282,4],[192,284,-40],
+          [206,266,-14],[182,302,-56],[288,244,30],[301,226,8],[279,261,48],
+          [315,268,36],[328,251,13],[339,298,42],[353,280,20]
+        ]},
+        { fill:leafMid, stroke:'#286010', o:.92, leaves:[
+          [156,265,-10],[174,258,5],[216,281,14],[198,251,-28],[218,251,-32],
+          [232,232,-6],[209,267,-50],[242,248,17],[311,242,-12],[320,268,-10],
+          [336,253,25],[331,316,58],[351,310,-7],[359,291,32]
+        ]},
+        { fill:leafBrt, stroke:'#387010', o:.94, leaves:[
+          [248,214,-20],[262,196,2],[274,216,22],[254,229,-8],[250,199,-33],
+          [272,199,14],[258,182,0],[236,249,-32],[294,207,22],[225,216,-22]
+        ]},
+        { fill:leafTop, stroke:'#488018', o:.9, leaves:[
+          [246,194,-33],[262,178,0],[276,194,16],[234,232,-18],[278,226,20]
+        ]},
+        { fill:leafShade, stroke:'#144008', o:.82, leaves:[
+          [228,362,-30],[278,356,26],[212,380,-46],[296,372,42],[246,386,-16],[264,384,13]
+        ]},
+      ];
+      leafGroups.forEach(g => {
+        svg += `<g fill="${g.fill}" stroke="${g.stroke}" stroke-width="${(1.6*sx).toFixed(1)}" opacity="${(co*g.o).toFixed(2)}">`;
+        g.leaves.forEach(([cx,cy,rot]) => {
+          svg += `<ellipse cx="${(cx*sx).toFixed(1)}" cy="${(cy*sy).toFixed(1)}" rx="${(22*sx).toFixed(1)}" ry="${(9*sy).toFixed(1)}" transform="rotate(${rot},${(cx*sx).toFixed(1)},${(cy*sy).toFixed(1)})"/>`;
+        });
+        svg += `</g>`;
+      });
+
+      // Lemons
+      if (lemonCount > 0) {
+        const allLemons = [
+          {cx:258,cy:250,sx2:275,sy2:246,ex:284,ey:239,lr:-34},
+          {cx:150,cy:325,sx2:166,sy2:321,ex:175,ey:314,lr:-26},
+          {cx:320,cy:310,sx2:336,sy2:306,ex:345,ey:299,lr:22},
+          {cx:190,cy:315,sx2:205,sy2:311,ex:214,ey:304,lr:-18},
+          {cx:286,cy:282,sx2:301,sy2:278,ex:310,ey:271,lr:14},
+          {cx:222,cy:288,sx2:238,sy2:284,ex:247,ey:277,lr:-8},
+          {cx:256,cy:372,sx2:272,sy2:368,ex:281,ey:361,lr:4},
+        ];
+        svg += `<g stroke="#a07000" stroke-width="${(3*sx).toFixed(1)}" opacity="${co}">`;
+        allLemons.slice(0, lemonCount).forEach(l => {
+          const lcx=(l.cx*sx).toFixed(1), lcy=(l.cy*sy).toFixed(1);
+          svg += `<ellipse cx="${lcx}" cy="${lcy}" rx="${(16*sx).toFixed(1)}" ry="${(13*sy).toFixed(1)}" fill="url(#lg${w})"/>`;
+          svg += `<ellipse cx="${((l.cx-8)*sx).toFixed(1)}" cy="${((l.cy-7)*sy).toFixed(1)}" rx="${(6*sx).toFixed(1)}" ry="${(4*sy).toFixed(1)}" fill="rgba(255,255,255,0.55)"/>`;
+          svg += `<line x1="${(l.sx2*sx).toFixed(1)}" y1="${(l.sy2*sy).toFixed(1)}" x2="${(l.ex*sx).toFixed(1)}" y2="${(l.ey*sy).toFixed(1)}" stroke="#2a7010" stroke-width="${(2*sx).toFixed(1)}" stroke-linecap="round"/>`;
+          svg += `<ellipse cx="${(l.ex*sx).toFixed(1)}" cy="${(l.ey*sy).toFixed(1)}" rx="${(10*sx).toFixed(1)}" ry="${(4.5*sy).toFixed(1)}" fill="#58a018" stroke="#286008" stroke-width="${(1.5*sx).toFixed(1)}" transform="rotate(${l.lr},${(l.ex*sx).toFixed(1)},${(l.ey*sy).toFixed(1)})"/>`;
+        });
+        svg += `</g>`;
+      }
+
+      // Wilting leaves if low vitality
+      if (lv < 0.35 && stage >= 3) {
+        svg += `<g fill="#b89808" opacity="0.65">`;
+        for (let i = 0; i < 5; i++) {
+          const angle = (i/5)*Math.PI*2;
+          const fx = (252 + Math.cos(angle)*105)*sx;
+          const fy = (300 + Math.sin(angle)*60)*sy;
+          svg += `<ellipse cx="${fx.toFixed(1)}" cy="${fy.toFixed(1)}" rx="${(5*sx).toFixed(1)}" ry="${(2.5*sy).toFixed(1)}" transform="rotate(${(angle*57).toFixed(0)},${fx.toFixed(1)},${fy.toFixed(1)})"/>`;
+        }
+        svg += `</g>`;
+      }
+    }
+  }
+  svg += `</svg>`;
+  return svg;
+}
+
+// ── 渲染整页 ─────────────────────────────────────────
+// ── 渲染整页 ─────────────────────────────────────────
+function renderTree() {
+  getTreeData();
+  const state = calcTreeState();
+
+  const subEl = document.getElementById('tree-sub');
+  if (!db.treeGoal) {
+    subEl.textContent = '点击「设定目标」种下你的FIRE之树';
+  } else {
+    subEl.textContent = `目标 ${fmtMoney(db.treeGoal)} · 进度 ${(state.progress*100).toFixed(1)}%`;
+  }
+
+  // Render full SVG tree — responsive, wait for layout
+  const container = document.getElementById('tree-svg-container');
+  if (container) {
+    const doRender = () => {
+      const cw = container.offsetWidth || 680;
+      const ch = Math.round(cw * 520 / 680);
+      container.innerHTML = buildTreeSVG(state, cw, ch);
+    };
+    if (container.offsetWidth > 0) doRender();
+    else requestAnimationFrame(doRender);
+  }
+
+  // Progress label
+  const prog = document.getElementById('tree-progress-label');
+  if (db.treeGoal && state.currentAssets > 0) {
+    const stageNames = ['🌰 种子', '🌱 萌芽', '🪴 小苗', '🌿 成长', '🌳 茂盛', '🌸 开花', '🍋 丰收'];
+    const vitalityDesc = state.vitality > 0.8 ? '💚 活力充沛' : state.vitality > 0.5 ? '💛 状态不错' : state.vitality > 0.3 ? '🟡 需要呵护' : '🔴 亟需改善';
+    prog.innerHTML = `
+      <div style="font-weight:700;font-size:13px;margin-bottom:4px">${stageNames[state.stage]}</div>
+      <div style="color:var(--t2);font-size:11px">当前 ${fmtMoney(state.currentAssets)}</div>
+      <div style="color:var(--t2);font-size:11px">目标 ${fmtMoney(db.treeGoal)}</div>
+      <div style="margin-top:6px">
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--t2);margin-bottom:2px">
+          <span>资产进度</span><span>${(state.progress*100).toFixed(1)}%</span>
+        </div>
+        <div style="height:6px;background:rgba(0,0,0,.1);border-radius:3px;overflow:hidden">
+          <div style="height:100%;width:${(state.progress*100).toFixed(1)}%;background:linear-gradient(90deg,#22c55e,#86efac);border-radius:3px;transition:width 1s"></div>
+        </div>
+      </div>
+      <div style="margin-top:6px;font-size:11px">${vitalityDesc}</div>`;
+  } else {
+    prog.innerHTML = '<div style="color:var(--t2);font-size:12px">设定目标后开始生长 🌱</div>';
+  }
+
+  // 里程碑
+  const milestones = [
+    { pct: 0.25, label: '25%', name: '第一颗柠檬', icon: '🍋' },
+    { pct: 0.50, label: '50%', name: '半程达成', icon: '🌿' },
+    { pct: 0.75, label: '75%', name: '即将丰收', icon: '🌳' },
+    { pct: 1.00, label: '100%', name: 'FIRE达成！', icon: '🎉' },
+  ];
+  const msEl = document.getElementById('tree-milestones');
+  if (msEl) msEl.innerHTML = milestones.map(m => {
+    const done = state.progress >= m.pct;
+    return `<div style="text-align:center;padding:14px 8px;border-radius:12px;background:${done?'var(--green-l)':'var(--s2)'};border:1.5px solid ${done?'var(--green)':'var(--border)'};transition:all .3s">
+      <div style="font-size:24px;margin-bottom:4px">${m.icon}</div>
+      <div style="font-size:11px;font-weight:700;color:${done?'var(--green)':'var(--t2)'}">${m.name}</div>
+      <div style="font-size:10px;color:var(--t3);margin-top:2px">${m.label}</div>
+      ${done ? '<div style="font-size:10px;color:var(--green);margin-top:2px">✓ 已达成</div>' : `<div style="font-size:10px;color:var(--t3);margin-top:2px">${fmtMoney((db.treeGoal||0)*m.pct)}</div>`}
+    </div>`;
+  }).join('');
+
+  // 成长日记
+  checkTreeMilestones(state);
+  const diary = document.getElementById('tree-diary');
+  const entries = db.treeDiary || [];
+  if (diary) {
+    if (!entries.length) {
+      diary.innerHTML = '<div style="text-align:center;padding:20px;color:var(--t3);font-size:13px">种下树后，成长记录会在这里出现 🌱</div>';
+    } else {
+      diary.innerHTML = entries.map(e => `
+        <div style="display:flex;gap:10px;align-items:flex-start;padding:10px 12px;background:var(--s2);border-radius:10px;border:1px solid var(--border)">
+          <span style="font-size:18px;flex-shrink:0">${e.icon||'📝'}</span>
+          <div>
+            <div style="font-size:13px;color:var(--text);line-height:1.5">${e.text}</div>
+            <div style="font-size:10px;color:var(--t3);margin-top:2px">${e.date}</div>
+          </div>
+        </div>`).join('');
+    }
+  }
+}
+
+// 总览页迷你树
+function renderDashTree() {
+  const el = document.getElementById('dash-tree-svg');
+  const label = document.getElementById('dash-tree-label');
+  const pct = document.getElementById('dash-tree-pct');
+  if (!el) return;
+  getTreeData();
+  const state = calcTreeState();
+  const mw = el.offsetWidth || 148;
+  const mh = Math.round(mw * 160 / 148);
+  el.innerHTML = buildTreeSVG(state, mw, mh);
+  if (label) {
+    const stageNames = ['🌰 种子', '🌱 萌芽', '🪴 小苗', '🌿 成长', '🌳 茂盛', '🌸 开花', '🍋 丰收'];
+    label.textContent = db.treeGoal ? stageNames[state.stage] : '🌳 柠檬树';
+  }
+  if (pct) {
+    pct.textContent = db.treeGoal
+      ? `${(state.progress*100).toFixed(0)}% · 点击详情`
+      : '设定目标开始生长';
+  }
+}
+
+function checkTreeMilestones(state) {
+  if (!db.treeGoal) return;
+  if (!db.treeDiary) db.treeDiary = [];
+  const milestones = [
+    { pct: 0.25, text: '🍋 第一颗柠檬成熟！资产达到目标的25%', icon: '🍋' },
+    { pct: 0.50, text: '🌿 半程达成！资产达到目标的50%，树已茂盛', icon: '🌿' },
+    { pct: 0.75, text: '🌳 即将丰收！资产达到目标的75%', icon: '🌳' },
+    { pct: 1.00, text: '🎉 FIRE达成！财务自由之树完全成熟！', icon: '🎉' },
+  ];
+  let changed = false;
+  milestones.forEach(m => {
+    const key = `milestone_${m.pct}`;
+    if (state.progress >= m.pct && !db.treeDiary.find(e => e.key === key)) {
+      db.treeDiary.unshift({ date: new Date().toISOString().slice(0,10), text: m.text, icon: m.icon, key });
+      changed = true;
+    }
+  });
+  if (changed) saveDB();
+}
+
 async function boot() {
   let gistPullSucceeded = false;
 
@@ -3728,4 +4232,4 @@ function seedDemoData() {
 }
 </script>
 </body>
-</html>
+</html
