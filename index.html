@@ -347,37 +347,7 @@ tbody td{padding:12px 14px;font-size:13px;vertical-align:middle;}
 .photo-overlay.show{display:flex;}
 .photo-overlay img{max-width:90vw;max-height:90vh;border-radius:12px;box-shadow:0 24px 80px rgba(0,0,0,.5);}
 
-/* iPhone 14 Pro (393px) & 16 Pro (402px) */
-@media(max-width:430px){
-.main{padding:14px 12px 80px !important;}.page-title{font-size:18px !important;}.page-sub{font-size:11px;}
-.stats-grid{grid-template-columns:repeat(2,1fr) !important;gap:8px;}.sc{padding:12px 10px;border-radius:10px;}
-.sc-val{font-size:17px !important;}.sc-val.lg{font-size:19px !important;}.sc-label{font-size:11px;}.sc-chg{font-size:10px;padding:2px 6px;}
-.charts-row{grid-template-columns:1fr !important;gap:8px;}.chart-box{height:160px !important;}
-.card{padding:12px 10px;border-radius:10px;}.card-title{font-size:13px;}
-.data-bar{padding:6px 10px;gap:8px;font-size:10px;}.dbs{padding:0 8px;}.dbl{font-size:9px;}.dv{font-size:11px;}
-.btn-sm{padding:5px 10px;font-size:11px;}.btn-xs{padding:3px 6px;font-size:10px;}
-.hdr-actions{gap:5px !important;flex-wrap:wrap;}
-.an-row{grid-template-columns:repeat(3,1fr) !important;gap:6px;}.an-item{padding:12px 8px;}.an-num{font-size:16px !important;}.an-lbl{font-size:10px;}
-.modal{width:calc(100vw - 20px) !important;padding:20px 16px;}.frow{grid-template-columns:1fr !important;}
-.type-grid{grid-template-columns:repeat(2,1fr) !important;}
-.ri{padding:10px;}.ri-inp{font-size:14px !important;}.rgrid{grid-template-columns:1fr !important;}
-table{font-size:12px;}thead th{padding:8px 10px;font-size:10px;}tbody td{padding:10px;font-size:12px;}
-.wtabs{gap:4px;}.wtab{font-size:10px;padding:4px 8px;}
-.mob-nav{padding-bottom:calc(8px + env(safe-area-inset-bottom));}
-.main{padding-top:calc(14px + env(safe-area-inset-top)) !important;}
-#ledger-stats-cards{grid-template-columns:repeat(2,1fr) !important;}
-.pchip{font-size:10px;}.pchip .tk{font-size:10px;}.pchip .pr{font-size:10px;}
-.sh-item{padding:3px 6px;}.sh-inp{width:50px;font-size:11px;}
-.login-card{width:calc(100vw - 32px);padding:28px 24px;}.login-title{font-size:20px;}
-#tree-milestones{grid-template-columns:repeat(3,1fr) !important;}
-.cpill{font-size:10px;padding:4px 0;}.stock-row{grid-template-columns:80px 1fr 1fr auto;gap:6px;}
-.admin-section{padding:14px 12px;}.storage-info{grid-template-columns:1fr !important;}
-}
-@media(max-width:375px){
-.stats-grid{gap:6px;}.sc{padding:10px 8px;}.sc-val{font-size:15px !important;}.sc-val.lg{font-size:17px !important;}
-.an-num{font-size:14px !important;}.hdr-actions{flex-wrap:wrap;}
-#tree-milestones{grid-template-columns:repeat(2,1fr) !important;}
-}
+
 
 
 /* iPhone 14 Pro (393px) & 16 Pro (402px) */
@@ -445,116 +415,7 @@ table{font-size:12px;}thead th{padding:8px 10px;font-size:10px;}tbody td{padding
 #tree-milestones{grid-template-columns:repeat(2,1fr) !important;}
 }
 
-/* ═══════════════════════════════════════
-   MOBILE RESPONSIVE  (≤ 768px)
-═══════════════════════════════════════ */
-@media (max-width:768px){
-  /* Hide desktop sidebar */
-  .sidebar { display:none !important; }
 
-  /* Main fills full width, add bottom padding for tab bar */
-  .main { margin-left:0 !important; max-width:100% !important; padding:16px 14px 80px !important; }
-
-  /* Page header stacks on mobile */
-  .page-header { flex-direction:column; gap:10px; margin-bottom:14px; }
-  .page-header .hdr-actions { display:flex; gap:8px; flex-wrap:wrap; }
-
-  /* Stats grid: 2 columns on mobile */
-  .stats-grid { grid-template-columns:repeat(2,1fr) !important; gap:10px; }
-  .sc { padding:14px 12px; }
-  .sc-val.lg { font-size:20px; }
-
-  /* Charts stack vertically */
-  .charts-row { grid-template-columns:1fr !important; gap:10px; }
-  .chart-box { height:180px !important; }
-
-  /* Data bar scrollable */
-  .data-bar { overflow-x:auto; flex-wrap:nowrap; gap:12px; padding:8px 12px; font-size:11px; }
-  .dbs { flex-shrink:0; }
-
-  /* Tables horizontally scrollable */
-  .tw { overflow-x:auto; -webkit-overflow-scrolling:touch; }
-  table { min-width:480px; }
-  .stk-table { min-width:500px; }
-
-  /* Prevent full-page horizontal scroll */
-  body { overflow-x:hidden; }
-  .main { overflow-x:hidden; }
-
-  /* Cards */
-  .card { padding:14px 12px; border-radius:12px; }
-  .card-title { font-size:14px; }
-
-  /* Week tabs wrap */
-  .wtabs { gap:6px; }
-  .wtab { font-size:11px; padding:5px 10px; }
-
-  /* Modals full width */
-  .modal { width:calc(100vw - 28px) !important; max-width:100% !important; margin:14px; }
-
-  /* An row */
-  .an-row { gap:8px; }
-  .an-num { font-size:18px; }
-
-  /* Buttons smaller */
-  .btn-sm { font-size:11px; padding:5px 10px; }
-
-  /* AI card */
-  .ai-card { padding:16px 14px; }
-  .ai-header { flex-direction:column; gap:10px; }
-  .ai-trigger { align-self:flex-start; }
-
-  /* Hide less important table columns on mobile */
-  .dash-hide-mob { display:none; }
-
-  /* Bottom nav bar */
-  .mob-nav {
-    display:flex !important;
-    position:fixed; bottom:0; left:0; right:0;
-    background:var(--surface);
-    border-top:1px solid var(--border);
-    z-index:200;
-    padding:6px 0 calc(8px + env(safe-area-inset-bottom));
-    box-shadow:0 -2px 16px rgba(0,0,0,.06);
-  }
-  .mob-nav-item {
-    flex:1; display:flex; flex-direction:column; align-items:center;
-    gap:2px; padding:4px 0; cursor:pointer;
-    font-size:9px; color:var(--t3); font-weight:500;
-    border:none; background:none; transition:color .15s;
-    min-width:0;
-  }
-  .mob-nav-item.active { color:var(--blue); }
-  .mob-nav-item .mob-icon { font-size:18px; line-height:1; }
-
-  /* Toast above nav bar */
-  .toast { bottom:72px; }
-
-  /* page title smaller */
-  .page-title { font-size:20px; }
-
-  /* Ledger mobile */
-  #page-ledger .page-header { flex-direction:column; gap:8px; }
-  #page-ledger .hdr-actions { flex-wrap:wrap; gap:6px; }
-  #page-ledger .hdr-actions > div:first-child { flex-wrap:wrap; }
-  #ledger-week-body > div,
-  #ledger-month-body > div { gap:10px !important; }
-  #ledger-stats-cards { grid-template-columns:repeat(2,1fr) !important; }
-
-  /* Ledger week form: single column on mobile */
-  #ledger-week-body div[style*="grid-template-columns:repeat(1"] { grid-template-columns:1fr !important; }
-
-  /* Budget settings switches */
-  #ledger-budget-tab div[style*="grid-template-columns:repeat(auto-fill"] {
-    grid-template-columns: repeat(2,1fr) !important;
-  }
-
-  /* sec-hdr stack */
-  .sec-hdr { flex-direction:column; gap:8px; align-items:flex-start !important; }
-  .sec-hdr > div:last-child { align-self:flex-end; }
-}
-
-/* Privacy mode — blur ALL numbers */
 .privacy-mode .sc-val, .privacy-mode .sc-chg, .privacy-mode .sc-cur,
 .privacy-mode .mono, .privacy-mode #dv-usd, .privacy-mode #dv-hkd, .privacy-mode #dv-jpy,
 .privacy-mode .dv, .privacy-mode [id^="s-total"], .privacy-mode [id^="s-bank"],
@@ -582,6 +443,195 @@ th.sort-active .sort-icon{color:var(--blue);}
 @keyframes spin{to{transform:rotate(360deg);}}
 .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:rgba(17,24,39,.92);backdrop-filter:blur(12px);color:#fff;border-radius:20px;padding:10px 20px;font-size:13px;z-index:9999;animation:tIn .2s ease;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.25);}
 @keyframes tIn{from{opacity:0;transform:translateX(-50%) translateY(8px);}}
+
+
+/* ══════════════════════════════════════════════════════
+   FIRE v6.2 Mobile Deep Optimization
+   iPhone 14 Pro (393px) · iPhone 16 Pro (402px)
+   ══════════════════════════════════════════════════════ */
+
+/* ── Global touch & scroll ── */
+@media(max-width:768px){
+  html{-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent;}
+  body{-webkit-overflow-scrolling:touch;overflow-x:hidden;touch-action:manipulation;}
+  *{-webkit-tap-highlight-color:rgba(0,0,0,0);}
+  input,select,textarea{font-size:16px !important;touch-action:manipulation;}
+  button{touch-action:manipulation;}
+
+  /* ── Sidebar hidden, main full ── */
+  .sidebar{display:none !important;}
+  .main{margin-left:0 !important;max-width:100% !important;padding:env(safe-area-inset-top,12px) 12px calc(72px + env(safe-area-inset-bottom,20px)) 12px !important;overflow-x:hidden;}
+
+  /* ── Page header: stack vertically ── */
+  .page-header{flex-direction:column;gap:10px;margin-bottom:14px;}
+  .page-title{font-size:20px !important;letter-spacing:-.3px;}
+  .page-sub{font-size:12px;}
+  .hdr-actions{display:flex;gap:6px;flex-wrap:wrap;width:100%;}
+  .hdr-actions .btn{flex-shrink:0;}
+
+  /* ── Data bar: scrollable, compact ── */
+  .data-bar{overflow-x:auto;-webkit-overflow-scrolling:touch;flex-wrap:nowrap;gap:0;padding:8px 10px;margin-bottom:12px;scroll-snap-type:x mandatory;scrollbar-width:none;-ms-overflow-style:none;}
+  .data-bar::-webkit-scrollbar{display:none;}
+  .dbs{flex-shrink:0;padding:0 10px;scroll-snap-align:start;}
+  .dbl{font-size:9px;letter-spacing:.4px;}
+  .dv{font-size:11px;}
+  .data-bar>div:last-child{padding-right:16px;}
+
+  /* ── Stats grid ── */
+  .stats-grid{grid-template-columns:1fr 1fr !important;gap:8px;margin-bottom:12px;}
+  .sc{padding:14px 12px;border-radius:12px;}
+  .sc-label{font-size:11px;margin-bottom:6px;}
+  .sc-val{font-size:18px !important;}
+  .sc-val.lg{font-size:20px !important;}
+  .sc-chg{font-size:10px;padding:2px 7px;margin-top:6px;}
+  .sc-cur{font-size:10px;}
+
+  /* ── Charts ── */
+  .charts-row{grid-template-columns:1fr !important;gap:10px;margin-bottom:12px;}
+  .chart-box{height:180px !important;touch-action:pan-x pan-y;}
+  .card{padding:14px 12px;border-radius:12px;}
+  .card-title{font-size:14px;}
+  .card-sub{font-size:11px;}
+  .card-hdr{margin-bottom:12px;}
+
+  /* ── Tables: horizontal scroll with indicator ── */
+  .tw{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -12px;padding:0 12px;scroll-snap-type:x proximity;}
+  .tw::after{content:'← 左右滑动 →';display:block;text-align:center;font-size:10px;color:var(--t3);padding:6px 0 2px;opacity:.6;}
+  table{min-width:520px;}
+  .stk-table{min-width:480px;}
+  thead th{padding:8px 10px;font-size:10px;position:sticky;top:0;z-index:1;}
+  tbody td{padding:10px;font-size:12px;}
+
+  /* ── Stock chips: wrap nicely ── */
+  .pchip{font-size:10px;padding:2px 6px;margin-bottom:2px;}
+  .pchip .tk{font-size:10px;}
+  .pchip .pr{font-size:9px;}
+  .mtag{font-size:8px;padding:1px 4px;}
+
+  /* ── Week/period tabs: horizontal scroll ── */
+  .wtabs{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px;scroll-snap-type:x mandatory;scrollbar-width:none;}
+  .wtabs::-webkit-scrollbar{display:none;}
+  .wtab{flex-shrink:0;font-size:11px;padding:6px 12px;scroll-snap-align:start;min-height:32px;}
+
+  /* ── Record form: single column, bigger inputs ── */
+  .rgrid{grid-template-columns:1fr !important;gap:8px;}
+  .ri{padding:12px;border-radius:10px;}
+  .ri-lbl{font-size:11px;margin-bottom:5px;}
+  .ri-inp{font-size:16px !important;padding:4px 0;}
+  .ri-auto{font-size:16px;}
+  .ri-detail{font-size:10px;line-height:1.5;}
+  .shares-row{gap:4px;}
+  .sh-item{padding:4px 6px;border-radius:6px;}
+  .sh-tk{font-size:10px;min-width:32px;}
+  .sh-inp{width:56px;font-size:12px !important;}
+  .sh-unit{font-size:9px;}
+
+  /* ── Buttons: bigger touch targets ── */
+  .btn{min-height:36px;padding:8px 14px;}
+  .btn-sm{min-height:32px;padding:6px 12px;font-size:12px;}
+  .btn-xs{min-height:28px;padding:4px 10px;font-size:11px;}
+
+  /* ── Bottom nav bar ── */
+  .mob-nav{display:flex !important;position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);z-index:200;padding:4px 0 env(safe-area-inset-bottom,8px) 0;box-shadow:0 -2px 16px rgba(0,0,0,.08);}
+  .mob-nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0;cursor:pointer;font-size:10px;color:var(--t3);font-weight:500;border:none;background:none;transition:color .15s;min-width:0;min-height:44px;justify-content:center;-webkit-tap-highlight-color:transparent;}
+  .mob-nav-item.active{color:var(--blue);font-weight:600;}
+  .mob-nav-item .mob-icon{font-size:20px;line-height:1;}
+
+  /* ── Modals: full-width on mobile ── */
+  .modal{width:calc(100vw - 24px) !important;max-width:100% !important;margin:12px;padding:20px 16px;border-radius:14px;max-height:calc(100vh - 24px);}
+  .modal-title{font-size:16px;margin-bottom:16px;}
+  .frow{grid-template-columns:1fr !important;gap:10px;}
+  .fi,.fs{padding:12px;font-size:16px !important;border-radius:10px;min-height:44px;}
+  .fl{font-size:12px;margin-bottom:4px;}
+  .mfooter{margin-top:18px;padding-top:14px;}
+  .mfooter .btn{flex:1;justify-content:center;min-height:40px;}
+  .type-grid{grid-template-columns:repeat(2,1fr) !important;gap:6px;}
+  .topt{padding:10px 8px;font-size:12px;min-height:40px;}
+  .stock-row{grid-template-columns:80px 1fr 1fr auto !important;gap:6px;}
+
+  /* ── Analysis section ── */
+  .an-row{grid-template-columns:repeat(3,1fr) !important;gap:6px;}
+  .an-item{padding:12px 8px;border-radius:10px;}
+  .an-num{font-size:17px !important;}
+  .an-lbl{font-size:10px;}
+
+  /* ── Sec headers ── */
+  .sec-hdr{flex-direction:column;gap:8px;align-items:flex-start !important;margin-bottom:12px;}
+  .sec-hdr>div:last-child{align-self:stretch;}
+
+  /* ── Currency breakdown ── */
+  .cur-legend{gap:4px 8px;}
+  .cur-dot{font-size:10px;}
+
+  /* ── Export menu: bottom sheet style ── */
+  #export-menu{position:fixed !important;bottom:0 !important;left:0 !important;right:0 !important;top:auto !important;border-radius:16px 16px 0 0 !important;padding:12px 16px calc(12px + env(safe-area-inset-bottom,8px)) !important;min-width:100% !important;z-index:300 !important;box-shadow:0 -4px 30px rgba(0,0,0,.15) !important;}
+  .emenu-item{padding:14px 16px;font-size:14px;border-radius:10px;min-height:44px;display:flex;align-items:center;}
+
+  /* ── Login: keyboard-aware ── */
+  #login-screen{padding:20px 16px;align-items:flex-start;padding-top:15vh;}
+  .login-card{width:100% !important;max-width:400px;padding:28px 20px;border-radius:16px;}
+  .login-title{font-size:22px;}
+  .login-sub{font-size:12px;margin-bottom:24px;}
+  .login-input{padding:14px;font-size:16px !important;min-height:48px;}
+  .login-btn{padding:14px;font-size:15px;min-height:48px;}
+
+  /* ── Admin ── */
+  .admin-section{padding:14px 12px;border-radius:12px;}
+  .storage-info{grid-template-columns:1fr !important;gap:8px;}
+  .email-row{padding:10px 12px;flex-wrap:wrap;gap:6px;}
+
+  /* ── Ledger ── */
+  #ledger-stats-cards{grid-template-columns:repeat(2,1fr) !important;gap:8px;}
+  #ledger-week-body div[style*='grid-template-columns']{grid-template-columns:1fr !important;}
+  #ledger-budget-tab div[style*='grid-template-columns:repeat(auto-fill']{grid-template-columns:repeat(2,1fr) !important;}
+
+  /* ── Tree page ── */
+  #tree-milestones{grid-template-columns:repeat(3,1fr) !important;gap:6px;}
+  #tree-svg-container{overflow:hidden;}
+  #tree-progress-label{max-width:140px;font-size:11px;}
+
+  /* ── Camera modal: full screen ── */
+  #modal-camera .modal{width:100vw !important;height:100vh !important;max-height:100vh !important;margin:0 !important;border-radius:0 !important;padding:0 !important;}
+
+  /* ── Toast above nav ── */
+  .toast{bottom:calc(72px + env(safe-area-inset-bottom,8px)) !important;font-size:12px;padding:8px 16px;}
+
+  /* ── Hide less important columns ── */
+  .dash-hide-mob{display:none;}
+
+  /* ── Privacy btn ── */
+  #privacy-btn{order:-1;}
+
+  /* ── Misc readability ── */
+  .fhint{font-size:11px;line-height:1.5;}
+  .divider{margin:12px 0;}
+}
+
+/* ── Extra tight: iPhone 14 Pro (393px) ── */
+@media(max-width:393px){
+  .main{padding-left:10px !important;padding-right:10px !important;}
+  .stats-grid{gap:6px;}
+  .sc{padding:12px 10px;}
+  .sc-val{font-size:16px !important;}
+  .sc-val.lg{font-size:18px !important;}
+  .an-num{font-size:15px !important;}
+  .btn-sm{font-size:11px;padding:5px 10px;}
+  #tree-milestones{grid-template-columns:repeat(2,1fr) !important;}
+  .login-card{padding:24px 16px;}
+  .modal{padding:18px 14px !important;}
+}
+
+/* ── Landscape on phone ── */
+@media(max-width:768px) and (orientation:landscape){
+  .main{padding-top:8px !important;}
+  .stats-grid{grid-template-columns:repeat(4,1fr) !important;}
+  .charts-row{grid-template-columns:1fr 1fr !important;}
+  .chart-box{height:150px !important;}
+  .mob-nav{padding-bottom:env(safe-area-inset-bottom,4px);}
+  .mob-nav-item{padding:3px 0;min-height:36px;}
+  .mob-nav-item .mob-icon{font-size:16px;}
+}
+
 </style>
 </head>
 <body>
