@@ -796,6 +796,7 @@ th.sort-active .sort-icon{color:var(--blue);}
           <button class="btn btn-g btn-sm" id="ledger-tab-budget-btn" onclick="switchLedgerTab('budget')">🎯 预算</button>
         </div>
         <button class="btn btn-g btn-sm" onclick="exportLedgerCSV()">↓ 导出 CSV</button>
+        <button class="btn btn-g btn-sm" id="ledger-import-btn" onclick="importHistoricalLedger()">📥 导入历史</button>
         <button class="btn btn-p btn-sm" id="ledger-add-btn" onclick="openLedgerModal()">＋ 新增</button>
       </div>
     </div>
@@ -4236,6 +4237,53 @@ function checkTreeMilestones(state) {
   if (changed) saveDB();
 }
 
+
+// ── 一次性导入历史周账数据 ─────────────────────────
+function importHistoricalLedger() {
+  if (!confirm('导入5条历史周账 + 1条月账数据？已有同日期数据将被跳过。')) return;
+  if (!db.ledgerWeeks)  db.ledgerWeeks  = [];
+  if (!db.ledgerMonths) db.ledgerMonths = [];
+
+  const weeks = [
+    { weekEnd:'2025-01-04', vals:{ food:9766, dining:42175, daily:21020, cosmet:6100, hobby:11430, travel:1500, trans:8000 }},
+    { weekEnd:'2025-01-11', vals:{ food:7210, dining:15531, daily:2200, hobby:8000 }},
+    { weekEnd:'2025-01-18', vals:{ food:16637, dining:18281, daily:6170, study:4400, hobby:3590, rent:15968, trans:3000, comm:4914 }},
+    { weekEnd:'2025-01-25', vals:{ food:4833, dining:17447, daily:1724, cosmet:2200, rent:295810, trans:4368, comm:4300 }},
+    { weekEnd:'2025-02-01', vals:{ food:20710, dining:16641, cloth:17800, cosmet:7700, travel:1600, rent:170000 }},
+  ];
+
+  const months = [
+    { month:'2025-01', vals:{
+      food:49830, dining:96425, daily:10094,
+      cosmet:2200, study:4400, hobby:22640, travel:297310,
+      rent:190336, trans:18700, comm:9218,
+      cn_wasa:5200, cn_eskimo:8700
+    }},
+  ];
+
+  let addedW = 0, addedM = 0;
+  weeks.forEach(row => {
+    if (db.ledgerWeeks.find(w => w.weekEnd === row.weekEnd)) return;
+    db.ledgerWeeks.push({ id:genId(), weekEnd:row.weekEnd, vals:row.vals, notes:{} });
+    addedW++;
+  });
+  months.forEach(row => {
+    if (db.ledgerMonths.find(m => m.month === row.month)) return;
+    db.ledgerMonths.push({ id:genId(), month:row.month, vals:row.vals, note:'' });
+    addedM++;
+  });
+
+  const btn = document.getElementById('ledger-import-btn');
+  if (btn) btn.style.display = 'none';
+
+  if (addedW + addedM > 0) {
+    saveDB();
+    toast(`✓ 已导入 ${addedW} 条周账、${addedM} 条月账`);
+    if (document.querySelector('#page-ledger.active')) renderLedger();
+  } else {
+    toast('所有日期已存在，无需重复导入');
+  }
+}
 
 async function boot() {
   let gistPullSucceeded = false;
