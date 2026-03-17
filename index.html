@@ -820,6 +820,13 @@ body{padding-top:env(safe-area-inset-top,0px);}
 .toast{bottom:calc(72px + env(safe-area-inset-bottom,0px));}
 #login-screen{padding-top:env(safe-area-inset-top,0px);}
 .overlay .modal{margin-top:env(safe-area-inset-top,0px);}
+
+/* fire-v63-patch: safe area */
+body{padding-top:env(safe-area-inset-top,0px);}
+.sidebar{top:env(safe-area-inset-top,0px);height:calc(100vh - env(safe-area-inset-top,0px));}
+#login-screen{padding-top:env(safe-area-inset-top,0px);}
+.overlay .modal{margin-top:env(safe-area-inset-top,0px);}
+@media(min-width:769px){#page-tree .card:first-of-type{max-height:420px;overflow:hidden;}#tree-svg-container{max-height:400px;}}
 </style>
 </head>
 <body>
@@ -1218,9 +1225,9 @@ body{padding-top:env(safe-area-inset-top,0px);}
           <div class="card-title">统计时间范围</div>
           <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
             <div style="display:flex;gap:6px">
-              <button class="btn btn-g btn-xs" onclick="setLedgerRange('1m')">近1月</button>
-              <button class="btn btn-g btn-xs" onclick="setLedgerRange('3m')">近3月</button>
-              <button class="btn btn-g btn-xs" onclick="setLedgerRange('6m')">近6月</button>
+              <button class="btn btn-g btn-xs" onclick="setLedgerRange('4w')">近4周</button>
+              <button class="btn btn-g btn-xs" onclick="setLedgerRange('8w')">近8周</button>
+              <button class="btn btn-g btn-xs" onclick="setLedgerRange('12w')">近12周</button>
               <button class="btn btn-g btn-xs" onclick="setLedgerRange('all')">全部</button>
             </div>
             <div style="display:flex;gap:6px;align-items:center">
@@ -1293,7 +1300,7 @@ body{padding-top:env(safe-area-inset-top,0px);}
   <div class="fg">
     <label class="fl">目标总资产（基准货币）</label>
     <div style="display:flex;align-items:center;gap:8px">
-      <span id="tree-goal-cur-label" style="font-size:13px;color:var(--t2);min-width:36px"></span>
+      <select class="fs" id="tree-goal-currency" style="width:90px"><option value="CNY">CNY</option><option value="USD">USD</option><option value="HKD">HKD</option><option value="JPY">JPY</option></select>
       <input type="number" class="fi" id="tree-goal-input" placeholder="如 10000000" style="flex:1">
     </div>
     <div class="fhint">达到此目标时，你的家将完全建成🏠</div>
@@ -1309,7 +1316,7 @@ body{padding-top:env(safe-area-inset-top,0px);}
 <div class="overlay" id="modal-ledger-new">
 <div class="modal" style="width:360px">
   <div class="modal-title" id="ledger-new-title">新增周账</div>
-  <div class="fg" id="ledger-new-date-group"><label class="fl" id="ledger-new-date-label">记录日期（该周结束日）</label><input type="date" class="fi" id="ledger-new-date"></div>
+  <div class="fg" id="ledger-new-date-group"><label class="fl">起始日期</label><input type="date" class="fi" id="ledger-new-start" style="margin-bottom:8px"><label class="fl">结束日期（7天自动计算）</label><input type="date" class="fi" id="ledger-new-end" readonly style="background:var(--s3)"></div>
   <div class="fg" id="ledger-new-month-group" style="display:none"><label class="fl">月份</label><input type="month" class="fi" id="ledger-new-month"></div>
   <div class="mfooter">
     <button class="btn btn-s" onclick="closeModal('modal-ledger-new')">取消</button>
@@ -3305,7 +3312,7 @@ function switchLedgerTab(tab, force) {
   }
   if (tab==='week')   renderLedgerWeekTab();
   if (tab==='month')  renderLedgerMonthTab();
-  if (tab==='stats')  setLedgerRange('3m');
+  if (tab==='stats')  setLedgerRange('all');
   if (tab==='budget') renderLedgerBudgetSettings();
 }
 
@@ -3314,18 +3321,16 @@ function openLedgerModal() {
   document.getElementById('ledger-new-title').textContent = isWeek ? '新增周账' : '新增月账';
   document.getElementById('ledger-new-date-group').style.display = isWeek ? '' : 'none';
   document.getElementById('ledger-new-month-group').style.display = isWeek ? 'none' : '';
-  if (isWeek) document.getElementById('ledger-new-date').value = new Date().toISOString().slice(0,10);
+  if(isWeek){var _today=new Date();var _start=new Date(_today);_start.setDate(_start.getDate()-6);document.getElementById('ledger-new-start').value=_start.toISOString().slice(0,10);document.getElementById('ledger-new-end').value=_today.toISOString().slice(0,10);}
   else document.getElementById('ledger-new-month').value = new Date().toISOString().slice(0,7);
   openModal('modal-ledger-new');
 }
 
 function createLedgerEntry() {
   if (_ledgerTab === 'week') {
-    const d = document.getElementById('ledger-new-date').value;
-    if (!d) { alert('请选择日期'); return; }
-    const existing = db.ledgerWeeks.find(w => w.weekEnd === d);
+    var ws=document.getElementById('ledger-new-start').value;var we=document.getElementById('ledger-new-end').value;if(!ws){alert('请选择起始日期');return;}if(!we){var _wd=new Date(ws);_wd.setDate(_wd.getDate()+6);we=_wd.toISOString().slice(0,10);}var d=we;var existing=db.ledgerWeeks.find(function(w){return w.weekEnd===d;});
     if (existing) { _ledgerWeekId=existing.id; closeModal('modal-ledger-new'); renderLedgerWeekTab(); toast('已切换到该日期'); return; }
-    const entry = { id:genId(), weekEnd:d, vals:{}, notes:{} };
+    const entry = { id:genId(), weekStart:ws, weekEnd:d, vals:{}, notes:{} };
     db.ledgerWeeks.push(entry);
     _ledgerWeekId = entry.id;
     saveDB(); closeModal('modal-ledger-new'); renderLedgerWeekTab();
@@ -3367,7 +3372,7 @@ function selectLedgerWeek(id) {
 
 function renderLedgerWeekForm(entry) {
   document.getElementById('ledger-week-form').style.display = '';
-  document.getElementById('ledger-week-title').textContent = entry.weekEnd + ' 周开支明细';
+  document.getElementById('ledger-week-title').textContent = (entry.weekStart?entry.weekStart+'~':'') + entry.weekEnd + ' 周开支明细';
   if (!entry.notes) entry.notes = {};
 
   // 计算当月累计（不含本周，用于显示预算进度参考）
@@ -3785,14 +3790,7 @@ function saveYearBudget() {
 }
 
 // ── Stats ─────────────────────────────────────────────────
-function setLedgerRange(range) {
-  const now = new Date();
-  const to = now.toISOString().slice(0,10);
-  let from;
-  if (range==='1m') { const d=new Date(now); d.setMonth(d.getMonth()-1); from=d.toISOString().slice(0,10); }
-  else if (range==='3m') { const d=new Date(now); d.setMonth(d.getMonth()-3); from=d.toISOString().slice(0,10); }
-  else if (range==='6m') { const d=new Date(now); d.setMonth(d.getMonth()-6); from=d.toISOString().slice(0,10); }
-  else from='2020-01-01';
+function setLedgerRange(range){var sorted=(db.ledgerWeeks||[]).slice().sort(function(a,b){return a.weekEnd.localeCompare(b.weekEnd);});if(!sorted.length){renderLedgerStats();return;}var to=sorted[sorted.length-1].weekEnd;var from;var n={'4w':4,'8w':8,'12w':12}[range];if(n&&sorted.length>n)from=sorted[sorted.length-n].weekEnd;else from=sorted[0].weekEnd||'2020-01-01';
   const fromEl=document.getElementById('stats-from'); if(fromEl) fromEl.value=from;
   const toEl=document.getElementById('stats-to'); if(toEl) toEl.value=to;
   renderLedgerStats();
@@ -3926,16 +3924,15 @@ function getTreeData() {
 }
 
 function openTreeGoalModal() {
-  document.getElementById('tree-goal-cur-label').textContent = CUR_SYM[baseCurrency] || '';
-  document.getElementById('tree-goal-input').value = db.treeGoal || '';
+  var gc=db.treeGoalCurrency||baseCurrency;var sel=document.getElementById('tree-goal-currency');if(sel)sel.value=gc;var goalDisplay=db.treeGoal?Math.round(conv(db.treeGoal,db.treeGoalCurrency||'CNY',gc)):'';
+  document.getElementById('tree-goal-input').value = goalDisplay || '';
   openModal('modal-tree-goal');
 }
 
 function saveTreeGoal() {
   const v = parseFloat(document.getElementById('tree-goal-input').value);
   if (!v || v <= 0) { toast('请输入有效的目标金额'); return; }
-  const oldGoal = db.treeGoal;
-  db.treeGoal = v;
+  var goalCur=document.getElementById('tree-goal-currency')?.value||baseCurrency;var oldGoal=db.treeGoal;db.treeGoal=conv(v,goalCur,'CNY');db.treeGoalCurrency=goalCur;
   if (!oldGoal) {
     db.treeDiary = db.treeDiary || [];
     db.treeDiary.unshift({ date: new Date().toISOString().slice(0,10), text: `🌱 奠基！目标：${fmtMoney(v)}，从一片土地开始建造`, icon: '🌱', key:'start' });
@@ -3947,8 +3944,7 @@ function calcTreeState() {
   const sorted = sortedRecords();
   const latest = sorted[sorted.length - 1];
   const currentAssets = latest ? computeRecord(latest).total : 0;
-  const goal = db.treeGoal || 0;
-  const progress = goal > 0 ? Math.min(1, currentAssets / goal) : 0;
+  var goalCNY=db.treeGoal||0;var goal=goalCNY>0?conv(goalCNY,'CNY',baseCurrency):0;var progress=goal>0?Math.min(1,currentAssets/goal):0;
 
   // Recent growth health
   let healthScore = 1;
@@ -3982,7 +3978,7 @@ function calcTreeState() {
 
   const vitality = Math.max(0, healthScore - budgetPenalty);
 
-  // House stage: 0=土地 1=石头地基 2=帐篷 3=小木屋 4=英式小屋 5=FIRE豪宅
+  // House stage: 0=土地 1=石头地基 2=帐篷 3=小木屋 4=日式一户建 5=FIRE豪宅
   let stage;
   if (progress < 0.05) stage = 0;
   else if (progress < 0.20) stage = 1;
@@ -4142,55 +4138,36 @@ function buildHouseSVG(state, w, h) {
 <text x="${px(200)}" y="${py(310)}" text-anchor="middle" font-size="${sw(13)}" fill="#5a3010" font-family="sans-serif" font-weight="bold">小木屋</text>`;
   }
 
-  // ── STAGE 4: English cottage ────────────────────
+  // ── STAGE 4: Japanese Ikkodate ────
   else if (stage === 4) {
     svg += `
-<rect x="${px(118)}" y="${py(252)}" width="${sw(164)}" height="${sh(22)}" fill="#b8b0a0" stroke="#908880" stroke-width="${sw(2)}" rx="${sw(2)}"/>
-<rect x="${px(124)}" y="${py(162)}" width="${sw(152)}" height="${sh(92)}" fill="url(#wall${w})" stroke="#c8c0a0" stroke-width="${sw(2.5)}" rx="${sw(3)}"/>
-<g stroke="#5a3010" stroke-width="${sw(3)}" stroke-linecap="round">
-  <line x1="${px(124)}" y1="${py(162)}" x2="${px(124)}" y2="${py(254)}"/>
-  <line x1="${px(276)}" y1="${py(162)}" x2="${px(276)}" y2="${py(254)}"/>
-  <line x1="${px(178)}" y1="${py(162)}" x2="${px(178)}" y2="${py(254)}"/>
-  <line x1="${px(222)}" y1="${py(162)}" x2="${px(222)}" y2="${py(254)}"/>
-  <line x1="${px(124)}" y1="${py(162)}" x2="${px(276)}" y2="${py(162)}"/>
-  <line x1="${px(124)}" y1="${py(206)}" x2="${px(276)}" y2="${py(206)}"/>
-</g>
-<g stroke="#5a3010" stroke-width="${sw(2)}" opacity=".5">
-  <line x1="${px(124)}" y1="${py(162)}" x2="${px(178)}" y2="${py(206)}"/>
-  <line x1="${px(178)}" y1="${py(162)}" x2="${px(124)}" y2="${py(206)}"/>
-  <line x1="${px(222)}" y1="${py(162)}" x2="${px(276)}" y2="${py(206)}"/>
-  <line x1="${px(276)}" y1="${py(162)}" x2="${px(222)}" y2="${py(206)}"/>
-</g>
-<rect x="${px(124)}" y="${py(162)}" width="${sw(24)}" height="${sh(92)}" fill="rgba(0,0,0,0.06)" rx="${sw(3)}"/>
-<polygon points="${s(110,164)} ${s(200,76)} ${s(290,164)}" fill="url(#roof${w})" stroke="#404040" stroke-width="${sw(3)}" stroke-linejoin="round"/>
-<polygon points="${s(110,164)} ${s(200,76)} ${s(152,164)}" fill="rgba(0,0,0,0.14)"/>
-<rect x="${px(134)}" y="${py(172)}" width="${sw(32)}" height="${sh(26)}" fill="#b8daf5" stroke="#8888a0" stroke-width="${sw(2)}" rx="${sw(2)}"/>
-<line x1="${px(150)}" y1="${py(172)}" x2="${px(150)}" y2="${py(198)}" stroke="#8888a0" stroke-width="${sw(1.5)}"/>
-<line x1="${px(134)}" y1="${py(185)}" x2="${px(166)}" y2="${py(185)}" stroke="#8888a0" stroke-width="${sw(1.5)}"/>
-<rect x="${px(128)}" y="${py(172)}" width="${sw(7)}" height="${sh(26)}" fill="#7a9a50" stroke="#4a6a28" stroke-width="${sw(1)}" rx="${sw(1)}"/>
-<rect x="${px(165)}" y="${py(172)}" width="${sw(7)}" height="${sh(26)}" fill="#7a9a50" stroke="#4a6a28" stroke-width="${sw(1)}" rx="${sw(1)}"/>
-<rect x="${px(234)}" y="${py(172)}" width="${sw(32)}" height="${sh(26)}" fill="#b8daf5" stroke="#8888a0" stroke-width="${sw(2)}" rx="${sw(2)}"/>
-<line x1="${px(250)}" y1="${py(172)}" x2="${px(250)}" y2="${py(198)}" stroke="#8888a0" stroke-width="${sw(1.5)}"/>
-<line x1="${px(234)}" y1="${py(185)}" x2="${px(266)}" y2="${py(185)}" stroke="#8888a0" stroke-width="${sw(1.5)}"/>
-<rect x="${px(228)}" y="${py(172)}" width="${sw(7)}" height="${sh(26)}" fill="#7a9a50" stroke="#4a6a28" stroke-width="${sw(1)}" rx="${sw(1)}"/>
-<rect x="${px(265)}" y="${py(172)}" width="${sw(7)}" height="${sh(26)}" fill="#7a9a50" stroke="#4a6a28" stroke-width="${sw(1)}" rx="${sw(1)}"/>
-<rect x="${px(180)}" y="${py(214)}" width="${sw(40)}" height="${sh(40)}" fill="#7a4020" stroke="#3a1808" stroke-width="${sw(2.5)}" rx="${sw(4)}"/>
-<path d="M${s(180,226)} Q${s(200,208)} ${s(220,226)}" fill="#9a5830" stroke="#3a1808" stroke-width="${sw(2)}"/>
-<circle cx="${px(215)}" cy="${py(236)}" r="${sw(3.5)}" fill="#d4a830"/>
-<rect x="${px(174)}" y="${py(220)}" width="${sw(6)}" height="${sh(10)}" fill="#f8d870" stroke="#c0a030" stroke-width="${sw(1)}" rx="${sw(1)}"/>
-<rect x="${px(220)}" y="${py(220)}" width="${sw(6)}" height="${sh(10)}" fill="#f8d870" stroke="#c0a030" stroke-width="${sw(1)}" rx="${sw(1)}"/>
-<rect x="${px(232)}" y="${py(96)}" width="${sw(16)}" height="${sh(36)}" fill="#b09878" stroke="#807050" stroke-width="${sw(1.5)}" rx="${sw(2)}"/>
-<rect x="${px(228)}" y="${py(92)}" width="${sw(24)}" height="${sh(8)}" fill="#908060" rx="${sw(2)}"/>
-<circle cx="${px(240)}" cy="${py(82)}" r="${sw(6)}" fill="#e8e8e0" opacity=".6"/>
-<circle cx="${px(244)}" cy="${py(72)}" r="${sw(5)}" fill="#e8e8e0" opacity=".4"/>
-<rect x="${px(134)}" y="${py(197)}" width="${sw(32)}" height="${sh(6)}" fill="#a07030" rx="${sw(2)}"/>
-<circle cx="${px(141)}" cy="${py(193)}" r="${sw(4)}" fill="#f86090"/>
-<circle cx="${px(150)}" cy="${py(191)}" r="${sw(4)}" fill="#f8d040"/>
-<circle cx="${px(159)}" cy="${py(193)}" r="${sw(4)}" fill="#f86090"/>
-<rect x="${px(286)}" y="${py(254)}" width="${sw(7)}" height="${sh(16)}" fill="#6090d0" rx="${sw(1)}"/>
-<rect x="${px(283)}" y="${py(248)}" width="${sw(13)}" height="${sh(9)}" fill="#4878c0" rx="${sw(2)}"/>
-<circle cx="${px(295)}" cy="${py(250)}" r="${sw(2)}" fill="#c8e0f8"/>
-<text x="${px(200)}" y="${py(310)}" text-anchor="middle" font-size="${sw(13)}" fill="#3a2808" font-family="sans-serif" font-weight="bold">英式小屋</text>`;
+<rect x="${px(120)}" y="${py(252)}" width="${sw(160)}" height="${sh(22)}" fill="#c8c0a8" stroke="#908880" stroke-width="${sw(2)}" rx="${sw(2)}"/>
+<rect x="${px(126)}" y="${py(162)}" width="${sw(148)}" height="${sh(92)}" fill="#f5f0e0" stroke="#d0c8a8" stroke-width="${sw(2)}" rx="${sw(2)}"/>
+<path d="M${s(108,164)} Q${s(200,60)} ${s(292,164)}" fill="#404858" stroke="#303840" stroke-width="${sw(3)}"/>
+<path d="M${s(108,164)} Q${s(200,72)} ${s(155,164)}" fill="rgba(0,0,0,0.10)"/>
+<rect x="${px(122)}" y="${py(246)}" width="${sw(156)}" height="${sh(8)}" fill="#c8a870" rx="${sw(2)}"/>
+<rect x="${px(140)}" y="${py(172)}" width="${sw(30)}" height="${sh(72)}" fill="#f8f4e8" stroke="#b0a888" stroke-width="${sw(1.5)}" rx="${sw(1)}"/>
+<line x1="${px(155)}" y1="${py(172)}" x2="${px(155)}" y2="${py(244)}" stroke="#b0a888" stroke-width="${sw(1)}"/>
+<line x1="${px(140)}" y1="${py(208)}" x2="${px(170)}" y2="${py(208)}" stroke="#b0a888" stroke-width="${sw(1)}"/>
+<rect x="${px(176)}" y="${py(172)}" width="${sw(30)}" height="${sh(72)}" fill="#f8f4e8" stroke="#b0a888" stroke-width="${sw(1.5)}" rx="${sw(1)}"/>
+<line x1="${px(191)}" y1="${py(172)}" x2="${px(191)}" y2="${py(244)}" stroke="#b0a888" stroke-width="${sw(1)}"/>
+<line x1="${px(176)}" y1="${py(208)}" x2="${px(206)}" y2="${py(208)}" stroke="#b0a888" stroke-width="${sw(1)}"/>
+<rect x="${px(215)}" y="${py(210)}" width="${sw(36)}" height="${sh(36)}" fill="#7a5030" stroke="#4a2810" stroke-width="${sw(2)}" rx="${sw(2)}"/>
+<rect x="${px(215)}" y="${py(210)}" width="${sw(18)}" height="${sh(36)}" fill="#8a6040" stroke="#4a2810" stroke-width="${sw(1.5)}"/>
+<rect x="${px(216)}" y="${py(210)}" width="${sw(34)}" height="${sh(12)}" fill="#d04040" rx="${sw(2)}" opacity=".85"/>
+<line x1="${px(226)}" y1="${py(216)}" x2="${px(226)}" y2="${py(222)}" stroke="#f8f0e0" stroke-width="${sw(1.5)}"/>
+<line x1="${px(233)}" y1="${py(216)}" x2="${px(233)}" y2="${py(222)}" stroke="#f8f0e0" stroke-width="${sw(1.5)}"/>
+<line x1="${px(240)}" y1="${py(216)}" x2="${px(240)}" y2="${py(222)}" stroke="#f8f0e0" stroke-width="${sw(1.5)}"/>
+<rect x="${px(222)}" y="${py(176)}" width="${sw(24)}" height="${sh(22)}" fill="#c8e0f0" stroke="#8888a0" stroke-width="${sw(1.5)}" rx="${sw(2)}"/>
+<line x1="${px(234)}" y1="${py(176)}" x2="${px(234)}" y2="${py(198)}" stroke="#8888a0" stroke-width="${sw(1)}"/>
+<circle cx="${px(108)}" cy="${py(248)}" r="${sw(16)}" fill="#5a9a30" opacity=".7"/>
+<circle cx="${px(100)}" cy="${py(252)}" r="${sw(12)}" fill="#4a8a28" opacity=".6"/>
+<rect x="${px(106)}" y="${py(252)}" width="${sw(2)}" height="${sh(22)}" fill="#705030" rx="${sw(1)}"/>
+<rect x="${px(290)}" y="${py(258)}" width="${sw(8)}" height="${sh(14)}" fill="#b0a898" rx="${sw(1)}"/>
+<rect x="${px(288)}" y="${py(254)}" width="${sw(12)}" height="${sh(6)}" fill="#a09888" rx="${sw(2)}"/>
+<polygon points="${px(288)},${py(254)} ${px(294)},${py(246)} ${px(300)},${py(254)}" fill="#908878"/>
+<circle cx="${px(294)}" cy="${py(250)}" r="${sw(2)}" fill="#f8e080" opacity=".7"/>
+<text x="${px(200)}" y="${py(310)}" text-anchor="middle" font-size="${sw(13)}" fill="#3a2808" font-family="sans-serif" font-weight="bold">日式一户建</text>`;
   }
 
   // ── STAGE 5: grand mansion ───────────────────────
@@ -4290,7 +4267,7 @@ function renderTree() {
     { emoji:'🪨', name:'石头地基',   desc:'地基已打好，开始建造！' },
     { emoji:'⛺', name:'帐篷',       desc:'有了临时的遮蔽所' },
     { emoji:'🪵', name:'小木屋',     desc:'第一个真正的家' },
-    { emoji:'🏠', name:'英式小屋',   desc:'家园越来越完善' },
+    { emoji:'🏠', name:'日式一户建',   desc:'家园越来越完善' },
     { emoji:'🏰', name:'FIRE豪宅',   desc:'财务自由，美梦成真！' },
   ];
   const si = stageInfo[state.stage];
@@ -4338,7 +4315,7 @@ function renderTree() {
     { pct:0.20, name:'石头地基', icon:'🪨' },
     { pct:0.40, name:'帐篷',     icon:'⛺' },
     { pct:0.60, name:'小木屋',   icon:'🪵' },
-    { pct:0.85, name:'英式小屋', icon:'🏠' },
+    { pct:0.85, name:'日式一户建', icon:'🏠' },
     { pct:1.00, name:'FIRE豪宅', icon:'🏰' },
   ];
   const msEl = document.getElementById('tree-milestones');
@@ -4388,7 +4365,7 @@ function checkTreeMilestones(state) {
     { pct:0.20, text:'🪨 石头地基打好！建造正式开始', icon:'🪨' },
     { pct:0.40, text:'⛺ 帐篷搭起来了！有了第一个落脚点', icon:'⛺' },
     { pct:0.60, text:'🪵 小木屋建成！第一个真正的家', icon:'🪵' },
-    { pct:0.85, text:'🏠 英式小屋升级完成！家园越来越美', icon:'🏠' },
+    { pct:0.85, text:'🏠 日式一户建升级完成！家园越来越美', icon:'🏠' },
     { pct:1.00, text:'🏰 FIRE豪宅落成！财务自由达成！', icon:'🏰' },
   ];
   let changed = false;
@@ -4515,6 +4492,14 @@ function seedDemoData() {
   }
   saveLocalDB();
 }
+
+/* v6.3: ledger date auto-calc */
+document.addEventListener('change',function(e){
+  if(e.target.id==='ledger-new-start'){
+    var d=new Date(e.target.value);
+    if(!isNaN(d)){d.setDate(d.getDate()+6);document.getElementById('ledger-new-end').value=d.toISOString().slice(0,10);}
+  }
+});
 </script>
 </body>
 </html>
