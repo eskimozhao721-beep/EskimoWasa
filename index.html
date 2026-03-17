@@ -2,8 +2,8 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FIRE计划 v6.1</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>FIRE计划 v6.2</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
@@ -17,7 +17,7 @@
   --purple:#7c3aed; --purple-l:rgba(124,58,237,.1);
   --teal:#0ea5e9; --teal-l:rgba(14,165,233,.1);
   --yellow:#eab308; --yellow-l:rgba(234,179,8,.1);
-  --text:#111827; --t2:#6b7280; --t3:#9ca3af;
+  --text:#0a0f1a; --t2:#3d4654; --t3:#6b7585;
   --sh0:0 1px 2px rgba(0,0,0,.05);
   --sh1:0 1px 3px rgba(0,0,0,.1),0 1px 2px rgba(0,0,0,.06);
   --sh2:0 4px 6px rgba(0,0,0,.07),0 2px 4px rgba(0,0,0,.06);
@@ -55,10 +55,10 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
 .logo-mark{display:flex;align-items:center;gap:10px;}
 .logo-icon{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,#1a6fff,#60a5fa);display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 3px 10px rgba(26,111,255,.3);flex-shrink:0;}
 .logo-text{font-family:var(--display);font-size:15px;font-weight:700;letter-spacing:-.3px;}
-.logo-sub{font-size:10px;color:var(--t3);margin-top:1px;letter-spacing:.3px;}
+.logo-sub{font-size:10px;color:var(--t2);margin-top:1px;letter-spacing:.3px;}
 .nav{padding:10px 10px;flex:1;overflow-y:auto;}
 .nav-section{font-size:10px;font-weight:600;color:var(--t3);letter-spacing:.9px;text-transform:uppercase;padding:10px 8px 5px;}
-.nav-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;cursor:pointer;color:var(--t2);font-size:13px;transition:all .15s;margin-bottom:1px;}
+.nav-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;cursor:pointer;color:var(--text);font-size:13px;transition:all .15s;margin-bottom:1px;}
 .nav-item:hover{background:var(--s3);color:var(--text);}
 .nav-item.active{background:var(--blue-l);color:var(--blue);font-weight:500;}
 .nav-icon{font-size:14px;width:18px;text-align:center;opacity:.8;}
@@ -85,7 +85,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
 .dbs{display:flex;align-items:center;gap:7px;padding:0 14px;border-right:1px solid var(--border);}
 .dbs:first-child{padding-left:0;}
 .dbs:last-child{border-right:none;}
-.dbl{font-size:10px;font-weight:600;color:var(--t3);letter-spacing:.7px;text-transform:uppercase;white-space:nowrap;}
+.dbl{font-size:10px;font-weight:600;color:var(--t2);letter-spacing:.7px;text-transform:uppercase;white-space:nowrap;}
 .dv{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--text);}
 .dv.auto{color:var(--blue);}
 .dv.manual{color:var(--orange);}
@@ -97,7 +97,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
 .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px;}
 .sc{background:var(--surface);border-radius:var(--rl);padding:18px 20px;box-shadow:var(--sh1);border:1px solid var(--border);transition:box-shadow .2s,transform .2s;position:relative;overflow:hidden;}
 .sc:hover{box-shadow:var(--sh3);transform:translateY(-2px);}
-.sc-label{font-size:12px;font-weight:500;color:var(--t2);margin-bottom:8px;display:flex;align-items:center;gap:5px;}
+.sc-label{font-size:12px;font-weight:600;color:var(--t2);margin-bottom:8px;display:flex;align-items:center;gap:5px;}
 .sc-label-icon{font-size:13px;}
 .sc-val{font-family:var(--display);font-size:22px;font-weight:700;letter-spacing:-.5px;line-height:1.1;}
 .sc-val.lg{font-size:26px;}
@@ -116,7 +116,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
 .charts-row{display:grid;grid-template-columns:2fr 1fr;gap:12px;margin-bottom:18px;}
 .card{background:var(--surface);border-radius:var(--rl);padding:20px;box-shadow:var(--sh1);border:1px solid var(--border);}
 .card-title{font-size:13px;font-weight:600;color:var(--text);}
-.card-sub{font-size:11px;color:var(--t3);margin-top:1px;}
+.card-sub{font-size:11px;color:var(--t2);margin-top:1px;}
 .card-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
 .chart-box{position:relative;height:220px;}
 .sync-badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;padding:3px 8px;border-radius:6px;}
@@ -176,10 +176,10 @@ tbody td{padding:12px 14px;font-size:13px;vertical-align:middle;}
 .modal-title{font-family:var(--display);font-size:17px;font-weight:700;letter-spacing:-.3px;margin-bottom:20px;}
 .fg{margin-bottom:14px;}
 .frow{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-.fl{font-size:12px;font-weight:500;color:var(--t2);margin-bottom:5px;display:block;}
+.fl{font-size:12px;font-weight:600;color:var(--text);margin-bottom:5px;display:block;}
 .fi,.fs{width:100%;padding:10px 13px;background:var(--surface);border:1.5px solid var(--border2);border-radius:9px;color:var(--text);font-family:inherit;font-size:13px;outline:none;transition:border-color .15s,box-shadow .15s;box-shadow:var(--sh0);}
 .fi:focus,.fs:focus{border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-m);}
-.fhint{font-size:11px;color:var(--t3);margin-top:5px;}
+.fhint{font-size:11px;color:var(--t2);margin-top:5px;}
 .mfooter{display:flex;gap:8px;justify-content:flex-end;margin-top:22px;padding-top:16px;border-top:1px solid var(--border);}
 .divider{height:1px;background:var(--border);margin:16px 0;}
 
@@ -193,7 +193,7 @@ tbody td{padding:12px 14px;font-size:13px;vertical-align:middle;}
 .page{display:none;}
 .page.active{display:block;}
 .sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
-.empty-state{text-align:center;padding:40px;color:var(--t3);}
+.empty-state{text-align:center;padding:40px;color:var(--t2);}
 .empty-icon{font-size:32px;margin-bottom:10px;opacity:.4;}
 
 /* WEEK TABS */
@@ -332,6 +332,39 @@ tbody td{padding:12px 14px;font-size:13px;vertical-align:middle;}
 .photo-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:800;align-items:center;justify-content:center;cursor:pointer;backdrop-filter:blur(8px);}
 .photo-overlay.show{display:flex;}
 .photo-overlay img{max-width:90vw;max-height:90vh;border-radius:12px;box-shadow:0 24px 80px rgba(0,0,0,.5);}
+
+/* iPhone 14 Pro (393px) & 16 Pro (402px) */
+@media(max-width:430px){
+.main{padding:14px 12px 80px !important;}.page-title{font-size:18px !important;}.page-sub{font-size:11px;}
+.stats-grid{grid-template-columns:repeat(2,1fr) !important;gap:8px;}.sc{padding:12px 10px;border-radius:10px;}
+.sc-val{font-size:17px !important;}.sc-val.lg{font-size:19px !important;}.sc-label{font-size:11px;}.sc-chg{font-size:10px;padding:2px 6px;}
+.charts-row{grid-template-columns:1fr !important;gap:8px;}.chart-box{height:160px !important;}
+.card{padding:12px 10px;border-radius:10px;}.card-title{font-size:13px;}
+.data-bar{padding:6px 10px;gap:8px;font-size:10px;}.dbs{padding:0 8px;}.dbl{font-size:9px;}.dv{font-size:11px;}
+.btn-sm{padding:5px 10px;font-size:11px;}.btn-xs{padding:3px 6px;font-size:10px;}
+.hdr-actions{gap:5px !important;flex-wrap:wrap;}
+.an-row{grid-template-columns:repeat(3,1fr) !important;gap:6px;}.an-item{padding:12px 8px;}.an-num{font-size:16px !important;}.an-lbl{font-size:10px;}
+.modal{width:calc(100vw - 20px) !important;padding:20px 16px;}.frow{grid-template-columns:1fr !important;}
+.type-grid{grid-template-columns:repeat(2,1fr) !important;}
+.ri{padding:10px;}.ri-inp{font-size:14px !important;}.rgrid{grid-template-columns:1fr !important;}
+table{font-size:12px;}thead th{padding:8px 10px;font-size:10px;}tbody td{padding:10px;font-size:12px;}
+.wtabs{gap:4px;}.wtab{font-size:10px;padding:4px 8px;}
+.mob-nav{padding-bottom:calc(8px + env(safe-area-inset-bottom));}
+.main{padding-top:calc(14px + env(safe-area-inset-top)) !important;}
+#ledger-stats-cards{grid-template-columns:repeat(2,1fr) !important;}
+.pchip{font-size:10px;}.pchip .tk{font-size:10px;}.pchip .pr{font-size:10px;}
+.sh-item{padding:3px 6px;}.sh-inp{width:50px;font-size:11px;}
+.login-card{width:calc(100vw - 32px);padding:28px 24px;}.login-title{font-size:20px;}
+#tree-milestones{grid-template-columns:repeat(3,1fr) !important;}
+.cpill{font-size:10px;padding:4px 0;}.stock-row{grid-template-columns:80px 1fr 1fr auto;gap:6px;}
+.admin-section{padding:14px 12px;}.storage-info{grid-template-columns:1fr !important;}
+}
+@media(max-width:375px){
+.stats-grid{gap:6px;}.sc{padding:10px 8px;}.sc-val{font-size:15px !important;}.sc-val.lg{font-size:17px !important;}
+.an-num{font-size:14px !important;}.hdr-actions{flex-wrap:wrap;}
+#tree-milestones{grid-template-columns:repeat(2,1fr) !important;}
+}
+
 /* ═══════════════════════════════════════
    MOBILE RESPONSIVE  (≤ 768px)
 ═══════════════════════════════════════ */
@@ -401,7 +434,7 @@ tbody td{padding:12px 14px;font-size:13px;vertical-align:middle;}
     background:var(--surface);
     border-top:1px solid var(--border);
     z-index:200;
-    padding:6px 0 calc(6px + env(safe-area-inset-bottom));
+    padding:6px 0 calc(8px + env(safe-area-inset-bottom));
     box-shadow:0 -2px 16px rgba(0,0,0,.06);
   }
   .mob-nav-item {
@@ -518,7 +551,7 @@ th.sort-active .sort-icon{color:var(--blue);}
   <!-- trend line inside flame -->
   <polyline points="12,25 15,20 18,22 22,15" stroke="rgba(255,255,255,0.75)" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
 </svg></div>
-        <div><div class="logo-text">🔥 FIRE计划</div><div class="logo-sub">Financial Independence · v6.1</div></div>
+        <div><div class="logo-text">🔥 FIRE计划</div><div class="logo-sub">Financial Independence · v6.2</div></div>
       </div>
     </div>
     <nav class="nav">
@@ -635,28 +668,6 @@ th.sort-active .sort-icon{color:var(--blue);}
       <div style="flex:1;height:1px;background:var(--border)"></div>
       <span style="font-size:11px;font-weight:700;color:var(--t3);letter-spacing:.8px;text-transform:uppercase">深度分析</span>
       <div style="flex:1;height:1px;background:var(--border)"></div>
-    </div>
-
-    <!-- ── AI 投资顾问 ── -->
-    <div class="ai-card">
-      <div class="ai-header">
-        <div class="ai-title-row">
-          <div class="ai-badge">AI · Beta</div>
-          <div>
-            <div class="ai-title">🤖 投资顾问</div>
-            <div class="ai-sub">结合「犀牛财经 RhinoFinance」宏观分析，基于你的持仓给出建议</div>
-          </div>
-        </div>
-        <div class="ai-trigger">
-          <button class="btn btn-ai btn-sm" id="ai-btn" onclick="runAIAdvisor()">✦ 生成分析</button>
-        </div>
-      </div>
-      <div class="ai-body" id="ai-body">
-        <div class="ai-placeholder">
-          <div class="ai-placeholder-icon">✦</div>
-          <div>点击「生成分析」，AI 将分析你的资产配置并结合宏观视角给出投资建议</div>
-        </div>
-      </div>
     </div>
 
     <!-- ── 统计数字 ── -->
@@ -1663,7 +1674,7 @@ function renderTrendChart(sorted) {
   charts.trend=new Chart(ctx,{type:'line',
     data:{labels:sorted.map(r=>r.weekEnd||''),datasets:[{label:'总资产',data:sorted.map(r=>computeRecord(r).total),borderColor:'#007aff',backgroundColor:g,borderWidth:2,pointRadius:4,pointBackgroundColor:'#fff',pointBorderColor:'#007aff',pointBorderWidth:2,fill:true,tension:.4}]},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>fmtMoney(c.parsed.y)}}},
-      scales:{x:{grid:{color:'rgba(0,0,0,.04)'},ticks:{color:'#aeaeb2',font:{size:10}}},y:{grid:{color:'rgba(0,0,0,.04)'},ticks:{color:'#aeaeb2',font:{size:10},callback:v=>v>=1e4?(v/1e4).toFixed(0)+'万':v}}}}});
+      scales:{x:{grid:{color:'rgba(0,0,0,.04)'},ticks:{color:'#7a7e86',font:{size:10}}},y:{grid:{color:'rgba(0,0,0,.04)'},ticks:{color:'#7a7e86',font:{size:10},callback:v=>v>=1e4?(v/1e4).toFixed(0)+'万':v}}}}});
 }
 
 function renderPieChart(cur) {
@@ -1673,7 +1684,7 @@ function renderPieChart(cur) {
   charts.pie=new Chart(ctx,{type:'doughnut',
     data:{labels:['银行存款','投资资产','其他资产'],datasets:[{data:[cur.bank,cur.invest,cur.other],backgroundColor:['#007aff','#ff9500','#34c759'],borderColor:'#fff',borderWidth:3,hoverOffset:4}]},
     options:{responsive:true,maintainAspectRatio:false,cutout:'65%',
-      plugins:{legend:{position:'bottom',labels:{color:'#6e6e73',font:{size:11},padding:14,usePointStyle:true}},
+      plugins:{legend:{position:'bottom',labels:{color:'#4a4e56',font:{size:11},padding:14,usePointStyle:true}},
         tooltip:{callbacks:{label:c=>`${c.label}: ${fmtMoney(c.raw)} (${(c.raw/cur.total*100).toFixed(1)}%)`}}}}});
 }
 
@@ -2134,8 +2145,8 @@ function renderTypeTrendChart(sorted){
       {label:'投资',data:sorted.map(r=>computeRecord(r).invest),borderColor:'#ff9500',backgroundColor:'transparent',borderWidth:2,pointRadius:3,pointBackgroundColor:'#fff',pointBorderColor:'#ff9500',pointBorderWidth:2,tension:.4},
       {label:'其他',data:sorted.map(r=>computeRecord(r).other),borderColor:'#34c759',backgroundColor:'transparent',borderWidth:2,pointRadius:3,pointBackgroundColor:'#fff',pointBorderColor:'#34c759',pointBorderWidth:2,tension:.4},
     ]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#6e6e73',font:{size:11},usePointStyle:true,padding:14}}},
-      scales:{x:{grid:{color:'rgba(0,0,0,.04)'},ticks:{color:'#aeaeb2',font:{size:10}}},y:{grid:{color:'rgba(0,0,0,.04)'},ticks:{color:'#aeaeb2',font:{size:10},callback:v=>v>=1e4?(v/1e4).toFixed(0)+'万':v}}}}});
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#4a4e56',font:{size:11},usePointStyle:true,padding:14}}},
+      scales:{x:{grid:{color:'rgba(0,0,0,.04)'},ticks:{color:'#7a7e86',font:{size:10}}},y:{grid:{color:'rgba(0,0,0,.04)'},ticks:{color:'#7a7e86',font:{size:10},callback:v=>v>=1e4?(v/1e4).toFixed(0)+'万':v}}}}});
 }
 function renderInvestAnalysis(sorted){
   const el=document.getElementById('invest-an');
@@ -2162,7 +2173,7 @@ function renderContribChart(sorted){
   charts.contrib=new Chart(ctx,{type:'bar',
     data:{labels:data.map(d=>d.name),datasets:[{label:'增减',data:data.map(d=>d.diff),backgroundColor:data.map(d=>d.diff>=0?({bank:'#007aff',stock:'#ff9500',fund:'#ffcc00',insurance:'#34c759',btc:'#e07800',cash:'#5ac8fa'}[d.type]||'#007aff'):'#ff3b30'),borderRadius:6,borderSkipped:false}]},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>fmtMoney(c.raw)}}},
-      scales:{x:{grid:{color:'rgba(0,0,0,.04)'},ticks:{color:'#aeaeb2',font:{size:10}}},y:{grid:{color:'rgba(0,0,0,.04)'},ticks:{color:'#aeaeb2',font:{size:10},callback:v=>v>=1e4?(v/1e4).toFixed(1)+'万':v}}}}});
+      scales:{x:{grid:{color:'rgba(0,0,0,.04)'},ticks:{color:'#7a7e86',font:{size:10}}},y:{grid:{color:'rgba(0,0,0,.04)'},ticks:{color:'#7a7e86',font:{size:10},callback:v=>v>=1e4?(v/1e4).toFixed(1)+'万':v}}}}});
 }
 
 // ── Individual stock contribution trend ──────────────────
@@ -2203,14 +2214,14 @@ function renderStockChart({ labels, datasets, weekTotals, TICKER_COLORS, chartId
     options: {
       responsive: true, maintainAspectRatio: false,
       plugins: {
-        legend: { labels: { color:'#6e6e73', font:{size:11}, usePointStyle:true, padding:12 } },
+        legend: { labels: { color:'#4a4e56', font:{size:11}, usePointStyle:true, padding:12 } },
         tooltip: { callbacks: { label: c => isPct
           ? `${c.dataset.label}: ${c.parsed.y.toFixed(2)}%`
           : `${c.dataset.label}: ${fmtMoney(c.parsed.y)}` } }
       },
       scales: {
-        x: { grid:{color:'rgba(0,0,0,.04)'}, ticks:{color:'#aeaeb2',font:{size:10}} },
-        y: { grid:{color:'rgba(0,0,0,.04)'}, ticks:{color:'#aeaeb2',font:{size:10},
+        x: { grid:{color:'rgba(0,0,0,.04)'}, ticks:{color:'#7a7e86',font:{size:10}} },
+        y: { grid:{color:'rgba(0,0,0,.04)'}, ticks:{color:'#7a7e86',font:{size:10},
           callback: v => isPct ? v+'%' : v>=1e4?(v/1e4).toFixed(1)+'万':v } }
       }
     }
@@ -2420,175 +2431,6 @@ function openPhoto(recId) {
 function closePhoto() {
   document.getElementById('photo-overlay').classList.remove('show');
   document.getElementById('photo-lightbox-img').src = '';
-}
-async function runAIAdvisor() {
-  const btn = document.getElementById('ai-btn');
-  const body = document.getElementById('ai-body');
-
-  const sorted = sortedRecords();
-  if (!sorted.length) { toast('需要至少一周数据才能生成分析'); return; }
-
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spinner" style="border-top-color:#fff"></span> 分析中…';
-  body.innerHTML = `<div class="ai-loading"><div class="ai-loading-dots"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div></div><span>正在分析你的投资组合，请稍候…</span></div>`;
-
-  const latest = sorted[sorted.length - 1];
-  const first  = sorted[0];
-  const cur    = computeRecord(latest);
-  const ini    = computeRecord(first);
-  const totalBase = cur.total;
-  const bankPct   = totalBase > 0 ? (cur.bank / totalBase * 100).toFixed(1) : 0;
-  const investPct = totalBase > 0 ? (cur.invest / totalBase * 100).toFixed(1) : 0;
-  const otherPct  = totalBase > 0 ? (cur.other / totalBase * 100).toFixed(1) : 0;
-  const growthPct = ini.total > 0 ? ((cur.total - ini.total) / ini.total * 100).toFixed(2) : 0;
-  const weeks = sorted.length;
-
-  const stockAccounts = db.accounts.filter(a => a.type === 'stock' && a.holdings?.length);
-  const stockLines = stockAccounts.flatMap(acc =>
-    (acc.holdings || []).map(h => {
-      const sp = stockPrices[h.ticker?.toUpperCase()];
-      const mkt = sp?.market || h.market || 'US';
-      const price = sp?.price ? `${sp.currency} ${sp.price}（日涨跌 ${sp.changePct >= 0 ? '+' : ''}${sp.changePct ?? '—'}%）` : '价格暂未获取';
-      return `  - [${mkt}] ${h.ticker} × ${h.shares}股 @ ${price}`;
-    })
-  ).join('\n');
-
-  const accountLines = db.accounts.map(acc => {
-    const native = getAccNative(acc, latest);
-    const base   = conv(native, acc.currency || 'CNY', baseCurrency);
-    return `  - ${acc.name}（${TYPES[acc.type]?.label || acc.type}，${acc.currency}）：${fmtMoney(native, acc.currency)} ≈ ${fmtMoney(base)}`;
-  }).join('\n');
-
-  const prompt = `你是一位专业的个人理财顾问，分析风格参考 YouTube 频道「犀牛财经 RhinoFinance」（@RhinoFinance）：具备宏观视野、逻辑严谨、以长线价值投资为导向、不鼓励频繁交易和短线投机、善于结合全球宏观环境分析资产配置。
-
-以下是用户的家庭资产组合快照（基准货币：${baseCurrency}，数据截至 ${latest.weekEnd}）：
-
-【资产配置比例】
-- 总资产：${fmtMoney(cur.total)}
-- 银行/现金：${bankPct}%（${fmtMoney(cur.bank)}）
-- 投资资产：${investPct}%（${fmtMoney(cur.invest)}）
-- 其他资产（保险/加密等）：${otherPct}%（${fmtMoney(cur.other)}）
-- 期间累计增长（${weeks}周）：${growthPct}%
-
-【全部账户明细】
-${accountLines}
-
-【股票持仓及最新价格】
-${stockLines || '（当前无股票持仓）'}
-
-请严格按以下5个板块输出分析，每个板块用【板块名】开头，2-4句话，简洁有力，直接给结论和建议：
-
-【配置概览】当前资产配置比例点评，是否健康平衡
-
-【持仓点评】针对具体持仓股票和市场（美/港/日股）给出简短判断
-
-【主要风险】当前组合面临的1-2个核心风险点
-
-【优化建议】2-3条具体可操作的调整建议（要有针对性，不要泛泛而谈）
-
-【宏观参考】结合当前全球宏观环境（美联储利率走向、中美关系、汇率趋势）给出1-2点值得关注的方向
-
-语言：中文，专业但易懂，最后附一行简短免责声明。`;
-
-  try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1200,
-        messages: [{ role: 'user', content: prompt }]
-      })
-    });
-
-    if (!res.ok) {
-      const errText = await res.text().catch(() => res.status);
-      throw new Error(`API 错误 ${res.status}：${errText}`);
-    }
-
-    const data = await res.json();
-    const text = data.content?.map(c => c.type === 'text' ? c.text : '').join('').trim();
-    if (!text) throw new Error('返回内容为空');
-
-    // Parse 【标题】内容 sections
-    const parts = text.split(/(【[^】]+】)/);
-    let html = '<div class="ai-result">';
-    let i = 0;
-    // Skip any leading text before first section marker
-    while (i < parts.length && !parts[i].startsWith('【')) i++;
-    while (i + 1 < parts.length) {
-      const rawTitle = parts[i].replace(/[【】]/g, '').trim();
-      const rawContent = (parts[i + 1] || '').trim();
-      if (rawTitle && rawContent) {
-        html += `<div class="ai-section">
-          <div class="ai-section-title">${rawTitle}</div>
-          <div class="ai-text">${rawContent.replace(/\n/g, '<br>')}</div>
-        </div>`;
-      }
-      i += 2;
-    }
-    // Fallback: if no sections parsed, show raw
-    if (i === 0) {
-      html += `<div class="ai-section"><div class="ai-text">${text.replace(/\n/g, '<br>')}</div></div>`;
-    }
-    html += `<div class="ai-chips">
-      <span class="ai-chip">📅 ${latest.weekEnd}</span>
-      <span class="ai-chip">💰 ${fmtMoney(cur.total)}</span>
-      <span class="ai-chip">📊 ${weeks}周数据</span>
-      <span class="ai-chip">🦏 犀牛财经视角</span>
-    </div>`;
-    html += `<div class="ai-disclaimer">⚠️ 以上内容由 AI 生成，仅供参考，不构成任何投资建议。市场有风险，投资需谨慎。</div>`;
-    html += '</div>';
-    body.innerHTML = html;
-
-  } catch(e) {
-    // Fallback: show copy-prompt UI — works 100% regardless of CORS
-    window._aiPrompt = prompt;
-    const escaped = prompt.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    body.innerHTML = `<div class="ai-result">
-      <div class="ai-section">
-        <div class="ai-section-title" style="color:rgba(251,191,36,.9)">📋 一键复制分析提示词</div>
-        <div class="ai-text">已根据你的持仓数据生成专属分析提示词。点击复制后，粘贴到
-          <a href="https://claude.ai" target="_blank" style="color:#a78bfa;text-decoration:underline;">Claude.ai</a>
-          对话框发送，即可获得基于「犀牛财经 RhinoFinance」视角的专业分析。
-        </div>
-      </div>
-      <button id="copy-prompt-btn" onclick="copyAIPrompt()" style="display:inline-flex;align-items:center;gap:7px;margin:12px 0 14px;padding:10px 20px;background:linear-gradient(135deg,rgba(124,58,237,.4),rgba(168,85,247,.3));border:1px solid rgba(168,85,247,.5);border-radius:9px;color:#e9d5ff;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;transition:all .2s;">
-        📋 复制提示词到剪贴板
-      </button>
-      <details style="margin-top:4px;">
-        <summary style="font-size:11px;color:rgba(196,181,253,.5);cursor:pointer;user-select:none;margin-bottom:6px;">预览提示词内容</summary>
-        <div style="background:rgba(0,0,0,.3);border-radius:8px;padding:12px 14px;max-height:160px;overflow-y:auto;font-size:11px;color:rgba(255,255,255,.45);font-family:var(--mono);line-height:1.6;white-space:pre-wrap;border:1px solid rgba(255,255,255,.05);">${escaped}</div>
-      </details>
-      <div class="ai-chips" style="margin-top:12px;">
-        <span class="ai-chip">📅 ${latest.weekEnd}</span>
-        <span class="ai-chip">💰 ${fmtMoney(cur.total)}</span>
-        <span class="ai-chip">📊 ${weeks}周数据</span>
-        <span class="ai-chip">🦏 犀牛财经视角</span>
-      </div>
-    </div>`;
-  } finally {
-    btn.disabled = false;
-    btn.innerHTML = '↺ 重新生成';
-  }
-}
-
-function copyAIPrompt() {
-  if (!window._aiPrompt) return;
-  const copyBtn = document.getElementById('copy-prompt-btn');
-  navigator.clipboard.writeText(window._aiPrompt).then(() => {
-    if (copyBtn) { copyBtn.textContent = '✓ 已复制！'; copyBtn.style.background = 'rgba(23,178,106,.3)'; copyBtn.style.borderColor = 'rgba(23,178,106,.5)'; }
-    toast('✓ 提示词已复制 — 请粘贴到 Claude.ai 对话框');
-    setTimeout(() => {
-      if (copyBtn) { copyBtn.innerHTML = '📋 复制提示词到剪贴板'; copyBtn.style.background = ''; copyBtn.style.borderColor = ''; }
-    }, 2500);
-  }).catch(() => {
-    // execCommand fallback
-    const ta = document.createElement('textarea');
-    ta.value = window._aiPrompt; ta.style.position = 'fixed'; ta.style.opacity = '0';
-    document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
-    toast('✓ 提示词已复制');
-  });
 }
 function toggleExportMenu() {
   const m = document.getElementById('export-menu');
@@ -3692,10 +3534,10 @@ function renderLedgerStats() {
         }))
       },
       options:{ responsive:true, maintainAspectRatio:false,
-        plugins:{ legend:{labels:{color:'#6e6e73',font:{size:11},usePointStyle:true,padding:12}},
+        plugins:{ legend:{labels:{color:'#4a4e56',font:{size:11},usePointStyle:true,padding:12}},
           tooltip:{callbacks:{label:c=>`${c.dataset.label}: JP¥ ${Math.round(c.parsed.y).toLocaleString()}`}}},
-        scales:{ x:{grid:{color:'rgba(0,0,0,.04)'},ticks:{color:'#aeaeb2',font:{size:10}}},
-          y:{grid:{color:'rgba(0,0,0,.04)'},ticks:{color:'#aeaeb2',font:{size:10},
+        scales:{ x:{grid:{color:'rgba(0,0,0,.04)'},ticks:{color:'#7a7e86',font:{size:10}}},
+          y:{grid:{color:'rgba(0,0,0,.04)'},ticks:{color:'#7a7e86',font:{size:10},
             callback:v=>v>=10000?(v/10000).toFixed(0)+'万':v}}}}
     });
   }
@@ -3707,7 +3549,7 @@ function renderLedgerStats() {
         datasets:[{data:catData.map(c=>c.total), backgroundColor:catData.map(c=>c.color),
           borderColor:'#fff', borderWidth:3, hoverOffset:4}]},
       options:{ responsive:true, maintainAspectRatio:false, cutout:'65%',
-        plugins:{ legend:{position:'bottom',labels:{color:'#6e6e73',font:{size:11},padding:14,usePointStyle:true}},
+        plugins:{ legend:{position:'bottom',labels:{color:'#4a4e56',font:{size:11},padding:14,usePointStyle:true}},
           tooltip:{callbacks:{label:c=>`${c.label}: JP¥ ${Math.round(c.raw).toLocaleString()} (${(c.raw/grandTotal*100).toFixed(1)}%)`}}}}
     });
   }
