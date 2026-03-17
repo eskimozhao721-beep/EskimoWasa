@@ -812,6 +812,14 @@ body.standalone #export-menu{padding-bottom:calc(env(safe-area-inset-bottom,34px
   body.standalone #export-menu{padding-bottom:calc(env(safe-area-inset-bottom,34px) + 12px) !important;}
 }
 @media(min-width:769px){#fire-safe-top{display:none;}}
+
+/* ── fire-safe-area-patch: Safe Area for Dynamic Island ── */
+body{padding-top:env(safe-area-inset-top,0px);}
+.sidebar{top:env(safe-area-inset-top,0px);}
+.mob-nav{padding-bottom:calc(6px + env(safe-area-inset-bottom,0px));}
+.toast{bottom:calc(72px + env(safe-area-inset-bottom,0px));}
+#login-screen{padding-top:env(safe-area-inset-top,0px);}
+.overlay .modal{margin-top:env(safe-area-inset-top,0px);}
 </style>
 </head>
 <body>
