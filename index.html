@@ -830,6 +830,8 @@ body{padding-top:env(safe-area-inset-top,0px);}
 
 /* tree-pc-height - fixed for better visibility */
 @media(min-width:769px){#page-tree .card:first-of-type{max-height:520px;overflow:visible;}#tree-svg-container{max-height:500px;min-height:320px;}}
+/* 移动端资产+消费并排变上下 */
+@media(max-width:768px){.dash-split{grid-template-columns:1fr !important;}}
 </style>
 </head>
 <body>
@@ -963,18 +965,45 @@ body{padding-top:env(safe-area-inset-top,0px);}
       </div>
     </div>
 
-    <!-- ── 快照统计 ── -->
-    <div class="stats-grid">
-      <div class="sc"><div class="sc-label"><span class="sc-label-icon">🏠</span>家庭总资产</div><div class="sc-val lg" id="s-total">—</div><div class="sc-cur" id="s-total-cur"></div><div class="sc-chg cn" id="s-total-chg">—</div><div class="sbar sb-total"></div></div>
-      <div class="sc"><div class="sc-label"><span class="sc-label-icon">🏦</span>银行存款</div><div class="sc-val" id="s-bank">—</div><div class="sc-chg cn" id="s-bank-chg">—</div><div class="sbar sb-blue"></div></div>
-      <div class="sc"><div class="sc-label"><span class="sc-label-icon">📈</span>投资资产</div><div class="sc-val" id="s-invest">—</div><div class="sc-chg cn" id="s-invest-chg">—</div><div class="sbar sb-orange"></div></div>
-      <div class="sc"><div class="sc-label"><span class="sc-label-icon">🗂</span>其他资产</div><div class="sc-val" id="s-other">—</div><div class="sc-chg cn" id="s-other-chg">—</div><div class="sbar sb-green"></div></div>
+    <!-- ── 快照统计 - 资产 + 消费并排 ── -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px" class="dash-split">
+      <!-- 左侧：资产概览 -->
+      <div>
+        <div style="font-size:12px;font-weight:700;color:var(--t2);margin-bottom:10px;display:flex;align-items:center;gap:6px">
+          <span style="width:10px;height:10px;border-radius:3px;background:var(--blue)"></span>资产概览
+        </div>
+        <div class="stats-grid" style="grid-template-columns:1fr 1fr">
+          <div class="sc"><div class="sc-label"><span class="sc-label-icon">🏠</span>家庭总资产</div><div class="sc-val lg" id="s-total">—</div><div class="sc-cur" id="s-total-cur"></div><div class="sc-chg cn" id="s-total-chg">—</div><div class="sbar sb-total"></div></div>
+          <div class="sc"><div class="sc-label"><span class="sc-label-icon">🏦</span>银行存款</div><div class="sc-val" id="s-bank">—</div><div class="sc-chg cn" id="s-bank-chg">—</div><div class="sbar sb-blue"></div></div>
+          <div class="sc"><div class="sc-label"><span class="sc-label-icon">📈</span>投资资产</div><div class="sc-val" id="s-invest">—</div><div class="sc-chg cn" id="s-invest-chg">—</div><div class="sbar sb-orange"></div></div>
+          <div class="sc"><div class="sc-label"><span class="sc-label-icon">🗂</span>其他资产</div><div class="sc-val" id="s-other">—</div><div class="sc-chg cn" id="s-other-chg">—</div><div class="sbar sb-green"></div></div>
+        </div>
+      </div>
+      <!-- 右侧：消费概览 -->
+      <div>
+        <div style="font-size:12px;font-weight:700;color:var(--t2);margin-bottom:10px;display:flex;align-items:center;gap:6px">
+          <span style="width:10px;height:10px;border-radius:3px;background:#f97316"></span>消费概览
+          <span style="margin-left:auto;font-size:11px;font-weight:400;color:var(--t3)" id="dash-spend-period"></span>
+        </div>
+        <div class="stats-grid" style="grid-template-columns:1fr 1fr" id="dash-spend-cards">
+          <div class="sc"><div class="sc-label">本周消费</div><div class="sc-val" id="ds-week">—</div><div class="sbar" style="background:#f97316"></div></div>
+          <div class="sc"><div class="sc-label">本月消费</div><div class="sc-val" id="ds-month">—</div><div class="sbar" style="background:#ec4899"></div></div>
+          <div class="sc"><div class="sc-label">月预算剩余</div><div class="sc-val" id="ds-budget-left">—</div><div class="sc-chg" id="ds-budget-pct"></div><div class="sbar" style="background:#22c55e"></div></div>
+          <div class="sc"><div class="sc-label">周均消费</div><div class="sc-val" id="ds-week-avg">—</div><div class="sbar" style="background:#6b7280"></div></div>
+        </div>
+      </div>
     </div>
 
-    <!-- ── 趋势图 + 构成 ── -->
+    <!-- ── 趋势图 + 构成 (资产 + 消费并排) ── -->
     <div class="charts-row">
       <div class="card"><div class="card-hdr"><div><div class="card-title">总资产趋势</div><div class="card-sub" id="trend-cur-lbl"></div></div></div><div class="chart-box"><canvas id="chart-trend"></canvas></div></div>
+      <div class="card"><div class="card-hdr"><div class="card-title">消费分类趋势</div><div class="card-sub">近8周各分类支出</div></div><div class="chart-box"><canvas id="chart-spend-trend"></canvas></div></div>
+    </div>
+    
+    <!-- ── 资产构成 + 消费构成并排 ── -->
+    <div class="charts-row" style="margin-top:14px">
       <div class="card"><div class="card-hdr"><div class="card-title">资产构成</div></div><div class="chart-box"><canvas id="chart-pie"></canvas></div></div>
+      <div class="card"><div class="card-hdr"><div class="card-title">消费构成</div><div class="card-sub" id="spend-pie-period"></div></div><div class="chart-box"><canvas id="chart-spend-pie"></canvas></div></div>
     </div>
 
     <!-- ── 账户明细 ── -->
@@ -2041,6 +2070,7 @@ function renderDashboard() {
     ['total','bank','invest','other'].forEach(k=>{document.getElementById('s-'+k).textContent='—';const e=document.getElementById('s-'+k+'-chg');e.textContent='—';e.className='sc-chg cn';});
     renderTrendChart([]); renderPieChart(null);
     document.getElementById('dash-tbody').innerHTML='<tr><td colspan="7"><div class="empty-state"><div class="empty-icon">📊</div>暂无数据</div></td></tr>';
+    renderDashSpend(); // 渲染消费统计
     return;
   }
   const cur=computeRecord(latest), pre=prev?computeRecord(prev):null;
@@ -2055,6 +2085,148 @@ function renderDashboard() {
   // also render analysis section (merged into same page)
   renderAnalysisSummary(sorted);
   renderTypeTrendChart(sorted); renderInvestAnalysis(sorted); renderContribChart(sorted); renderStockAnalysis(sorted);
+  // 渲染消费统计
+  renderDashSpend();
+}
+
+// ── 总览页消费统计渲染 ──
+function renderDashSpend() {
+  const now = new Date();
+  const ym = now.toISOString().slice(0, 7);
+  const weeks = (db.ledgerWeeks || []).sort((a,b) => b.weekEnd.localeCompare(a.weekEnd));
+  const thisWeek = weeks[0];
+  const budget = getLedgerBudget();
+  
+  // 本周消费
+  let weekTotal = 0;
+  if (thisWeek) {
+    ALL_SUB_KEYS.forEach(k => { weekTotal += thisWeek.vals[k] || 0; });
+  }
+  document.getElementById('ds-week').textContent = weekTotal > 0 ? fmtJPY(weekTotal) : '—';
+  document.getElementById('dash-spend-period').textContent = thisWeek ? thisWeek.weekEnd : '';
+  
+  // 本月消费
+  const monthSpent = getMonthSpent(ym);
+  let monthTotal = 0;
+  ALL_SUB_KEYS.forEach(k => { monthTotal += monthSpent[k] || 0; });
+  document.getElementById('ds-month').textContent = monthTotal > 0 ? fmtJPY(monthTotal) : '—';
+  
+  // 月预算剩余
+  let monthBudgetTotal = 0;
+  LEDGER_CATS.flatMap(c => c.subs).filter(s => !s.yearBudget && budget.month[s.key]).forEach(sub => {
+    monthBudgetTotal += budget.month[sub.key] || 0;
+  });
+  const budgetLeft = monthBudgetTotal - monthTotal;
+  const budgetPct = monthBudgetTotal > 0 ? (monthTotal / monthBudgetTotal * 100) : 0;
+  document.getElementById('ds-budget-left').textContent = monthBudgetTotal > 0 ? fmtJPY(budgetLeft) : '—';
+  const budgetPctEl = document.getElementById('ds-budget-pct');
+  if (monthBudgetTotal > 0) {
+    budgetPctEl.textContent = `已用 ${budgetPct.toFixed(0)}%`;
+    budgetPctEl.style.color = budgetPct > 100 ? 'var(--red)' : budgetPct > 80 ? '#f97316' : 'var(--green)';
+  } else {
+    budgetPctEl.textContent = '';
+  }
+  
+  // 周均消费 (近8周)
+  const recent8 = weeks.slice(0, 8);
+  let weekAvg = 0;
+  if (recent8.length > 0) {
+    let sum = 0;
+    recent8.forEach(w => { ALL_SUB_KEYS.forEach(k => { sum += w.vals[k] || 0; }); });
+    weekAvg = sum / recent8.length;
+  }
+  document.getElementById('ds-week-avg').textContent = weekAvg > 0 ? fmtJPY(Math.round(weekAvg)) : '—';
+  
+  // 消费趋势图
+  renderSpendTrendChart(weeks.slice(0, 8).reverse());
+  // 消费构成饼图
+  renderSpendPieChart(monthSpent, ym);
+}
+
+// ── 消费趋势图 ──
+function renderSpendTrendChart(weeks) {
+  const ctx = document.getElementById('chart-spend-trend')?.getContext('2d');
+  if (!ctx) return;
+  if (charts.spendTrend) charts.spendTrend.destroy();
+  if (!weeks.length) return;
+  
+  const catData = LEDGER_CATS.map(cat => ({
+    label: cat.label,
+    color: cat.color,
+    data: weeks.map(w => cat.subs.reduce((s, sub) => s + (w.vals[sub.key] || 0), 0))
+  }));
+  
+  charts.spendTrend = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: weeks.map(w => w.weekEnd),
+      datasets: catData.map(cat => ({
+        label: cat.label,
+        data: cat.data,
+        borderColor: cat.color,
+        backgroundColor: 'transparent',
+        borderWidth: 2,
+        pointRadius: 3,
+        pointBackgroundColor: '#fff',
+        pointBorderColor: cat.color,
+        pointBorderWidth: 2,
+        tension: 0.4
+      }))
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: '#4a4e56', font: { size: 11 }, usePointStyle: true, padding: 12 } },
+        tooltip: { callbacks: { label: c => `${c.dataset.label}: JP¥ ${Math.round(c.parsed.y).toLocaleString()}` } }
+      },
+      scales: {
+        x: { grid: { color: 'rgba(0,0,0,.04)' }, ticks: { color: '#7a7e86', font: { size: 10 } } },
+        y: { grid: { color: 'rgba(0,0,0,.04)' }, ticks: { color: '#7a7e86', font: { size: 10 }, callback: v => v >= 10000 ? (v/10000).toFixed(0) + '万' : v } }
+      }
+    }
+  });
+}
+
+// ── 消费构成饼图 ──
+function renderSpendPieChart(monthSpent, ym) {
+  const ctx = document.getElementById('chart-spend-pie')?.getContext('2d');
+  if (!ctx) return;
+  if (charts.spendPie) charts.spendPie.destroy();
+  
+  document.getElementById('spend-pie-period').textContent = ym + ' 月';
+  
+  const catTotals = LEDGER_CATS.map(cat => ({
+    label: cat.label,
+    color: cat.color,
+    total: cat.subs.reduce((s, sub) => s + (monthSpent[sub.key] || 0), 0)
+  })).filter(c => c.total > 0);
+  
+  if (!catTotals.length) return;
+  const grandTotal = catTotals.reduce((s, c) => s + c.total, 0);
+  
+  charts.spendPie = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: catTotals.map(c => c.label),
+      datasets: [{
+        data: catTotals.map(c => c.total),
+        backgroundColor: catTotals.map(c => c.color),
+        borderColor: '#fff',
+        borderWidth: 3,
+        hoverOffset: 4
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '65%',
+      plugins: {
+        legend: { position: 'bottom', labels: { color: '#4a4e56', font: { size: 11 }, padding: 14, usePointStyle: true } },
+        tooltip: { callbacks: { label: c => `${c.label}: JP¥ ${Math.round(c.raw).toLocaleString()} (${(c.raw / grandTotal * 100).toFixed(1)}%)` } }
+      }
+    }
+  });
 }
 
 function renderTrendChart(sorted) {
@@ -4735,6 +4907,13 @@ function renderGoalsBudget() {
   // 年度预算
   const yearEl = document.getElementById('goal-year-budget');
   const yearItems = LEDGER_CATS.flatMap(c => c.subs).filter(s => s.yearBudget && isBudgetEnabled(s.key));
+  
+  // 计算年度时间进度
+  const yearStart = new Date(now.getFullYear(), 0, 1);
+  const yearEnd = new Date(now.getFullYear() + 1, 0, 1);
+  const yearTimePct = (now - yearStart) / (yearEnd - yearStart);
+  document.getElementById('goal-year-sub').textContent = `${yr}年 · 已过 ${(yearTimePct*100).toFixed(0)}%`;
+  
   if (!yearItems.length) {
     yearEl.innerHTML = '<div style="text-align:center;padding:20px;color:var(--t3)">暂无年度预算项目</div>';
   } else {
@@ -4751,8 +4930,9 @@ function renderGoalsBudget() {
           <span style="font-size:13px;font-weight:600">${sub.label}</span>
           <span style="font-size:12px;font-family:var(--mono);color:var(--t2)">${fmtJPY(spent)} / ${fmtJPY(limit)}</span>
         </div>
-        <div style="height:8px;background:var(--s3);border-radius:4px;overflow:hidden">
+        <div style="position:relative;height:8px;background:var(--s3);border-radius:4px;overflow:visible">
           <div style="height:100%;width:${Math.min(100, st.pct * 100).toFixed(1)}%;background:${barColor};border-radius:4px"></div>
+          <div style="position:absolute;left:${(yearTimePct * 100).toFixed(1)}%;top:-2px;height:12px;width:2px;background:#374151;border-radius:1px" title="时间进度线"></div>
         </div>
         ${st.status !== 'ok' ? `<div style="margin-top:4px">${budgetBadgeHtml(st)}</div>` : ''}
       </div>`;
