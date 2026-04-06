@@ -826,10 +826,10 @@ body{padding-top:env(safe-area-inset-top,0px);}
 .sidebar{top:env(safe-area-inset-top,0px);height:calc(100vh - env(safe-area-inset-top,0px));}
 #login-screen{padding-top:env(safe-area-inset-top,0px);}
 .overlay .modal{margin-top:env(safe-area-inset-top,0px);}
-@media(min-width:769px){#page-tree .card:first-of-type{max-height:420px;overflow:hidden;}#tree-svg-container{max-height:400px;}}
+@media(min-width:769px){#page-tree .card:first-of-type{max-height:520px;overflow:visible;}#tree-svg-container{max-height:500px;min-height:320px;}}
 
-/* tree-pc-height */
-@media(min-width:769px){#page-tree .card:first-of-type{max-height:420px;overflow:hidden;}#tree-svg-container{max-height:400px;}}
+/* tree-pc-height - fixed for better visibility */
+@media(min-width:769px){#page-tree .card:first-of-type{max-height:520px;overflow:visible;}#tree-svg-container{max-height:500px;min-height:320px;}}
 </style>
 </head>
 <body>
@@ -884,16 +884,17 @@ body{padding-top:env(safe-area-inset-top,0px);}
   <!-- trend line inside flame -->
   <polyline points="12,25 15,20 18,22 22,15" stroke="rgba(255,255,255,0.75)" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
 </svg></div>
-        <div><div class="logo-text">🔥 FIRE计划</div><div class="logo-sub">Financial Independence · v6.3</div></div>
+        <div><div class="logo-text">🔥 FIRE计划</div><div class="logo-sub">Financial Independence · v7.0</div></div>
       </div>
     </div>
     <nav class="nav">
-      <div class="nav-section">功能</div>
-      <div class="nav-item active" onclick="showPage('dashboard')"><span class="nav-icon">⊞</span>总览 & 分析</div>
+      <div class="nav-item" onclick="showPage('ledger')"><span class="nav-icon">📒</span>消费</div>
+      <div class="nav-section">理财收入</div>
+      <div class="nav-item active" onclick="showPage('dashboard')"><span class="nav-icon">⊞</span>总览分析</div>
       <div class="nav-item" onclick="showPage('record')"><span class="nav-icon">✎</span>记录</div>
+      <div class="nav-item" onclick="showPage('goals')"><span class="nav-icon">🎯</span>目标观测</div>
+      <div class="nav-section">管理</div>
       <div class="nav-item" onclick="showPage('accounts')"><span class="nav-icon">◈</span>账户管理</div>
-      <div class="nav-item" onclick="showPage('ledger')"><span class="nav-icon">📒</span>账本</div>
-      <div class="nav-section" id="admin-nav-section" style="display:none">管理</div>
       <div class="nav-item" id="admin-nav-item" style="display:none" onclick="showPage('admin')"><span class="nav-icon">⚙</span>系统管理</div>
     </nav>
     <div class="sidebar-foot">
@@ -1293,6 +1294,58 @@ body{padding-top:env(safe-area-inset-top,0px);}
     </div>
   </div>
 
+  <!-- 🎯 目标观测 -->
+  <div class="page" id="page-goals">
+    <div class="page-header">
+      <div><div class="page-title">🎯 目标观测</div><div class="page-sub">追踪你的FIRE进度与预算目标</div></div>
+      <div class="hdr-actions">
+        <button class="btn btn-g btn-sm" onclick="openTreeGoalModal()">设定总资产目标</button>
+      </div>
+    </div>
+
+    <!-- 目标类型切换 -->
+    <div style="display:flex;gap:8px;margin-bottom:14px">
+      <button class="btn btn-sm" id="goal-tab-asset-btn" onclick="switchGoalTab('asset')" style="font-weight:700;color:var(--blue)">📊 资产目标</button>
+      <button class="btn btn-g btn-sm" id="goal-tab-budget-btn" onclick="switchGoalTab('budget')">💰 预算目标</button>
+    </div>
+
+    <!-- 资产目标 Tab -->
+    <div id="goal-asset-tab">
+      <!-- FIRE总目标卡片 -->
+      <div class="card" style="margin-bottom:14px">
+        <div class="card-hdr"><div class="card-title">🏠 FIRE总目标</div><div class="card-sub" id="goal-fire-sub">建造你的财务自由之家</div></div>
+        <div id="goal-fire-progress" style="padding:12px 0"></div>
+      </div>
+
+      <!-- 周目标进度 -->
+      <div class="card" style="margin-bottom:14px">
+        <div class="card-hdr"><div class="card-title">📈 周资产变化</div><div class="card-sub">最近8周资产增长趋势</div></div>
+        <div id="goal-weekly-progress" style="max-height:320px;overflow-y:auto"></div>
+      </div>
+
+      <!-- 年度里程碑 -->
+      <div class="card">
+        <div class="card-hdr"><div class="card-title">🏆 年度里程碑</div><div class="card-sub">按年份统计资产增长</div></div>
+        <div id="goal-yearly-milestones"></div>
+      </div>
+    </div>
+
+    <!-- 预算目标 Tab -->
+    <div id="goal-budget-tab" style="display:none">
+      <!-- 月度预算进度 -->
+      <div class="card" style="margin-bottom:14px">
+        <div class="card-hdr"><div class="card-title">📅 本月预算进度</div><div class="card-sub" id="goal-month-sub"></div></div>
+        <div id="goal-month-budget"></div>
+      </div>
+
+      <!-- 年度预算进度 -->
+      <div class="card">
+        <div class="card-hdr"><div class="card-title">📆 年度预算进度</div><div class="card-sub" id="goal-year-sub"></div></div>
+        <div id="goal-year-budget"></div>
+      </div>
+    </div>
+  </div>
+
   </main>
 </div>
 </div>
@@ -1385,17 +1438,17 @@ body{padding-top:env(safe-area-inset-top,0px);}
 
 <!-- MOBILE BOTTOM NAV -->
 <nav class="mob-nav" id="mob-nav">
+  <button class="mob-nav-item" id="mob-tab-ledger" onclick="showPage('ledger')">
+    <span class="mob-icon">📒</span>消费
+  </button>
   <button class="mob-nav-item active" id="mob-tab-dashboard" onclick="showPage('dashboard')">
     <span class="mob-icon">⊞</span>总览
   </button>
   <button class="mob-nav-item" id="mob-tab-record" onclick="showPage('record')">
     <span class="mob-icon">✎</span>记录
   </button>
-  <button class="mob-nav-item" id="mob-tab-accounts" onclick="showPage('accounts')">
-    <span class="mob-icon">◈</span>账户
-  </button>
-  <button class="mob-nav-item" id="mob-tab-ledger" onclick="showPage('ledger')">
-    <span class="mob-icon">📒</span>账本
+  <button class="mob-nav-item" id="mob-tab-goals" onclick="showPage('goals')">
+    <span class="mob-icon">🎯</span>目标
   </button>
   <button class="mob-nav-item" id="mob-tab-admin" onclick="showPage('admin')" style="display:none">
     <span class="mob-icon">⚙</span>管理
@@ -1940,7 +1993,8 @@ function showPage(page) {
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   const pageEl = document.getElementById('page-'+page);
   if (pageEl) pageEl.classList.add('active');
-  const idx={dashboard:0,record:1,accounts:2,ledger:3,admin:4};
+  // 新菜单结构索引: ledger=0, dashboard=1, record=2, goals=3, accounts=4, admin=5
+  const idx={ledger:0,dashboard:1,record:2,goals:3,accounts:4,admin:5};
   document.querySelectorAll('.nav-item')[idx[page]]?.classList.add('active');
   document.querySelectorAll('.mob-nav-item').forEach(b=>b.classList.remove('active'));
   document.getElementById('mob-tab-'+page)?.classList.add('active');
@@ -1954,6 +2008,7 @@ function renderPageContent(p) {
   if(p==='accounts') renderAccounts();
   if(p==='ledger') renderLedger();
   if(p==='tree') renderTree();
+  if(p==='goals') renderGoals();
   if(p==='admin') renderAdmin();
 }
 function togglePrivacy() {
@@ -2234,7 +2289,9 @@ function renderRecordForm(rec) {
         const hint=native&&rate?`1 ${accCur} = ${rate.toFixed(4)} ${baseCurrency}　→　${fmtMoney(conv(native,accCur,baseCurrency))}`:'';
         html+=`<div class="ri">
           <div class="ri-lbl"><span class="cur-tag">${accCur}</span>${acc.name}</div>
-          <input type="number" class="ri-inp" id="rec-${acc.id}" placeholder="0.00" step="0.01" min="0" value="${rec.balances?.[acc.id]??''}">
+          <input type="text" inputmode="decimal" class="ri-inp" id="rec-${acc.id}" placeholder="0.00 或 1200+800" step="0.01" min="0" value="${rec.balances?.[acc.id]??''}"
+            onblur="calcRecInput(this,'${acc.id}')"
+            onkeydown="if(event.key==='Enter'){calcRecInput(this,'${acc.id}');event.preventDefault();}">
           <div class="ri-detail" id="hint-${acc.id}">${hint}</div>
         </div>`;
       }
@@ -2246,7 +2303,8 @@ function renderRecordForm(rec) {
   document.querySelectorAll('.ri-inp').forEach(input=>{
     input.addEventListener('input',()=>{
       const acc=db.accounts.find(a=>a.id===input.id.replace('rec-',''));if(!acc)return;
-      const val=parseFloat(input.value)||0; const accCur=acc.currency||'CNY';
+      // 支持表达式计算
+      const val=evalCalc(input.value)||0; const accCur=acc.currency||'CNY';
       const rate=accCur!==baseCurrency?fxRate(accCur):null;
       const h=document.getElementById('hint-'+acc.id);
       if(h)h.textContent=val>0&&rate?`1 ${accCur} = ${rate.toFixed(4)} ${baseCurrency}　→　折合 ${fmtMoney(conv(val,accCur,baseCurrency))}`:'';
@@ -2276,6 +2334,29 @@ function saveWeekRecord() {
   if(!currentWeekId) return;
   const rec=db.records.find(r=>r.id===currentWeekId);if(!rec)return;
   if(!rec.balances)rec.balances={};if(!rec.sharesSnapshot)rec.sharesSnapshot={};
+  
+  // 🆕 保存汇率快照
+  const fxSnap = effFx();
+  rec.fxSnapshot = {
+    USD: fxSnap.USD,
+    HKD: fxSnap.HKD,
+    JPY: fxSnap.JPY,
+    timestamp: new Date().toISOString()
+  };
+  
+  // 🆕 保存股价快照
+  rec.stockPriceSnapshot = {};
+  Object.keys(stockPrices).forEach(ticker => {
+    const sp = stockPrices[ticker];
+    if (sp && sp.price) {
+      rec.stockPriceSnapshot[ticker] = {
+        price: sp.price,
+        currency: sp.currency,
+        market: sp.market
+      };
+    }
+  });
+  
   db.accounts.forEach(acc=>{
     if(acc.type==='stock'&&acc.holdings?.length){
       const snap={};
@@ -2284,10 +2365,11 @@ function saveWeekRecord() {
       rec.balances[acc.id]=getAccNative(acc,rec);
     } else {
       const el=document.getElementById('rec-'+acc.id);
-      if(el)rec.balances[acc.id]=parseFloat(el.value)||0;
+      // 支持表达式计算
+      if(el)rec.balances[acc.id]=evalCalc(el.value)||0;
     }
   });
-  saveDB();renderHistoryTable();toast('✓ 已保存');
+  saveDB();renderHistoryTable();toast('✓ 已保存（含汇率/股价快照）');
 }
 
 function deleteWeekRecord() {
@@ -3063,7 +3145,7 @@ const LEDGER_CATS = [
   { key:'eat',    label:'吃饭',     color:'#f97316', subs:[
     { key:'food',    label:'食费',     yearBudget:false },
     { key:'dining',  label:'外食',     yearBudget:false },
-    { key:'alcohol', label:'酒',       yearBudget:false },
+    { key:'alcohol', label:'酒',       yearBudget:true,  yearAmt:120000 },
   ]},
   { key:'need',   label:'刚需',     color:'#ec4899', subs:[
     { key:'daily',   label:'日用品',   yearBudget:false },
@@ -3282,6 +3364,22 @@ function calcInput(el, catKey) {
     el.style.background = 'var(--green-l)';
     setTimeout(() => { el.style.background = ''; }, 800);
     if (catKey) lwUpdateCatTotal(catKey);
+  }
+}
+
+// 🆕 理财记录输入框计算功能
+function calcRecInput(el, accId) {
+  const raw = el.value.trim();
+  if (!raw) return;
+  // 如果是纯数字不处理
+  if (/^\d+(\.\d+)?$/.test(raw)) return;
+  const result = evalCalc(raw);
+  if (result >= 0) {
+    el.value = result.toFixed(2);
+    el.style.background = 'var(--green-l)';
+    setTimeout(() => { el.style.background = ''; }, 800);
+    // 触发input事件更新汇率提示
+    el.dispatchEvent(new Event('input', { bubbles: true }));
   }
 }
 
@@ -4383,6 +4481,285 @@ function checkTreeMilestones(state) {
     }
   });
   if (changed) saveDB();
+}
+
+// ════════════════════════════════════════════════════════
+// 🎯 GOALS PAGE
+// ════════════════════════════════════════════════════════
+let _goalTab = 'asset';
+
+function switchGoalTab(tab) {
+  _goalTab = tab;
+  document.getElementById('goal-asset-tab').style.display = tab === 'asset' ? '' : 'none';
+  document.getElementById('goal-budget-tab').style.display = tab === 'budget' ? '' : 'none';
+  document.getElementById('goal-tab-asset-btn').style.fontWeight = tab === 'asset' ? '700' : '';
+  document.getElementById('goal-tab-asset-btn').style.color = tab === 'asset' ? 'var(--blue)' : '';
+  document.getElementById('goal-tab-asset-btn').className = tab === 'asset' ? 'btn btn-sm' : 'btn btn-g btn-sm';
+  document.getElementById('goal-tab-budget-btn').style.fontWeight = tab === 'budget' ? '700' : '';
+  document.getElementById('goal-tab-budget-btn').style.color = tab === 'budget' ? 'var(--blue)' : '';
+  document.getElementById('goal-tab-budget-btn').className = tab === 'budget' ? 'btn btn-sm' : 'btn btn-g btn-sm';
+  if (tab === 'asset') renderGoalsAsset();
+  if (tab === 'budget') renderGoalsBudget();
+}
+
+function renderGoals() {
+  switchGoalTab(_goalTab);
+}
+
+function renderGoalsAsset() {
+  const state = calcTreeState();
+  const sorted = sortedRecords();
+  
+  // FIRE总目标
+  const fireEl = document.getElementById('goal-fire-progress');
+  if (!db.treeGoal) {
+    document.getElementById('goal-fire-sub').textContent = '尚未设定目标';
+    fireEl.innerHTML = `<div style="text-align:center;padding:30px;color:var(--t3)">
+      <div style="font-size:32px;margin-bottom:10px">🏗</div>
+      <div>点击上方「设定总资产目标」开始追踪你的FIRE进度</div>
+    </div>`;
+  } else {
+    const goalDisplay = conv(db.treeGoal, 'CNY', baseCurrency);
+    document.getElementById('goal-fire-sub').textContent = `目标 ${fmtMoney(goalDisplay)} · 当前 ${fmtMoney(state.currentAssets)}`;
+    const icons = ['🌱','🪨','⛺','🪵','🏠','🏰'];
+    const names = ['一片土地','石头地基','帐篷','小木屋','日式一户建','FIRE豪宅'];
+    fireEl.innerHTML = `
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px">
+        <div style="font-size:48px">${icons[state.stage]}</div>
+        <div>
+          <div style="font-size:18px;font-weight:700">${names[state.stage]}</div>
+          <div style="font-size:13px;color:var(--t2);margin-top:2px">进度 ${(state.progress*100).toFixed(1)}%</div>
+        </div>
+      </div>
+      <div style="height:12px;background:var(--s3);border-radius:6px;overflow:hidden;margin-bottom:8px">
+        <div style="height:100%;width:${Math.min(100,state.progress*100).toFixed(1)}%;background:linear-gradient(90deg,#f59e0b,#22c55e);border-radius:6px;transition:width 1s"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--t3)">
+        <span>当前 ${fmtMoney(state.currentAssets)}</span>
+        <span>距目标还差 ${fmtMoney(Math.max(0, goalDisplay - state.currentAssets))}</span>
+      </div>`;
+  }
+  
+  // 周资产变化
+  const weeklyEl = document.getElementById('goal-weekly-progress');
+  const recent8 = sorted.slice(-8);
+  if (recent8.length < 2) {
+    weeklyEl.innerHTML = '<div style="text-align:center;padding:20px;color:var(--t3)">需要至少2周数据</div>';
+  } else {
+    let html = '<div style="display:grid;gap:8px">';
+    for (let i = recent8.length - 1; i >= 0; i--) {
+      const rec = recent8[i];
+      const prev = i > 0 ? recent8[i-1] : null;
+      const cur = computeRecord(rec);
+      const prevTotal = prev ? computeRecord(prev).total : null;
+      const diff = prevTotal !== null ? cur.total - prevTotal : null;
+      const pctChg = prevTotal && prevTotal > 0 ? ((diff / prevTotal) * 100).toFixed(2) : null;
+      const chgColor = diff > 0 ? 'var(--green)' : diff < 0 ? 'var(--red)' : 'var(--t3)';
+      const chgIcon = diff > 0 ? '↑' : diff < 0 ? '↓' : '—';
+      html += `<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--s2);border-radius:10px;border:1px solid var(--border)">
+        <div>
+          <div style="font-size:12px;color:var(--t2)">${rec.weekEnd}</div>
+          <div style="font-size:15px;font-weight:600;font-family:var(--mono)">${fmtMoney(cur.total)}</div>
+        </div>
+        <div style="text-align:right">
+          ${diff !== null ? `
+            <div style="font-size:13px;font-weight:600;color:${chgColor}">${chgIcon} ${fmtMoney(Math.abs(diff))}</div>
+            <div style="font-size:11px;color:${chgColor}">${pctChg > 0 ? '+' : ''}${pctChg}%</div>
+          ` : '<div style="font-size:12px;color:var(--t3)">首次记录</div>'}
+        </div>
+      </div>`;
+    }
+    html += '</div>';
+    weeklyEl.innerHTML = html;
+  }
+  
+  // 年度里程碑
+  const yearlyEl = document.getElementById('goal-yearly-milestones');
+  const yearMap = {};
+  sorted.forEach(rec => {
+    const year = rec.weekEnd.slice(0, 4);
+    if (!yearMap[year]) yearMap[year] = { first: rec, last: rec };
+    else yearMap[year].last = rec;
+  });
+  const years = Object.keys(yearMap).sort();
+  if (years.length === 0) {
+    yearlyEl.innerHTML = '<div style="text-align:center;padding:20px;color:var(--t3)">暂无年度数据</div>';
+  } else {
+    let html = '<div style="display:grid;gap:10px">';
+    years.forEach(year => {
+      const { first, last } = yearMap[year];
+      const firstTotal = computeRecord(first).total;
+      const lastTotal = computeRecord(last).total;
+      const growth = lastTotal - firstTotal;
+      const growthPct = firstTotal > 0 ? ((growth / firstTotal) * 100).toFixed(1) : null;
+      const color = growth >= 0 ? 'var(--green)' : 'var(--red)';
+      html += `<div style="padding:14px 16px;background:var(--s2);border-radius:12px;border:1px solid var(--border)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <span style="font-size:16px;font-weight:700">${year}年</span>
+          <span style="font-size:14px;font-weight:600;color:${color}">${growth >= 0 ? '+' : ''}${fmtMoney(growth)}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--t2)">
+          <span>年初 ${fmtMoney(firstTotal)}</span>
+          <span>年末 ${fmtMoney(lastTotal)}</span>
+          ${growthPct !== null ? `<span style="color:${color}">${growthPct > 0 ? '+' : ''}${growthPct}%</span>` : ''}
+        </div>
+      </div>`;
+    });
+    html += '</div>';
+    yearlyEl.innerHTML = html;
+  }
+}
+
+function renderGoalsBudget() {
+  const now = new Date();
+  const ym = now.toISOString().slice(0, 7);
+  const yr = now.getFullYear().toString();
+  const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+  const dayOfMonth = now.getDate();
+  const timePct = dayOfMonth / daysInMonth;
+  
+  document.getElementById('goal-month-sub').textContent = `${ym} · 今日第${dayOfMonth}天 / 共${daysInMonth}天 (${(timePct*100).toFixed(0)}%)`;
+  document.getElementById('goal-year-sub').textContent = `${yr}年`;
+  
+  const monthSpent = getMonthSpent(ym);
+  const yearSpent = getYearSpent(yr);
+  const budget = getLedgerBudget();
+  
+  // 获取有数据的所有月份
+  const allMonths = [...new Set((db.ledgerWeeks || []).map(w => w.weekEnd.slice(0, 7)))].sort().reverse();
+  
+  // 月度预算 - 当月进度
+  const monthEl = document.getElementById('goal-month-budget');
+  const monthItems = LEDGER_CATS.flatMap(c => c.subs).filter(s => !s.yearBudget && isBudgetEnabled(s.key) && budget.month[s.key]);
+  
+  let monthHtml = '';
+  
+  // 当月进度卡片
+  if (!monthItems.length) {
+    monthHtml = '<div style="text-align:center;padding:20px;color:var(--t3)">暂无月度预算设置，请在账本→预算设置中配置</div>';
+  } else {
+    monthHtml += '<div style="font-size:12px;font-weight:600;color:var(--t2);margin-bottom:10px">📊 当月进度</div>';
+    monthHtml += '<div style="display:grid;gap:10px;margin-bottom:20px">';
+    monthItems.forEach(sub => {
+      const spent = monthSpent[sub.key] || 0;
+      const limit = budget.month[sub.key] || 0;
+      if (!limit) return;
+      const st = calcMonthBudgetStatus(sub.key, spent);
+      if (!st) return;
+      const barColor = st.status === 'danger' ? '#ef4444' : st.status === 'orange' ? '#f97316' : st.status === 'warn' ? '#eab308' : '#22c55e';
+      monthHtml += `<div style="padding:12px 14px;background:var(--s2);border-radius:10px;border:1px solid var(--border)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <span style="font-size:13px;font-weight:600">${sub.label}</span>
+          <span style="font-size:12px;font-family:var(--mono);color:var(--t2)">${fmtJPY(spent)} / ${fmtJPY(limit)}</span>
+        </div>
+        <div style="position:relative;height:8px;background:var(--s3);border-radius:4px;overflow:visible">
+          <div style="height:100%;width:${Math.min(100, st.spentPct * 100).toFixed(1)}%;background:${barColor};border-radius:4px"></div>
+          <div style="position:absolute;left:${(timePct * 100).toFixed(1)}%;top:-2px;height:12px;width:2px;background:#374151;border-radius:1px" title="时间进度线"></div>
+        </div>
+        ${st.status !== 'ok' ? `<div style="margin-top:4px">${budgetBadgeHtml(st)}</div>` : ''}
+      </div>`;
+    });
+    monthHtml += '</div>';
+    
+    // 历史月度达成情况
+    const recentMonths = allMonths.slice(0, 6); // 最近6个月
+    if (recentMonths.length > 0) {
+      monthHtml += '<div style="font-size:12px;font-weight:600;color:var(--t2);margin-bottom:10px">📅 历史月度达成</div>';
+      monthHtml += '<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px">';
+      monthHtml += '<thead><tr style="background:var(--s2)"><th style="padding:10px 8px;text-align:left;font-weight:600;border-bottom:1px solid var(--border)">月份</th>';
+      monthItems.forEach(sub => {
+        monthHtml += `<th style="padding:10px 8px;text-align:right;font-weight:600;border-bottom:1px solid var(--border);white-space:nowrap">${sub.label}</th>`;
+      });
+      monthHtml += '<th style="padding:10px 8px;text-align:right;font-weight:600;border-bottom:1px solid var(--border)">合计</th></tr></thead><tbody>';
+      
+      recentMonths.forEach(month => {
+        const mSpent = getMonthSpent(month);
+        let rowTotal = 0;
+        monthHtml += `<tr style="border-bottom:1px solid var(--border)"><td style="padding:10px 8px;font-weight:500">${month}</td>`;
+        monthItems.forEach(sub => {
+          const spent = mSpent[sub.key] || 0;
+          const limit = budget.month[sub.key] || 0;
+          rowTotal += spent;
+          const pct = limit > 0 ? (spent / limit * 100) : 0;
+          const color = pct > 100 ? '#ef4444' : pct > 80 ? '#f97316' : '#22c55e';
+          monthHtml += `<td style="padding:10px 8px;text-align:right;font-family:var(--mono)">
+            <div>${fmtJPY(spent)}</div>
+            ${limit > 0 ? `<div style="font-size:10px;color:${color}">${pct.toFixed(0)}%</div>` : ''}
+          </td>`;
+        });
+        monthHtml += `<td style="padding:10px 8px;text-align:right;font-family:var(--mono);font-weight:600">${fmtJPY(rowTotal)}</td></tr>`;
+      });
+      
+      // 预算行
+      monthHtml += '<tr style="background:var(--s2)"><td style="padding:10px 8px;font-weight:600;color:var(--blue)">月预算</td>';
+      let budgetTotal = 0;
+      monthItems.forEach(sub => {
+        const limit = budget.month[sub.key] || 0;
+        budgetTotal += limit;
+        monthHtml += `<td style="padding:10px 8px;text-align:right;font-family:var(--mono);color:var(--blue)">${fmtJPY(limit)}</td>`;
+      });
+      monthHtml += `<td style="padding:10px 8px;text-align:right;font-family:var(--mono);font-weight:600;color:var(--blue)">${fmtJPY(budgetTotal)}</td></tr>`;
+      
+      monthHtml += '</tbody></table></div>';
+      
+      // 月度达成率趋势
+      monthHtml += '<div style="margin-top:16px;font-size:12px;font-weight:600;color:var(--t2);margin-bottom:10px">📈 月度达成率</div>';
+      monthHtml += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px">';
+      recentMonths.forEach(month => {
+        const mSpent = getMonthSpent(month);
+        let totalSpent = 0, totalBudget = 0;
+        monthItems.forEach(sub => {
+          totalSpent += mSpent[sub.key] || 0;
+          totalBudget += budget.month[sub.key] || 0;
+        });
+        const pct = totalBudget > 0 ? (totalSpent / totalBudget * 100) : 0;
+        const status = pct > 100 ? 'danger' : pct > 80 ? 'warn' : 'ok';
+        const barColor = status === 'danger' ? '#ef4444' : status === 'warn' ? '#eab308' : '#22c55e';
+        const icon = status === 'danger' ? '🚨' : status === 'warn' ? '⚠️' : '✅';
+        monthHtml += `<div style="padding:12px;background:var(--s2);border-radius:10px;border:1px solid var(--border)">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+            <span style="font-size:12px;font-weight:600">${month}</span>
+            <span style="font-size:14px">${icon}</span>
+          </div>
+          <div style="height:6px;background:var(--s3);border-radius:3px;overflow:hidden;margin-bottom:4px">
+            <div style="height:100%;width:${Math.min(100, pct).toFixed(1)}%;background:${barColor};border-radius:3px"></div>
+          </div>
+          <div style="font-size:11px;color:var(--t2);text-align:center">${pct.toFixed(0)}% · ${fmtJPY(totalSpent)}</div>
+        </div>`;
+      });
+      monthHtml += '</div>';
+    }
+  }
+  monthEl.innerHTML = monthHtml;
+  
+  // 年度预算
+  const yearEl = document.getElementById('goal-year-budget');
+  const yearItems = LEDGER_CATS.flatMap(c => c.subs).filter(s => s.yearBudget && isBudgetEnabled(s.key));
+  if (!yearItems.length) {
+    yearEl.innerHTML = '<div style="text-align:center;padding:20px;color:var(--t3)">暂无年度预算项目</div>';
+  } else {
+    let html = '<div style="display:grid;gap:10px">';
+    yearItems.forEach(sub => {
+      const spent = yearSpent[sub.key] || 0;
+      const limit = budget.year[sub.key] || sub.yearAmt || 0;
+      if (!limit) return;
+      const st = calcYearBudgetStatus(sub.key, spent);
+      if (!st) return;
+      const barColor = st.status === 'danger' ? '#ef4444' : st.status === 'orange' ? '#f97316' : st.status === 'warn' ? '#eab308' : '#22c55e';
+      html += `<div style="padding:12px 14px;background:var(--s2);border-radius:10px;border:1px solid var(--border)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <span style="font-size:13px;font-weight:600">${sub.label}</span>
+          <span style="font-size:12px;font-family:var(--mono);color:var(--t2)">${fmtJPY(spent)} / ${fmtJPY(limit)}</span>
+        </div>
+        <div style="height:8px;background:var(--s3);border-radius:4px;overflow:hidden">
+          <div style="height:100%;width:${Math.min(100, st.pct * 100).toFixed(1)}%;background:${barColor};border-radius:4px"></div>
+        </div>
+        ${st.status !== 'ok' ? `<div style="margin-top:4px">${budgetBadgeHtml(st)}</div>` : ''}
+      </div>`;
+    });
+    html += '</div>';
+    yearEl.innerHTML = html || '<div style="text-align:center;padding:20px;color:var(--t3)">暂无年度预算数据</div>';
+  }
 }
 
 
