@@ -1167,7 +1167,6 @@ body{padding-top:env(safe-area-inset-top,0px);}
         <div style="display:flex;gap:6px;align-items:center">
           <button class="btn btn-g btn-sm" id="ledger-tab-week-btn" onclick="switchLedgerTab('week')" style="font-weight:600;color:var(--blue)">周账</button>
           <button class="btn btn-g btn-sm" id="ledger-tab-month-btn" onclick="switchLedgerTab('month')">月账</button>
-          <button class="btn btn-g btn-sm" id="ledger-tab-stats-btn" onclick="switchLedgerTab('stats')">📊 统计</button>
           <button class="btn btn-g btn-sm" id="ledger-tab-budget-btn" onclick="switchLedgerTab('budget')">🎯 预算</button>
         </div>
         <button class="btn btn-g btn-sm" onclick="exportLedgerCSV()">↓ 导出 CSV</button>
@@ -4200,7 +4199,12 @@ function getTreeData() {
 }
 
 function openTreeGoalModal() {
-  var gc=db.treeGoalCurrency||baseCurrency;var sel=document.getElementById('tree-goal-currency');if(sel)sel.value=gc;var goalDisplay=db.treeGoal?Math.round(conv(db.treeGoal,db.treeGoalCurrency||'CNY',gc)):'';
+  // 目标以CNY存储，显示时用用户上次选择的货币（或当前基准货币）
+  var gc = db.treeGoalCurrency || baseCurrency;
+  var sel = document.getElementById('tree-goal-currency');
+  if (sel) sel.value = gc;
+  // db.treeGoal 是CNY，转换为显示货币
+  var goalDisplay = db.treeGoal ? Math.round(conv(db.treeGoal, 'CNY', gc)) : '';
   document.getElementById('tree-goal-input').value = goalDisplay || '';
   openModal('modal-tree-goal');
 }
