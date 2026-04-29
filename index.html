@@ -414,6 +414,17 @@ th.sort-active .sort-icon{color:var(--blue);}
 .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:rgba(17,24,39,.92);backdrop-filter:blur(12px);color:#fff;border-radius:20px;padding:10px 20px;font-size:13px;z-index:9999;animation:tIn .2s ease;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.25);}
 @keyframes tIn{from{opacity:0;transform:translateX(-50%) translateY(8px);}}
 
+/* ── Section tabs (二级菜单切换) ── */
+.section-tabs{display:flex;gap:6px;margin-bottom:16px;padding:5px;background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:var(--sh0);overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.section-tabs::-webkit-scrollbar{display:none;}
+.stab{flex:0 0 auto;padding:8px 18px;border-radius:8px;border:none;background:transparent;color:var(--t2);font-size:13px;font-weight:500;cursor:pointer;transition:all .18s;font-family:inherit;white-space:nowrap;min-height:36px;}
+.stab:hover{background:var(--s2);color:var(--text);}
+.stab.active{background:var(--blue);color:#fff;font-weight:600;box-shadow:0 2px 6px rgba(26,111,255,.3);}
+@media(max-width:768px){
+  .section-tabs{padding:4px;margin-bottom:12px;border-radius:10px;}
+  .stab{padding:7px 14px;font-size:12px;min-height:34px;}
+}
+
 
 /* ══════════════════════════════════════════════════════
    FIRE v6.3 Mobile Deep Optimization
@@ -890,14 +901,19 @@ body{padding-top:env(safe-area-inset-top,0px);}
       </div>
     </div>
     <nav class="nav">
-      <div class="nav-item" onclick="showPage('ledger')"><span class="nav-icon">📒</span>消费</div>
-      <div class="nav-section">理财收入</div>
-      <div class="nav-item active" onclick="showPage('dashboard')"><span class="nav-icon">⊞</span>总览分析</div>
-      <div class="nav-item" onclick="showPage('record')"><span class="nav-icon">✎</span>记录</div>
-      <div class="nav-item" onclick="showPage('goals')"><span class="nav-icon">🎯</span>目标观测</div>
+      <div class="nav-item active" onclick="showSection('overview')"><span class="nav-icon">⊞</span>总览分析</div>
+
+      <div class="nav-section">支出</div>
+      <div class="nav-item" onclick="showSection('expense','ledger')"><span class="nav-icon">📒</span>消费</div>
+      <div class="nav-item" onclick="showSection('expense','budget')"><span class="nav-icon">🎯</span>消费预算</div>
+
+      <div class="nav-section">收入</div>
+      <div class="nav-item" onclick="showSection('income','record')"><span class="nav-icon">✎</span>收入记录</div>
+      <div class="nav-item" onclick="showSection('income','goal')"><span class="nav-icon">📈</span>资产目标</div>
+
       <div class="nav-section" id="admin-nav-section">管理</div>
-      <div class="nav-item" onclick="showPage('accounts')"><span class="nav-icon">◈</span>账户管理</div>
-      <div class="nav-item" id="admin-nav-item" style="display:none" onclick="showPage('admin')"><span class="nav-icon">⚙</span>系统管理</div>
+      <div class="nav-item" onclick="showSection('manage','accounts')"><span class="nav-icon">◈</span>账户管理</div>
+      <div class="nav-item" id="admin-nav-item" style="display:none" onclick="showSection('manage','admin')"><span class="nav-icon">⚙</span>系统管理</div>
     </nav>
     <div class="sidebar-foot">
       <div class="cur-label">基准货币</div>
@@ -965,45 +981,32 @@ body{padding-top:env(safe-area-inset-top,0px);}
       </div>
     </div>
 
-    <!-- ── 快照统计 - 资产 + 消费并排 ── -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px" class="dash-split">
-      <!-- 左侧：资产概览 -->
-      <div>
-        <div style="font-size:12px;font-weight:700;color:var(--t2);margin-bottom:10px;display:flex;align-items:center;gap:6px">
-          <span style="width:10px;height:10px;border-radius:3px;background:var(--blue)"></span>资产概览
-        </div>
-        <div class="stats-grid" style="grid-template-columns:1fr 1fr">
-          <div class="sc"><div class="sc-label"><span class="sc-label-icon">🏠</span>家庭总资产</div><div class="sc-val lg" id="s-total">—</div><div class="sc-cur" id="s-total-cur"></div><div class="sc-chg cn" id="s-total-chg">—</div><div class="sbar sb-total"></div></div>
-          <div class="sc"><div class="sc-label"><span class="sc-label-icon">🏦</span>银行存款</div><div class="sc-val" id="s-bank">—</div><div class="sc-chg cn" id="s-bank-chg">—</div><div class="sbar sb-blue"></div></div>
-          <div class="sc"><div class="sc-label"><span class="sc-label-icon">📈</span>投资资产</div><div class="sc-val" id="s-invest">—</div><div class="sc-chg cn" id="s-invest-chg">—</div><div class="sbar sb-orange"></div></div>
-          <div class="sc"><div class="sc-label"><span class="sc-label-icon">🗂</span>其他资产</div><div class="sc-val" id="s-other">—</div><div class="sc-chg cn" id="s-other-chg">—</div><div class="sbar sb-green"></div></div>
-        </div>
+    <!-- ── 阶段 3.2: 资产快照统计 (占满宽度) ── -->
+    <div style="margin-bottom:16px">
+      <div style="font-size:12px;font-weight:700;color:var(--t2);margin-bottom:10px;display:flex;align-items:center;gap:6px">
+        <span style="width:10px;height:10px;border-radius:3px;background:var(--blue)"></span>资产概览
       </div>
-      <!-- 右侧：消费概览 -->
-      <div>
-        <div style="font-size:12px;font-weight:700;color:var(--t2);margin-bottom:10px;display:flex;align-items:center;gap:6px">
-          <span style="width:10px;height:10px;border-radius:3px;background:#f97316"></span>消费概览
-          <span style="margin-left:auto;font-size:11px;font-weight:400;color:var(--t3)" id="dash-spend-period"></span>
-        </div>
-        <div class="stats-grid" style="grid-template-columns:1fr 1fr" id="dash-spend-cards">
-          <div class="sc"><div class="sc-label">本周消费</div><div class="sc-val" id="ds-week">—</div><div class="sbar" style="background:#f97316"></div></div>
-          <div class="sc"><div class="sc-label">本月消费</div><div class="sc-val" id="ds-month">—</div><div class="sbar" style="background:#ec4899"></div></div>
-          <div class="sc"><div class="sc-label">月预算剩余</div><div class="sc-val" id="ds-budget-left">—</div><div class="sc-chg" id="ds-budget-pct"></div><div class="sbar" style="background:#22c55e"></div></div>
-          <div class="sc"><div class="sc-label">周均消费</div><div class="sc-val" id="ds-week-avg">—</div><div class="sbar" style="background:#6b7280"></div></div>
-        </div>
+      <div class="stats-grid">
+        <div class="sc"><div class="sc-label"><span class="sc-label-icon">🏠</span>家庭总资产</div><div class="sc-val lg" id="s-total">—</div><div class="sc-cur" id="s-total-cur"></div><div class="sc-chg cn" id="s-total-chg">—</div><div class="sbar sb-total"></div></div>
+        <div class="sc"><div class="sc-label"><span class="sc-label-icon">🏦</span>银行存款</div><div class="sc-val" id="s-bank">—</div><div class="sc-chg cn" id="s-bank-chg">—</div><div class="sbar sb-blue"></div></div>
+        <div class="sc"><div class="sc-label"><span class="sc-label-icon">📈</span>投资资产</div><div class="sc-val" id="s-invest">—</div><div class="sc-chg cn" id="s-invest-chg">—</div><div class="sbar sb-orange"></div></div>
+        <div class="sc"><div class="sc-label"><span class="sc-label-icon">🗂</span>其他资产</div><div class="sc-val" id="s-other">—</div><div class="sc-chg cn" id="s-other-chg">—</div><div class="sbar sb-green"></div></div>
       </div>
     </div>
 
-    <!-- ── 趋势图 + 构成 (资产 + 消费并排) ── -->
-    <div class="charts-row">
-      <div class="card"><div class="card-hdr"><div><div class="card-title">总资产趋势</div><div class="card-sub" id="trend-cur-lbl"></div></div></div><div class="chart-box"><canvas id="chart-trend"></canvas></div></div>
-      <div class="card"><div class="card-hdr"><div class="card-title">消费分类趋势</div><div class="card-sub">近8周各分类支出</div></div><div class="chart-box"><canvas id="chart-spend-trend"></canvas></div></div>
+    <!-- ── 阶段 3.2: 总资产趋势图 (占满) ── -->
+    <div class="card" style="margin-bottom:14px">
+      <div class="card-hdr"><div><div class="card-title">总资产趋势</div><div class="card-sub" id="trend-cur-lbl"></div></div></div>
+      <div class="chart-box"><canvas id="chart-trend"></canvas></div>
     </div>
-    
-    <!-- ── 资产构成 + 消费构成并排 ── -->
-    <div class="charts-row" style="margin-top:14px">
+
+    <!-- ── 阶段 3.2: 资产构成 + 现金流分析 并排 ── -->
+    <div class="charts-row">
       <div class="card"><div class="card-hdr"><div class="card-title">资产构成</div></div><div class="chart-box"><canvas id="chart-pie"></canvas></div></div>
-      <div class="card"><div class="card-hdr"><div class="card-title">消费构成</div><div class="card-sub" id="spend-pie-period"></div></div><div class="chart-box"><canvas id="chart-spend-pie"></canvas></div></div>
+      <div class="card" id="cashflow-card">
+        <div class="card-hdr"><div><div class="card-title">💰 本周现金流</div><div class="card-sub" id="cashflow-sub">—</div></div></div>
+        <div id="cashflow-body" style="padding:8px 0"></div>
+      </div>
     </div>
 
     <!-- ── 账户明细 ── -->
@@ -1070,6 +1073,10 @@ body{padding-top:env(safe-area-inset-top,0px);}
 
   <!-- RECORD -->
   <div class="page" id="page-record">
+    <div class="section-tabs" data-section="income">
+      <button class="stab active" data-tab="record" onclick="showSection('income','record')">✎ 收入记录</button>
+      <button class="stab" data-tab="goal" onclick="showSection('income','goal')">📈 资产目标</button>
+    </div>
     <div class="page-header">
       <div><div class="page-title">每周记录</div><div class="page-sub">记录各账户余额快照</div></div>
       <button class="btn btn-p" onclick="openNewWeekModal()">＋ 新增周记录</button>
@@ -1103,6 +1110,10 @@ body{padding-top:env(safe-area-inset-top,0px);}
 
   <!-- ACCOUNTS -->
   <div class="page" id="page-accounts">
+    <div class="section-tabs" data-section="manage">
+      <button class="stab active" data-tab="accounts" onclick="showSection('manage','accounts')">◈ 账户管理</button>
+      <button class="stab" data-tab="admin" onclick="showSection('manage','admin')" id="manage-tab-admin" style="display:none">⚙ 系统管理</button>
+    </div>
     <div class="page-header">
       <div><div class="page-title">账户管理</div><div class="page-sub">配置账户类型、货币与股票持仓</div></div>
       <button class="btn btn-p" onclick="openAddAccModal()">＋ 添加账户</button>
@@ -1117,6 +1128,10 @@ body{padding-top:env(safe-area-inset-top,0px);}
 
   <!-- ADMIN -->
   <div class="page" id="page-admin">
+    <div class="section-tabs" data-section="manage">
+      <button class="stab" data-tab="accounts" onclick="showSection('manage','accounts')">◈ 账户管理</button>
+      <button class="stab active" data-tab="admin" onclick="showSection('manage','admin')">⚙ 系统管理</button>
+    </div>
     <div class="page-header">
       <div><div class="page-title">系统管理</div><div class="page-sub">白名单账户管理与存储配置</div></div>
     </div>
@@ -1161,13 +1176,16 @@ body{padding-top:env(safe-area-inset-top,0px);}
 
   <!-- LEDGER 账本 -->
   <div class="page" id="page-ledger">
+    <div class="section-tabs" data-section="expense">
+      <button class="stab active" data-tab="ledger" onclick="showSection('expense','ledger')">📒 消费</button>
+      <button class="stab" data-tab="budget" onclick="showSection('expense','budget')">🎯 消费预算</button>
+    </div>
     <div class="page-header">
       <div><div class="page-title">账本</div><div class="page-sub">周开支明细 & 月汇总</div></div>
       <div class="hdr-actions">
         <div style="display:flex;gap:6px;align-items:center">
           <button class="btn btn-g btn-sm" id="ledger-tab-week-btn" onclick="switchLedgerTab('week')" style="font-weight:600;color:var(--blue)">周账</button>
           <button class="btn btn-g btn-sm" id="ledger-tab-month-btn" onclick="switchLedgerTab('month')">月账</button>
-          <button class="btn btn-g btn-sm" id="ledger-tab-budget-btn" onclick="switchLedgerTab('budget')">🎯 预算</button>
         </div>
         <button class="btn btn-g btn-sm" onclick="exportLedgerCSV()">↓ 导出 CSV</button>
         <button class="btn btn-g btn-sm" id="ledger-import-btn" onclick="importHistoricalLedger()">📥 导入历史</button>
@@ -1322,19 +1340,27 @@ body{padding-top:env(safe-area-inset-top,0px);}
     </div>
   </div>
 
-  <!-- 🎯 目标观测 -->
+  <!-- 🎯 资产目标 / 消费预算 (双入口共用页面) -->
   <div class="page" id="page-goals">
+    <div class="section-tabs" data-section="income" id="goals-tabs-income">
+      <button class="stab" data-tab="record" onclick="showSection('income','record')">✎ 收入记录</button>
+      <button class="stab active" data-tab="goal" onclick="showSection('income','goal')">📈 资产目标</button>
+    </div>
+    <div class="section-tabs" data-section="expense" id="goals-tabs-expense" style="display:none">
+      <button class="stab" data-tab="ledger" onclick="showSection('expense','ledger')">📒 消费</button>
+      <button class="stab active" data-tab="budget" onclick="showSection('expense','budget')">🎯 消费预算</button>
+    </div>
     <div class="page-header">
-      <div><div class="page-title">🎯 目标观测</div><div class="page-sub">追踪你的FIRE进度与预算目标</div></div>
-      <div class="hdr-actions">
+      <div><div class="page-title" id="goals-page-title">📈 资产目标</div><div class="page-sub" id="goals-page-sub">追踪你的FIRE进度与资产增长</div></div>
+      <div class="hdr-actions" id="goals-page-hdr-actions">
         <button class="btn btn-g btn-sm" onclick="openTreeGoalModal()">设定总资产目标</button>
       </div>
     </div>
 
-    <!-- 目标类型切换 -->
-    <div style="display:flex;gap:8px;margin-bottom:14px">
-      <button class="btn btn-sm" id="goal-tab-asset-btn" onclick="switchGoalTab('asset')" style="font-weight:700;color:var(--blue)">📊 资产目标</button>
-      <button class="btn btn-g btn-sm" id="goal-tab-budget-btn" onclick="switchGoalTab('budget')">💰 预算目标</button>
+    <!-- 内部隐藏切换 (由 section 路由控制,不再显示按钮) -->
+    <div style="display:none">
+      <button id="goal-tab-asset-btn" onclick="switchGoalTab('asset')"></button>
+      <button id="goal-tab-budget-btn" onclick="switchGoalTab('budget')"></button>
     </div>
 
     <!-- 资产目标 Tab -->
@@ -1466,19 +1492,16 @@ body{padding-top:env(safe-area-inset-top,0px);}
 
 <!-- MOBILE BOTTOM NAV -->
 <nav class="mob-nav" id="mob-nav">
-  <button class="mob-nav-item" id="mob-tab-ledger" onclick="showPage('ledger')">
-    <span class="mob-icon">📒</span>消费
-  </button>
-  <button class="mob-nav-item active" id="mob-tab-dashboard" onclick="showPage('dashboard')">
+  <button class="mob-nav-item active" id="mob-tab-overview" onclick="showSection('overview')">
     <span class="mob-icon">⊞</span>总览
   </button>
-  <button class="mob-nav-item" id="mob-tab-record" onclick="showPage('record')">
-    <span class="mob-icon">✎</span>记录
+  <button class="mob-nav-item" id="mob-tab-expense" onclick="showSection('expense')">
+    <span class="mob-icon">💸</span>支出
   </button>
-  <button class="mob-nav-item" id="mob-tab-goals" onclick="showPage('goals')">
-    <span class="mob-icon">🎯</span>目标
+  <button class="mob-nav-item" id="mob-tab-income" onclick="showSection('income')">
+    <span class="mob-icon">💰</span>收入
   </button>
-  <button class="mob-nav-item" id="mob-tab-admin" onclick="showPage('admin')" style="display:none">
+  <button class="mob-nav-item" id="mob-tab-manage" onclick="showSection('manage')">
     <span class="mob-icon">⚙</span>管理
   </button>
 </nav>
@@ -1779,7 +1802,8 @@ function enterApp() {
   if (currentUser.role === 'admin') {
     document.getElementById('admin-nav-section').style.display = '';
     document.getElementById('admin-nav-item').style.display = '';
-    document.getElementById('mob-tab-admin').style.display = '';
+    const mTabAdmin = document.getElementById('manage-tab-admin');
+    if (mTabAdmin) mTabAdmin.style.display = '';
   }
   // Set base currency pill
   document.querySelectorAll('.cpill').forEach(b => b.classList.toggle('active', b.textContent === baseCurrency));
@@ -1816,6 +1840,46 @@ async function fetchFx() {
 function effFx() { return { CNY:1, USD:fxOverride.USD||fx.USD, HKD:fxOverride.HKD||fx.HKD, JPY:fxOverride.JPY||fx.JPY }; }
 function conv(amount, from, to) { const e=effFx(); return amount*(e[from]||1)/(e[to]||1); }
 function fxRate(from) { if(from===baseCurrency)return 1; const e=effFx(); return e[from]/e[baseCurrency]; }
+
+// 🆕 阶段 3.1: 历史快照真实还原 ─────────────────────────
+// 取一周对应的汇率: 有快照用快照,否则用当前
+function getRecFx(rec, useSnapshot) {
+  if (useSnapshot && rec?.fxSnapshot && rec.fxSnapshot.USD) {
+    return { CNY:1, USD:rec.fxSnapshot.USD, HKD:rec.fxSnapshot.HKD, JPY:rec.fxSnapshot.JPY };
+  }
+  return effFx();
+}
+// 取一周对应的股价: 有快照用快照,否则用当前
+function getRecStockPrice(ticker, rec, useSnapshot) {
+  const key = ticker?.toUpperCase();
+  if (useSnapshot && rec?.stockPriceSnapshot?.[key]?.price) {
+    return rec.stockPriceSnapshot[key].price;
+  }
+  return stockPrices[key]?.price ?? null;
+}
+// 判断是否是最新一周 (最新一周永远用现价)
+function isLatestRec(rec) {
+  if (!rec || !db.records?.length) return false;
+  const sorted = [...db.records].sort((a,b)=>(a.weekEnd||'').localeCompare(b.weekEnd||''));
+  return sorted[sorted.length-1]?.id === rec.id;
+}
+// 判断该周是否有快照 (用于 UI 警告)
+function recHasSnapshot(rec) {
+  return !!(rec?.fxSnapshot?.USD && rec?.stockPriceSnapshot);
+}
+// 该周是否需要用快照 = 历史周 && 有快照
+function shouldUseSnapshot(rec) {
+  return !isLatestRec(rec) && recHasSnapshot(rec);
+}
+// 该周是否缺快照 (老数据,会失真) → 用于 UI 标记 ⚠️
+function recSnapshotMissing(rec) {
+  // 最新一周不算"缺快照",因为它本来就用现价
+  return !isLatestRec(rec) && !recHasSnapshot(rec);
+}
+// 用任意 fx 做转换
+function convAt(amount, from, to, fx) {
+  return amount * (fx[from]||1) / (fx[to]||1);
+}
 
 // ════════════════════════════════════════════════════════
 // STOCK PRICES — JST-aware previous close
@@ -1964,16 +2028,17 @@ function getEffHoldings(acc, rec) {
 function getAccNative(acc, rec) {
   if (acc.type === 'stock' && acc.holdings?.length) {
     const eff = getEffHoldings(acc, rec);
-    const priced = eff.filter(h => stockPrices[h.ticker?.toUpperCase()] && !stockPrices[h.ticker?.toUpperCase()].error);
-    if (priced.length > 0) {
-      // 只有当所有持仓股票都有价格时才用实时计算
-      // 如果部分股票没有价格，回退到快照余额，避免资产总额虚减
-      const allPriced = eff.every(h => stockPrices[h.ticker?.toUpperCase()] && !stockPrices[h.ticker?.toUpperCase()].error);
-      if (allPriced) {
-        return eff.reduce((s,h) => { const sp=stockPrices[h.ticker?.toUpperCase()]; return s+(sp&&sp.price?sp.price*(parseFloat(h.shares)||0):0); }, 0);
-      }
+    // 🆕 自动判断: 历史用快照,最新用现价
+    const useSnap = shouldUseSnapshot(rec);
+    // 看所有持仓的价格(快照或现价)能否拿到
+    const allPriced = eff.every(h => getRecStockPrice(h.ticker, rec, useSnap) != null);
+    if (allPriced) {
+      return eff.reduce((s,h) => {
+        const price = getRecStockPrice(h.ticker, rec, useSnap);
+        return s + (price ? price * (parseFloat(h.shares)||0) : 0);
+      }, 0);
     }
-    // 股价未加载或部分失败 → 使用上次保存的快照余额，保持资产总额稳定
+    // fallback: 用 balances 里存的快照值,避免虚减
     const snapshotBalance = parseFloat(rec?.balances?.[acc.id]);
     if (snapshotBalance > 0) return snapshotBalance;
   }
@@ -1981,14 +2046,18 @@ function getAccNative(acc, rec) {
 }
 
 function computeRecord(rec) {
+  // 🆕 阶段 3.1: 历史用快照汇率,最新用现价
+  const useSnap = shouldUseSnapshot(rec);
+  const fx = getRecFx(rec, useSnap);
   let total=0, bank=0, invest=0, other=0;
   db.accounts.forEach(acc => {
-    const base = conv(getAccNative(acc,rec), acc.currency||'CNY', baseCurrency);
+    const native = getAccNative(acc, rec);
+    const base = convAt(native, acc.currency||'CNY', baseCurrency, fx);
     total += base;
     const g = TYPES[acc.type]?.group || 'other';
     if (g==='bank') bank+=base; else if (g==='invest') invest+=base; else other+=base;
   });
-  return { total, bank, invest, other };
+  return { total, bank, invest, other, _missingSnapshot: recSnapshotMissing(rec) };
 }
 
 function sortedRecords() { return [...db.records].sort((a,b)=>(a.weekEnd||'').localeCompare(b.weekEnd||'')); }
@@ -2013,22 +2082,122 @@ function fmtChg(d) {
 }
 
 // ════════════════════════════════════════════════════════
-// NAV
+// NAV — Section + Tab 路由
 // ════════════════════════════════════════════════════════
-function showPage(page) {
-  if (page === 'analysis') page = 'dashboard'; // merged
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  const pageEl = document.getElementById('page-'+page);
-  if (pageEl) pageEl.classList.add('active');
-  // 新菜单结构索引: ledger=0, dashboard=1, record=2, goals=3, accounts=4, admin=5
-  const idx={ledger:0,dashboard:1,record:2,goals:3,accounts:4,admin:5};
-  document.querySelectorAll('.nav-item')[idx[page]]?.classList.add('active');
-  document.querySelectorAll('.mob-nav-item').forEach(b=>b.classList.remove('active'));
-  document.getElementById('mob-tab-'+page)?.classList.add('active');
-  window.scrollTo(0,0);
-  renderPageContent(page);
+const SECTION_MAP = {
+  overview: { default:'dashboard', tabs:{ dashboard:'dashboard' } },
+  expense:  { default:'ledger',    tabs:{ ledger:'ledger', budget:'goals' } },
+  income:   { default:'record',    tabs:{ record:'record', goal:'goals' } },
+  manage:   { default:'accounts',  tabs:{ accounts:'accounts', admin:'admin' } },
+};
+
+function pageToSection(pageId){
+  // goals 页同时被 expense/budget 和 income/goal 共用,默认归 income/goal
+  if (pageId === 'goals') return { section:'income', tab:'goal' };
+  for(const sec in SECTION_MAP){
+    for(const tab in SECTION_MAP[sec].tabs){
+      if(SECTION_MAP[sec].tabs[tab]===pageId) return {section:sec, tab};
+    }
+  }
+  return null;
 }
+
+let _currentSection = 'overview';
+let _currentTab = 'dashboard';
+
+function showSection(section, tab) {
+  if (!SECTION_MAP[section]) return;
+  if (!tab) tab = SECTION_MAP[section].default;
+  if (!SECTION_MAP[section].tabs[tab]) tab = SECTION_MAP[section].default;
+
+  _currentSection = section;
+  _currentTab = tab;
+
+  let pageId = SECTION_MAP[section].tabs[tab];
+
+  // 切页面
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const pageEl = document.getElementById('page-' + pageId);
+  if (pageEl) pageEl.classList.add('active');
+
+  // 桌面侧边栏高亮 (按 .nav-item 顺序: 总览/消费/消费预算/收入记录/资产目标/账户管理/系统管理)
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const navMap = {
+    'overview-dashboard': 0,
+    'expense-ledger': 1, 'expense-budget': 2,
+    'income-record': 3,  'income-goal': 4,
+    'manage-accounts': 5, 'manage-admin': 6,
+  };
+  const navIdx = navMap[`${section}-${tab}`];
+  if (navIdx !== undefined) {
+    const items = document.querySelectorAll('.nav-item');
+    if (items[navIdx]) items[navIdx].classList.add('active');
+  }
+
+  // 移动端底部 tab 高亮
+  document.querySelectorAll('.mob-nav-item').forEach(b => b.classList.remove('active'));
+  document.getElementById('mob-tab-' + section)?.classList.add('active');
+
+  // section-tabs 显隐 + 高亮 (goals 页有两套 tab,根据来源切换)
+  if (pageId === 'goals') {
+    const ti = document.getElementById('goals-tabs-income');
+    const te = document.getElementById('goals-tabs-expense');
+    if (section === 'expense') {
+      if (ti) ti.style.display = 'none';
+      if (te) te.style.display = '';
+    } else {
+      if (ti) ti.style.display = '';
+      if (te) te.style.display = 'none';
+    }
+    // 标题/副标题/按钮显隐
+    const title = document.getElementById('goals-page-title');
+    const sub = document.getElementById('goals-page-sub');
+    const hdr = document.getElementById('goals-page-hdr-actions');
+    if (section === 'expense') {
+      if (title) title.textContent = '🎯 消费预算';
+      if (sub) sub.textContent = '管理月度与年度预算限额';
+      if (hdr) hdr.style.display = 'none';
+    } else {
+      if (title) title.textContent = '📈 资产目标';
+      if (sub) sub.textContent = '追踪你的FIRE进度与资产增长';
+      if (hdr) hdr.style.display = '';
+    }
+  }
+  document.querySelectorAll(`.section-tabs[data-section="${section}"] .stab`).forEach(b => {
+    b.classList.toggle('active', b.dataset.tab === tab);
+  });
+
+  // 渲染页面
+  renderPageContent(pageId);
+
+  // 内部 tab 处理
+  if (pageId === 'goals') {
+    const goalInner = (section === 'expense') ? 'budget' : 'asset';
+    if (typeof switchGoalTab === 'function') switchGoalTab(goalInner);
+  }
+  if (pageId === 'ledger' && typeof _ledgerTab !== 'undefined' && _ledgerTab === 'budget') {
+    if (typeof switchLedgerTab === 'function') switchLedgerTab('week');
+  }
+
+  window.scrollTo(0, 0);
+}
+
+// 兼容旧 showPage 调用
+function showPage(page) {
+  if (page === 'analysis') page = 'dashboard';
+  if (page === 'tree') {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    const el = document.getElementById('page-tree');
+    if (el) el.classList.add('active');
+    window.scrollTo(0, 0);
+    renderPageContent('tree');
+    return;
+  }
+  const mapping = pageToSection(page);
+  if (mapping) showSection(mapping.section, mapping.tab);
+  else showSection('overview');
+}
+
 function renderCurrentPage() { const a=document.querySelector('.page.active'); if(a) renderPageContent(a.id.replace('page-','')); }
 function renderPageContent(p) {
   if(p==='dashboard') renderDashboard();
@@ -2060,7 +2229,20 @@ function setBase(cur) { baseCurrency=cur; document.querySelectorAll('.cpill').fo
 function renderDashboard() {
   const sorted = sortedRecords();
   const latest = sorted[sorted.length-1], prev = sorted[sorted.length-2];
-  document.getElementById('dash-sub').textContent = latest?'最近快照：'+latest.weekEnd:'尚无记录';
+  // 🆕 阶段 3.1: 副标题展示快照状态
+  const subEl = document.getElementById('dash-sub');
+  if (subEl) {
+    if (!latest) {
+      subEl.textContent = '尚无记录';
+    } else {
+      const missingCount = sorted.filter(r => recSnapshotMissing(r)).length;
+      let txt = '最近快照：' + latest.weekEnd;
+      if (missingCount > 0) {
+        txt += ` · ⚠️ ${missingCount} 周历史数据缺快照`;
+      }
+      subEl.textContent = txt;
+    }
+  }
   document.getElementById('base-cur-hdr').textContent = baseCurrency;
   document.getElementById('trend-cur-lbl').textContent = baseCurrency;
   updateDataBar();
@@ -2069,7 +2251,7 @@ function renderDashboard() {
     ['total','bank','invest','other'].forEach(k=>{document.getElementById('s-'+k).textContent='—';const e=document.getElementById('s-'+k+'-chg');e.textContent='—';e.className='sc-chg cn';});
     renderTrendChart([]); renderPieChart(null);
     document.getElementById('dash-tbody').innerHTML='<tr><td colspan="7"><div class="empty-state"><div class="empty-icon">📊</div>暂无数据</div></td></tr>';
-    renderDashSpend(); // 渲染消费统计
+    renderCashflow(); // 阶段 3.2: 渲染现金流分析
     return;
   }
   const cur=computeRecord(latest), pre=prev?computeRecord(prev):null;
@@ -2084,148 +2266,106 @@ function renderDashboard() {
   // also render analysis section (merged into same page)
   renderAnalysisSummary(sorted);
   renderTypeTrendChart(sorted); renderInvestAnalysis(sorted); renderContribChart(sorted); renderStockAnalysis(sorted);
-  // 渲染消费统计
-  renderDashSpend();
+  // 阶段 3.2: 渲染现金流分析
+  renderCashflow();
 }
 
-// ── 总览页消费统计渲染 ──
-function renderDashSpend() {
-  const now = new Date();
-  const ym = now.toISOString().slice(0, 7);
-  const weeks = (db.ledgerWeeks || []).sort((a,b) => b.weekEnd.localeCompare(a.weekEnd));
-  const thisWeek = weeks[0];
-  const budget = getLedgerBudget();
-  
-  // 本周消费
-  let weekTotal = 0;
-  if (thisWeek) {
-    ALL_SUB_KEYS.forEach(k => { weekTotal += thisWeek.vals[k] || 0; });
-  }
-  document.getElementById('ds-week').textContent = weekTotal > 0 ? fmtJPY(weekTotal) : '—';
-  document.getElementById('dash-spend-period').textContent = thisWeek ? thisWeek.weekEnd : '';
-  
-  // 本月消费
-  const monthSpent = getMonthSpent(ym);
-  let monthTotal = 0;
-  ALL_SUB_KEYS.forEach(k => { monthTotal += monthSpent[k] || 0; });
-  document.getElementById('ds-month').textContent = monthTotal > 0 ? fmtJPY(monthTotal) : '—';
-  
-  // 月预算剩余
-  let monthBudgetTotal = 0;
-  LEDGER_CATS.flatMap(c => c.subs).filter(s => !s.yearBudget && budget.month[s.key]).forEach(sub => {
-    monthBudgetTotal += budget.month[sub.key] || 0;
-  });
-  const budgetLeft = monthBudgetTotal - monthTotal;
-  const budgetPct = monthBudgetTotal > 0 ? (monthTotal / monthBudgetTotal * 100) : 0;
-  document.getElementById('ds-budget-left').textContent = monthBudgetTotal > 0 ? fmtJPY(budgetLeft) : '—';
-  const budgetPctEl = document.getElementById('ds-budget-pct');
-  if (monthBudgetTotal > 0) {
-    budgetPctEl.textContent = `已用 ${budgetPct.toFixed(0)}%`;
-    budgetPctEl.style.color = budgetPct > 100 ? 'var(--red)' : budgetPct > 80 ? '#f97316' : 'var(--green)';
-  } else {
-    budgetPctEl.textContent = '';
-  }
-  
-  // 周均消费 (近8周)
-  const recent8 = weeks.slice(0, 8);
-  let weekAvg = 0;
-  if (recent8.length > 0) {
-    let sum = 0;
-    recent8.forEach(w => { ALL_SUB_KEYS.forEach(k => { sum += w.vals[k] || 0; }); });
-    weekAvg = sum / recent8.length;
-  }
-  document.getElementById('ds-week-avg').textContent = weekAvg > 0 ? fmtJPY(Math.round(weekAvg)) : '—';
-  
-  // 消费趋势图
-  renderSpendTrendChart(weeks.slice(0, 8).reverse());
-  // 消费构成饼图
-  renderSpendPieChart(monthSpent, ym);
-}
+// ── 阶段 3.2: 现金流分析 (替代原消费统计) ──
+// 显示本周资产变化拆分 + 当周消费 + 净增
+function renderCashflow() {
+  const body = document.getElementById('cashflow-body');
+  const subEl = document.getElementById('cashflow-sub');
+  if (!body) return;
 
-// ── 消费趋势图 ──
-function renderSpendTrendChart(weeks) {
-  const ctx = document.getElementById('chart-spend-trend')?.getContext('2d');
-  if (!ctx) return;
-  if (charts.spendTrend) charts.spendTrend.destroy();
-  if (!weeks.length) return;
-  
-  const catData = LEDGER_CATS.map(cat => ({
-    label: cat.label,
-    color: cat.color,
-    data: weeks.map(w => cat.subs.reduce((s, sub) => s + (w.vals[sub.key] || 0), 0))
-  }));
-  
-  charts.spendTrend = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: weeks.map(w => w.weekEnd),
-      datasets: catData.map(cat => ({
-        label: cat.label,
-        data: cat.data,
-        borderColor: cat.color,
-        backgroundColor: 'transparent',
-        borderWidth: 2,
-        pointRadius: 3,
-        pointBackgroundColor: '#fff',
-        pointBorderColor: cat.color,
-        pointBorderWidth: 2,
-        tension: 0.4
-      }))
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { labels: { color: '#4a4e56', font: { size: 11 }, usePointStyle: true, padding: 12 } },
-        tooltip: { callbacks: { label: c => `${c.dataset.label}: JP¥ ${Math.round(c.parsed.y).toLocaleString()}` } }
-      },
-      scales: {
-        x: { grid: { color: 'rgba(0,0,0,.04)' }, ticks: { color: '#7a7e86', font: { size: 10 } } },
-        y: { grid: { color: 'rgba(0,0,0,.04)' }, ticks: { color: '#7a7e86', font: { size: 10 }, callback: v => v >= 10000 ? (v/10000).toFixed(0) + '万' : v } }
-      }
+  const sorted = sortedRecords();
+  const latest = sorted[sorted.length-1];
+  const prev = sorted[sorted.length-2];
+
+  // 边界 1: 没有任何资产记录
+  if (!latest) {
+    if (subEl) subEl.textContent = '尚无记录';
+    body.innerHTML = '<div class="empty-state" style="padding:20px;font-size:12px"><div class="empty-icon">💰</div>需要至少 1 周资产记录</div>';
+    return;
+  }
+
+  // 边界 2: 只有 1 周(无环比)
+  if (!prev) {
+    if (subEl) subEl.textContent = latest.weekEnd + ' (首次记录)';
+    body.innerHTML = '<div class="empty-state" style="padding:20px;font-size:12px"><div class="empty-icon">📊</div>需要至少 2 周资产记录<br>才能分析现金流变化</div>';
+    return;
+  }
+
+  if (subEl) subEl.textContent = latest.weekEnd + ' 对比 ' + prev.weekEnd;
+
+  const cur = computeRecord(latest);
+  const pre = computeRecord(prev);
+
+  const totalChg = cur.total - pre.total;
+  const cashChg  = (cur.bank + cur.other) - (pre.bank + pre.other);
+  const investChg = cur.invest - pre.invest;
+
+  // 找最接近 latest.weekEnd 的 ledger 周 (±3天)
+  let weekSpend = 0, spendWeekEnd = null;
+  if (db.ledgerWeeks?.length) {
+    const tgt = new Date(latest.weekEnd).getTime();
+    let bestDiff = Infinity, bestWeek = null;
+    db.ledgerWeeks.forEach(w => {
+      const d = Math.abs(new Date(w.weekEnd).getTime() - tgt);
+      if (d < bestDiff && d <= 3*24*3600*1000) { bestDiff = d; bestWeek = w; }
+    });
+    if (bestWeek) {
+      ALL_SUB_KEYS.forEach(k => { weekSpend += bestWeek.vals[k] || 0; });
+      spendWeekEnd = bestWeek.weekEnd;
     }
-  });
-}
+  }
+  // 消费货币是 JPY,换算到基准货币(用当前汇率,因为消费没存快照)
+  const weekSpendBase = weekSpend > 0 ? conv(weekSpend, 'JPY', baseCurrency) : 0;
+  const netGain = totalChg - weekSpendBase;
 
-// ── 消费构成饼图 ──
-function renderSpendPieChart(monthSpent, ym) {
-  const ctx = document.getElementById('chart-spend-pie')?.getContext('2d');
-  if (!ctx) return;
-  if (charts.spendPie) charts.spendPie.destroy();
-  
-  document.getElementById('spend-pie-period').textContent = ym + ' 月';
-  
-  const catTotals = LEDGER_CATS.map(cat => ({
-    label: cat.label,
-    color: cat.color,
-    total: cat.subs.reduce((s, sub) => s + (monthSpent[sub.key] || 0), 0)
-  })).filter(c => c.total > 0);
-  
-  if (!catTotals.length) return;
-  const grandTotal = catTotals.reduce((s, c) => s + c.total, 0);
-  
-  charts.spendPie = new Chart(ctx, {
-    type: 'doughnut',
-    data: {
-      labels: catTotals.map(c => c.label),
-      datasets: [{
-        data: catTotals.map(c => c.total),
-        backgroundColor: catTotals.map(c => c.color),
-        borderColor: '#fff',
-        borderWidth: 3,
-        hoverOffset: 4
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      cutout: '65%',
-      plugins: {
-        legend: { position: 'bottom', labels: { color: '#4a4e56', font: { size: 11 }, padding: 14, usePointStyle: true } },
-        tooltip: { callbacks: { label: c => `${c.label}: JP¥ ${Math.round(c.raw).toLocaleString()} (${(c.raw / grandTotal * 100).toFixed(1)}%)` } }
-      }
-    }
-  });
+  function fmtSign(n) {
+    if (Math.abs(n) < 0.01) return { txt:fmtMoney(0), cls:'cn', icon:'—' };
+    return n > 0
+      ? { txt:'+' + fmtMoney(n), cls:'cu', icon:'↑' }
+      : { txt:'−' + fmtMoney(Math.abs(n)), cls:'cd', icon:'↓' };
+  }
+
+  const tot = fmtSign(totalChg);
+  const cash = fmtSign(cashChg);
+  const inv = fmtSign(investChg);
+  const net = fmtSign(netGain);
+
+  // 现金流卡片 HTML
+  let html = '';
+  // 顶部: 总资产变化
+  html += `<div style="background:var(--s2);border-radius:10px;padding:14px 16px;margin-bottom:12px">
+    <div style="font-size:11px;color:var(--t2);margin-bottom:4px">本周资产变化</div>
+    <div style="font-family:var(--display);font-size:22px;font-weight:700;letter-spacing:-.5px"><span class="${tot.cls === 'cu' ? '' : tot.cls === 'cd' ? '' : ''}" style="color:${tot.cls==='cu'?'var(--green)':tot.cls==='cd'?'var(--red)':'var(--t2)'}">${tot.txt}</span></div>
+  </div>`;
+  // 拆分: 现金类 + 投资类
+  html += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 12px">
+      <div style="font-size:10px;color:var(--t3);margin-bottom:3px">🏦 来自现金类</div>
+      <div style="font-family:var(--mono);font-size:13px;font-weight:600;color:${cash.cls==='cu'?'var(--green)':cash.cls==='cd'?'var(--red)':'var(--t2)'}">${cash.txt}</div>
+    </div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 12px">
+      <div style="font-size:10px;color:var(--t3);margin-bottom:3px">📈 来自投资类</div>
+      <div style="font-family:var(--mono);font-size:13px;font-weight:600;color:${inv.cls==='cu'?'var(--green)':inv.cls==='cd'?'var(--red)':'var(--t2)'}">${inv.txt}</div>
+    </div>
+  </div>`;
+  // 消费 + 净增
+  html += `<div style="background:var(--s2);border-radius:10px;padding:12px 14px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <span style="font-size:12px;color:var(--t2)">💸 本周消费${spendWeekEnd && spendWeekEnd !== latest.weekEnd ? '<span style="font-size:10px;color:var(--t3);margin-left:5px">(' + spendWeekEnd + ')</span>' : ''}</span>
+      <span style="font-family:var(--mono);font-size:13px;font-weight:600;color:${weekSpend>0?'var(--orange)':'var(--t3)'}">${weekSpend > 0 ? '−' + fmtMoney(weekSpendBase) : '未录入'}</span>
+    </div>
+    <div style="height:1px;background:var(--border);margin:8px 0"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <span style="font-size:12px;font-weight:600;color:var(--text)">本周净增</span>
+      <span style="font-family:var(--mono);font-size:14px;font-weight:700;color:${net.cls==='cu'?'var(--green)':net.cls==='cd'?'var(--red)':'var(--t2)'}">${net.txt}</span>
+    </div>
+    <div style="font-size:10px;color:var(--t3);margin-top:4px;line-height:1.5">资产变化 − 消费 = 真实积累${weekSpend === 0 ? ' (消费未录入,等于资产变化)' : ''}</div>
+  </div>`;
+  body.innerHTML = html;
 }
 
 function renderTrendChart(sorted) {
@@ -2233,9 +2373,17 @@ function renderTrendChart(sorted) {
   if(charts.trend) charts.trend.destroy();
   const g=ctx.createLinearGradient(0,0,0,220);
   g.addColorStop(0,'rgba(0,122,255,.15)'); g.addColorStop(1,'rgba(0,122,255,0)');
+  // 🆕 阶段 3.1: 缺快照的点用橙色,有快照的点用蓝色
+  const computed = sorted.map(r => computeRecord(r));
+  const pointColors = computed.map(c => c._missingSnapshot ? '#f79009' : '#007aff');
+  const pointBgColors = computed.map(c => c._missingSnapshot ? '#fff7ed' : '#fff');
   charts.trend=new Chart(ctx,{type:'line',
-    data:{labels:sorted.map(r=>r.weekEnd||''),datasets:[{label:'总资产',data:sorted.map(r=>computeRecord(r).total),borderColor:'#007aff',backgroundColor:g,borderWidth:2,pointRadius:4,pointBackgroundColor:'#fff',pointBorderColor:'#007aff',pointBorderWidth:2,fill:true,tension:.4}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>fmtMoney(c.parsed.y)}}},
+    data:{labels:sorted.map(r=>r.weekEnd||''),datasets:[{label:'总资产',data:computed.map(c=>c.total),borderColor:'#007aff',backgroundColor:g,borderWidth:2,pointRadius:5,pointBackgroundColor:pointBgColors,pointBorderColor:pointColors,pointBorderWidth:2,fill:true,tension:.4}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>{
+      const isMissing = computed[c.dataIndex]?._missingSnapshot;
+      const txt = fmtMoney(c.parsed.y);
+      return isMissing ? '⚠️ ' + txt + ' (用当前汇率近似)' : txt;
+    }}}},
       scales:{x:{grid:{color:'rgba(0,0,0,.04)'},ticks:{color:'#7a7e86',font:{size:10}}},y:{grid:{color:'rgba(0,0,0,.04)'},ticks:{color:'#7a7e86',font:{size:10},callback:v=>v>=1e4?(v/1e4).toFixed(0)+'万':v}}}}});
 }
 
@@ -2443,7 +2591,7 @@ function renderRecordForm(rec) {
             <span class="sh-tk">${hld.ticker}</span>
             <input type="number" class="sh-inp" id="shares-${acc.id}-${hld.ticker}"
               data-accid="${acc.id}" data-ticker="${hld.ticker}"
-              value="${hld.shares}" min="0" step="0.01">
+              value="${hld.shares}" min="0" step="1">
             <span class="sh-unit">股</span>
             ${sp?`<span style="font-family:var(--mono);font-size:10px;color:var(--t3)">@${sp.price}${cs}</span>`:'<span style="font-size:10px;color:var(--t3)">价格加载中</span>'}
           </div>`;
@@ -2560,9 +2708,11 @@ function renderHistoryTable() {
     const photoCell = rec.photo
       ? `<td style="padding:8px 10px"><img class="week-photo" src="${rec.photo}" alt="" onclick="openPhoto('${rec.id}');event.stopPropagation()"></td>`
       : `<td style="padding:8px 10px"><div style="width:36px;height:36px;border-radius:6px;background:var(--s3);border:1.5px dashed var(--border2);display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;color:var(--t3)" onclick="selectWeek('${rec.id}');event.stopPropagation()">📷</div></td>`;
-    return`<tr onclick="selectWeek('${rec.id}')" style="cursor:pointer">
+    // 🆕 阶段 3.1: 缺快照行加 ⚠️ 标记
+    const warnIcon = cur._missingSnapshot ? '<span style="margin-left:5px;cursor:help" title="该周记录缺少汇率/股价快照，使用当前值近似显示，可能与真实历史值有偏差">⚠️</span>' : '';
+    return`<tr onclick="selectWeek('${rec.id}')" style="cursor:pointer${cur._missingSnapshot?';background:rgba(247,144,9,.04)':''}">
       ${photoCell}
-      <td class="mono">${rec.weekEnd}</td>
+      <td class="mono">${rec.weekEnd}${warnIcon}</td>
       <td class="mono" style="text-align:right;font-weight:600">${fmtMoney(cur.total)}</td>
       <td style="text-align:right"><span class="sc-chg ${c.cls}" style="display:inline-flex">${c.text}</span></td>
       <td class="mono" style="text-align:right;color:#1a6fff">${fmtMoney(cur.bank)}</td>
@@ -2584,8 +2734,28 @@ function createWeekRecord(){
     toast('已切换到该日期记录');
     return;
   }
-  db.records.push({id:genId(),weekEnd:d,balances:{},sharesSnapshot:{}});
-  saveDB();currentWeekId=db.records[db.records.length-1].id;closeModal('modal-week');renderRecord();
+  // 引用上一周记录作为默认值 (按 weekEnd 升序后取最后一条 = 最近一周)
+  const sortedExisting = [...db.records].sort((a,b)=>(a.weekEnd||'').localeCompare(b.weekEnd||''));
+  const lastRec = sortedExisting[sortedExisting.length-1];
+  const newRec = {id:genId(), weekEnd:d, balances:{}, sharesSnapshot:{}};
+  if (lastRec) {
+    // 深拷贝余额
+    if (lastRec.balances) {
+      Object.keys(lastRec.balances).forEach(k => { newRec.balances[k] = lastRec.balances[k]; });
+    }
+    // 深拷贝股票持仓快照 (二级结构)
+    if (lastRec.sharesSnapshot) {
+      Object.keys(lastRec.sharesSnapshot).forEach(accId => {
+        newRec.sharesSnapshot[accId] = {};
+        Object.keys(lastRec.sharesSnapshot[accId] || {}).forEach(ticker => {
+          newRec.sharesSnapshot[accId][ticker] = lastRec.sharesSnapshot[accId][ticker];
+        });
+      });
+    }
+  }
+  db.records.push(newRec);
+  saveDB();currentWeekId=newRec.id;closeModal('modal-week');renderRecord();
+  if (lastRec) toast('✓ 已创建,默认值来自 ' + lastRec.weekEnd);
 }
 
 // ════════════════════════════════════════════════════════
@@ -2657,7 +2827,7 @@ function addStockRow(ticker='',shares='',market='US') {
         <option value="JP" ${market==='JP'?'selected':''}>🇯🇵 日股</option>
       </select></div>
     <div class="fg" style="margin:0"><label class="fl">股票代码</label><input class="fi stock-ticker" placeholder="如 AAPL" value="${ticker}"></div>
-    <div class="fg" style="margin:0"><label class="fl">持股数量</label><input type="number" class="fi stock-shares" placeholder="股数" min="0" step="0.01" value="${shares}"></div>
+    <div class="fg" style="margin:0"><label class="fl">持股数量</label><input type="number" class="fi stock-shares" placeholder="股数" min="0" step="1" value="${shares}"></div>
     <button class="btn btn-d btn-sm" onclick="this.closest('.stock-row').remove()" style="margin-top:18px">✕</button>`;
   document.getElementById('stock-holdings-list').appendChild(div);
 }
@@ -3298,6 +3468,8 @@ async function initApp() {
     updateDataBar();
     renderDashboard();
   }
+  // 启动时显示总览 section
+  if (typeof showSection === 'function') showSection('overview');
 }
 
 // Boot
